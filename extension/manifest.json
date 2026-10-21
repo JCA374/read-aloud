@@ -1,0 +1,72 @@
+{
+  "manifest_version": 3,
+  "name": "Read Aloud (Kokoro)",
+  "version": "0.1.0",
+  "description": "Reads web pages aloud with natural Kokoro voices running on your own computer.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:5123/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Read Aloud",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "commands": {
+    "read": {
+      "suggested_key": {
+        "default": "Alt+Shift+R"
+      },
+      "description": "Read selection or page / pause / resume"
+    },
+    "stop": {
+      "suggested_key": {
+        "default": "Alt+Shift+X"
+      },
+      "description": "Stop reading"
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "read-aloud-kokoro@localhost",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  }
+}

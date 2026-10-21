@@ -1,0 +1,7 @@
+[Unit]
+Description=Read Aloud TTS server (Kokoro + Piper), started on demand by read-aloud-tts.socket
+
+[Service]
+# Change the path below to where you cloned this repo.
+ExecStart=%h/code/addon/start-server.sh --quiet --idle-exit 30
+Nice=5

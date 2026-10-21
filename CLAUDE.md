@@ -1,0 +1,33 @@
+# Read Aloud add-on
+
+Browser extension (`extension/`, Firefox + Chromium, MV3) + local TTS server
+(`server/tts_server.py`, Piper and Kokoro on 127.0.0.1:5123). See README.md.
+
+## How to report to the user: the status page
+
+The user finds long terminal replies hard to read. Report progress on the status page, not in the terminal.
+
+- Source: `docs/status.html`. It is published in two places, which must always match:
+  - private Artifact: https://claude.ai/artifact/DzigF14FjENFe38iWR56Bm (republish **to that same URL**)
+  - public GitHub Pages: https://jca374.github.io/read-aloud/ (built from `docs/index.html`)
+- After every meaningful change (feature done, test run, bug fixed, setup step finished):
+  1. update `docs/status.html`
+  2. republish the Artifact to the URL above (never create a second status page)
+  3. run `docs/make-index.sh`, commit all project changes, and push to `origin main`
+     (the user asked on 2026-10-21 for the code and page to be public on GitHub and kept up to date)
+- Then reply in the terminal with 2–4 short lines max: what changed, plus the link.
+- The public page must not contain personal details about the user's machine: no home-folder paths,
+  no other programs or ports they use, no notes about their other work. Write paths relative to the repo.
+- Keep these sections, in this order:
+  1. **At a glance**: counts for working/tested, built but not tested, and left to do
+  2. **Do this next**: numbered steps for the user, with copy buttons for anything to type
+  3. **What works**: each item with a chip ("Tested") and *how* it was verified
+  4. **Built, not tested yet**: be honest; never mark something tested that wasn't
+  5. **How it becomes permanent**: which parts are done, and which need the user
+  6. **How the session went**: the model/effort level used, the real slips made and what each cost,
+     and a suggestion. Facts from the session only; no invented comparisons.
+  7. **Handy commands**
+- Update the "Updated <date>, after <what>" line every time.
+- Writing: short, plain sentences, no jargon without explanation.
+
+Machine-specific notes (setup, testing quirks) are in `CLAUDE.local.md`, which is not committed.

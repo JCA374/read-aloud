@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}</style>
+</head>
+<body>
+<title>Read Aloud Status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;800&family=Atkinson+Hyperlegible+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --bg: #f6f7f8;
+    --surface: #ffffff;
+    --ink: #1b1e23;
+    --muted: #5d6570;
+    --line: #dfe3e8;
+    --accent: #d9480f;
+    --accent-soft: #fff0e6;
+    --ok: #1f7a3a;
+    --ok-soft: #e7f5ec;
+    --warn: #9a6200;
+    --warn-soft: #fff6dc;
+    --todo: #3451b2;
+    --todo-soft: #eaf0ff;
+    --hl-sentence: rgba(255, 196, 0, 0.32);
+    --hl-word: #e8590c;
+    --code-bg: #eef1f4;
+    --sans: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "Atkinson Hyperlegible Mono", ui-monospace, "DejaVu Sans Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #15171b; --surface: #1e2126; --ink: #eceef1; --muted: #a2a9b3; --line: #30353c;
+      --accent: #ff7a3d; --accent-soft: #3a2216;
+      --ok: #5cc98a; --ok-soft: #173225; --warn: #f0b84a; --warn-soft: #352a12;
+      --todo: #8fa8ff; --todo-soft: #1c2440; --code-bg: #262a30;
+      --hl-sentence: rgba(255, 196, 0, 0.22);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #15171b; --surface: #1e2126; --ink: #eceef1; --muted: #a2a9b3; --line: #30353c;
+    --accent: #ff7a3d; --accent-soft: #3a2216;
+    --ok: #5cc98a; --ok-soft: #173225; --warn: #f0b84a; --warn-soft: #352a12;
+    --todo: #8fa8ff; --todo-soft: #1c2440; --code-bg: #262a30;
+    --hl-sentence: rgba(255, 196, 0, 0.22);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 17px/1.6 var(--sans);
+    padding-inline: 16px; padding-block: 32px 64px;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; display: grid; gap: 40px; }
+  h1, h2, h3 { line-height: 1.2; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(30px, 6vw, 42px); font-weight: 800; letter-spacing: -0.01em; }
+  h2 { font-size: 24px; font-weight: 800; }
+  h3 { font-size: 18px; font-weight: 600; }
+  p { margin: 0; max-width: 65ch; }
+  a { color: var(--accent); }
+  code, kbd { font-family: var(--mono); font-size: 0.88em; background: var(--code-bg); padding: 1px 6px; border-radius: 5px; overflow-wrap: anywhere; }
+  section { display: grid; gap: 16px; }
+  .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+  header { display: grid; gap: 12px; }
+  .demo { font-size: 19px; }
+  .demo .s { background: var(--hl-sentence); border-radius: 3px; padding: 1px 0; }
+  .demo .w { background: var(--hl-word); color: #fff; border-radius: 3px; padding: 1px 2px; }
+  .meta { color: var(--muted); font-size: 15px; }
+
+  /* At a glance */
+  .glance { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 640px) { .glance { grid-template-columns: 1fr; } }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+  .tile .n { font-size: 34px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+  .tile.ok .n { color: var(--ok); } .tile.warn .n { color: var(--warn); } .tile.todo .n { color: var(--todo); }
+  .tile .l { font-weight: 600; }
+  .tile .d { color: var(--muted); font-size: 15px; }
+
+  /* Next step box */
+  .next { background: var(--accent-soft); border: 2px solid var(--accent); border-radius: 14px; padding: 20px; display: grid; gap: 14px; }
+  .next h2 { color: var(--accent); }
+  ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 10px; }
+  ol.steps > li { counter-increment: s; display: grid; grid-template-columns: 32px 1fr; gap: 10px; align-items: start; }
+  ol.steps > li::before {
+    content: counter(s); width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 800; display: grid; place-items: center; font-size: 15px;
+  }
+  .copy { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  button.cp { font: 600 13px var(--sans); border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 2px 8px; cursor: pointer; }
+  button.cp:hover { border-color: var(--accent); }
+  button.cp:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Status lists */
+  ul.status { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  ul.status li { display: grid; grid-template-columns: 112px 1fr; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line); align-items: start; }
+  ul.status li:first-child { border-top: 0; }
+  @media (max-width: 520px) { ul.status li { grid-template-columns: 1fr; gap: 4px; } }
+  .chip { display: inline-block; font-size: 13px; font-weight: 600; padding: 2px 10px; border-radius: 999px; white-space: nowrap; justify-self: start; }
+  .chip.ok { background: var(--ok-soft); color: var(--ok); }
+  .chip.warn { background: var(--warn-soft); color: var(--warn); }
+  .chip.todo { background: var(--todo-soft); color: var(--todo); }
+  .item b { font-weight: 600; }
+  .item .how { display: block; color: var(--muted); font-size: 15px; }
+
+  /* Pipeline */
+  .pipe { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 8px; align-items: stretch; }
+  @media (max-width: 640px) { .pipe { grid-template-columns: 1fr; } .pipe .arrow { transform: rotate(90deg); justify-self: center; } }
+  .box { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 6px; align-content: start; }
+  .box h3 { font-size: 16px; }
+  .box p { font-size: 15px; color: var(--muted); }
+  .arrow { align-self: center; color: var(--muted); font-size: 22px; }
+
+  /* Tables */
+  .tbl { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--line); vertical-align: top; }
+  thead th { border-top: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.best td:first-child { font-weight: 600; }
+
+  /* Review */
+  .review { display: grid; gap: 14px; }
+  .verdict { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 8px; }
+  .slips { display: grid; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .slip { padding: 12px 16px; border-top: 1px solid var(--line); display: grid; gap: 2px; }
+  .slip:first-child { border-top: 0; }
+  .slip .what { font-weight: 600; }
+  .slip .cost { color: var(--muted); font-size: 15px; }
+
+  footer { color: var(--muted); font-size: 14px; }
+  @media (prefers-reduced-motion: no-preference) { button.cp { transition: border-color .15s; } }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow">Project status</span>
+    <h1>Read Aloud</h1>
+    <p class="demo"><span class="s">A browser add-on that reads web pages to you with voices that run on <span class="w">your</span> own computer.</span></p>
+    <p class="meta">Updated 21 October 2026, after adding the light Piper voices.</p>
+  </header>
+
+  <section aria-label="At a glance">
+    <div class="glance">
+      <div class="tile ok"><span class="n">9</span><span class="l">Working and tested</span><span class="d">Reading, highlighting, both voice engines, auto-start</span></div>
+      <div class="tile warn"><span class="n">4</span><span class="l">Built, not tested yet</span><span class="d">Mostly Firefox itself, which only you can click through</span></div>
+      <div class="tile todo"><span class="n">2</span><span class="l">Left to do</span><span class="d">Try it in Firefox, then get it signed so it stays</span></div>
+    </div>
+  </section>
+
+  <section class="next" aria-labelledby="next-h">
+    <h2 id="next-h">Do this next: try it in Firefox</h2>
+    <p>This installs it until you close Firefox. The voice server starts by itself.</p>
+    <ol class="steps">
+      <li><span>Type this in the Firefox address bar and press Enter:
+        <span class="copy"><code id="u1">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u1" type="button">Copy</button></span></span></li>
+      <li><span>Click <b>Load Temporary Add-on…</b> and open <code>extension/manifest.json</code> in the project folder.</span></li>
+      <li><span><b>Reload</b> the page you want to hear. Pages that were already open don't have the add-on yet.</span></li>
+      <li><span>Select some text and click the orange speaker. Or click the add-on icon in the toolbar and press <b>Read page</b>.</span></li>
+      <li><span>Tell me what you hear and what looks wrong. I'll fix it and update this page.</span></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="works-h">
+    <h2 id="works-h">What works</h2>
+    <ul class="status">
+      <li><span class="chip ok">Tested</span><span class="item"><b>Read a selection.</b> Select text, click the speaker bubble.<span class="how">Checked in Chromium with real mouse clicks.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Read the whole page.</b> Starts at the title. Skips menus, footers and footnote marks like [1].<span class="how">Checked in Chromium on a test article.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Click-to-read.</b> Click any sentence and it reads from that exact sentence.<span class="how">Clicked the word "four", and it started at "She counted…"</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Highlighting.</b> The sentence is shaded yellow and the spoken word is orange.<span class="how">Watched the word highlight move with the audio.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Pause, resume, skip, stop.</b><span class="how">While paused, the audio and the highlight both stay put.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Light voices (Piper).</b> 0.4 seconds to make 3 seconds of speech, even with the CPU busy.<span class="how">Tested against the server directly.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Natural voices (Kokoro)</b> still work from the new Python environment.<span class="how">Tested against the server directly.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>The voice server starts by itself</b> when the add-on needs it, and stops after 30 idle minutes to free memory.<span class="how">Stopped it, then made a request. It started and answered.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Desktop icon script.</b> Wakes the server and shows a "voices ready" notification.<span class="how">Ran the script. Didn't click the icon itself.</span></span></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="untested-h">
+    <h2 id="untested-h">Built, not tested yet</h2>
+    <ul class="status">
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Everything in Firefox.</b> All browser tests ran in Chromium. Firefox should behave the same, but nobody has clicked through it yet.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>The voice list grouped by engine</b> ("Natural · Kokoro" and "Light &amp; fast · Piper") in the player and the popup.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Word highlighting with Piper voices.</b> Piper doesn't say when each word starts, so the add-on estimates it. It may run a little ahead or behind.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Clicking the desktop icon.</b> If GNOME shows a warning, right-click the icon and choose <b>Allow Launching</b>.</span></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="perm-h">
+    <h2 id="perm-h">How it becomes permanent</h2>
+    <p>There are three parts. Two are already set up.</p>
+    <div class="pipe">
+      <div class="box"><span class="chip todo">Needs you</span><h3>Add-on in Firefox</h3><p>Firefox only keeps add-ons that Mozilla has signed. Signing is free, and the add-on stays private.</p></div>
+      <span class="arrow" aria-hidden="true">→</span>
+      <div class="box"><span class="chip ok">Done</span><h3>Auto-start</h3><p>systemd waits for the add-on on <code>127.0.0.1:5123</code> and starts the server when needed.</p></div>
+      <span class="arrow" aria-hidden="true">→</span>
+      <div class="box"><span class="chip ok">Done</span><h3>Voice server</h3><p>Loads Piper or Kokoro, depending on the voice you pick. Runs from the project's <code>.venv</code>.</p></div>
+    </div>
+
+    <h3>Getting the add-on signed (about 5 minutes)</h3>
+    <ol class="steps">
+      <li><span>Open <a href="https://addons.mozilla.org/developers/" target="_blank" rel="noopener">addons.mozilla.org/developers</a> and log in with a Firefox account.</span></li>
+      <li><span>Click <b>Submit a New Add-on</b>, then choose <b>On your own</b>. This keeps it unlisted, so only you have it.</span></li>
+      <li><span>Upload <code>dist/read-aloud-kokoro.zip</code> (made by <code>./build.sh</code>). A warning about <code>127.0.0.1</code> is expected. If it asks for source code, answer No.</span></li>
+      <li><span>Download the signed <code>.xpi</code> file into the <code>dist</code> folder.</span></li>
+      <li><span>Click the <b>Read Aloud</b> icon on your desktop. Firefox asks to add the add-on. Click <b>Add</b>.</span></li>
+    </ol>
+    <p class="meta">In Chromium, "Load unpacked" from <code>chrome://extensions</code> is already permanent.</p>
+  </section>
+
+  <section aria-labelledby="voices-h">
+    <h2 id="voices-h">The two voice engines</h2>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Engine</th><th>Memory</th><th>Time for 3 s of speech*</th><th>First start</th><th>Sound</th></tr></thead>
+        <tbody>
+          <tr class="best"><td>Piper (default)</td><td class="num">~230 MB</td><td class="num">0.4 s</td><td class="num">~1 s</td><td>Clear, a bit flat. 9 voices.</td></tr>
+          <tr><td>Kokoro</td><td class="num">~1.2 GB</td><td class="num">~15 s</td><td class="num">~40 s</td><td>Most natural. 12 voices. Exact word timing.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="meta">* Measured while other heavy programs were using the CPU. On an idle laptop Kokoro keeps up with speech. Only the engine you use loads into memory.</p>
+  </section>
+
+  <section class="review" aria-labelledby="review-h">
+    <h2 id="review-h">How the lower-effort model did</h2>
+    <div class="verdict">
+      <p><b>Short version:</b> it got everything built and tested. It made small mistakes that cost retries, and it caught each one itself. None of them touched your files or your other programs.</p>
+      <p>This was one session, so there is no higher-effort run to compare it with. The list below is what actually happened.</p>
+    </div>
+    <h3>Slips along the way</h3>
+    <div class="slips">
+      <div class="slip"><span class="what">A test command stopped itself, twice.</span><span class="cost">The cleanup pattern matched its own command line. Fixed by looking up the process first. Nothing else was stopped.</span></div>
+      <div class="slip"><span class="what">It assumed a test port was free.</span><span class="cost">Another program already used it. The first test failed. It moved to a different port and left the other program alone.</span></div>
+      <div class="slip"><span class="what">The selection speaker first appeared in the middle of the line.</span><span class="cost">Seen in a screenshot. It now appears where you let go of the mouse.</span></div>
+      <div class="slip"><span class="what">It nearly set the server to offline mode.</span><span class="cost">That would have blocked downloading new voices. Spotted and removed before it caused a problem.</span></div>
+      <div class="slip"><span class="what">A false "installer stopped" alarm.</span><span class="cost">The progress check looked for the wrong process name. It confirmed the install was still running and fixed the check.</span></div>
+      <div class="slip"><span class="what">Too much text in the terminal.</span><span class="cost">You said the replies were hard to read. That's why this page exists, and future updates will come here.</span></div>
+    </div>
+    <div class="verdict">
+      <p><b>Suggestion:</b> lower effort works well for building and trying things in this project. Before you submit to Mozilla, run one careful review with <code>/code-review high</code>. It catches the kind of mistakes listed above before they reach a signed release.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="ref-h">
+    <h2 id="ref-h">Handy commands</h2>
+    <div class="tbl">
+      <table>
+        <tbody>
+          <tr><td>Is the voice server running?</td><td><code>systemctl --user status read-aloud-tts</code></td></tr>
+          <tr><td>See what it did</td><td><code>journalctl --user -u read-aloud-tts -n 30</code></td></tr>
+          <tr><td>Turn auto-start off</td><td><code>systemctl --user disable --now read-aloud-tts.socket</code></td></tr>
+          <tr><td>Rebuild the upload file for Mozilla</td><td><code>./build.sh</code></td></tr>
+          <tr><td>Where Piper voices are stored</td><td><code>~/.local/share/read-aloud/piper/</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>Claude keeps this page up to date as the project changes. Source: <code>docs/status.html</code> · Code: <a href="https://github.com/JCA374/read-aloud">github.com/JCA374/read-aloud</a></footer>
+</div>
+
+<script>
+  document.querySelectorAll("button.cp").forEach((b) => {
+    b.addEventListener("click", () => {
+      const el = document.getElementById(b.dataset.copy);
+      const done = () => { b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1500); };
+      const select = () => { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Selected"; };
+      try { navigator.clipboard.writeText(el.textContent).then(done, select); } catch { select(); }
+    });
+  });
+</script>
+
+</body>
+</html>
