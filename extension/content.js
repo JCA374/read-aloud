@@ -1,43 +1,40 @@
-// Read Aloud (Kokoro): page text -> sentences -> local TTS -> playback with sentence + word highlighting.
+// Neural Voices: page text -> sentences -> speech (Piper, in the add-on) -> playback with sentence + word highlighting.
 (() => {
-  if (window.__kokoroReader) return;
-  window.__kokoroReader = true;
+  if (window.__neuralVoices) return;
+  window.__neuralVoices = true;
 
-  const DEFAULTS = { voice: "piper:en_GB-cori-medium", voiceSv: "piper:sv_SE-alma-medium", speed: 1.0 };
   const SPEEDS = [0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
   const AHEAD_SECONDS = 60; // keep this much audio rendered ahead of what's playing
   const AHEAD_MAX = 30; // ...but never more than this many pieces
-  const STAGES = [45, 100, 200]; // max characters of the first pieces: short first, so sound starts fast
-  let settings = { ...DEFAULTS };
-  let voices = [{ id: "piper:en_GB-cori-medium", label: "Cori (UK, female)", engine: "piper", lang: "en" }];
+  const STAGES = [45, 80, 140, 220]; // max characters of the first pieces: short first, so sound starts fast
+  let settings = { ...NV.DEFAULTS };
+  let voices = NV.STARTER_VOICES;
 
-  const VOICE_GROUPS = {
-    "kokoro|en": "English · natural (Kokoro, ~1 GB RAM)",
-    "piper|en": "English · light & fast (Piper)",
-    "piper|sv": "Svenska · light & fast (Piper)",
-  };
-  function voiceOptions(voices) {
-    const groups = {};
-    for (const v of voices) (groups[`${v.engine || "kokoro"}|${v.lang || "en"}`] ??= []).push(`<option value="${v.id}">${v.label}</option>`);
-    return Object.entries(groups).map(([g, opts]) => `<optgroup label="${VOICE_GROUPS[g] || g}">${opts.join("")}</optgroup>`).join("");
+  function loadVoices() {
+    NV.allVoices().then((v) => {
+      voices = v;
+      ui.sync();
+    });
   }
-  const voiceLang = (id) => voices.find((v) => v.id === id)?.lang || (id.startsWith("piper:sv") ? "sv" : "en");
-  // Which voice setting a language uses. Each language remembers its own voice.
-  const VOICE_KEY = { en: "voice", sv: "voiceSv" };
 
-  chrome.storage.local.get(DEFAULTS).then((s) => {
+  chrome.storage.local.get(NV.DEFAULTS).then((s) => {
     settings = s;
-    ui.sync();
+    loadVoices();
   });
   chrome.storage.onChanged.addListener((changes) => {
-    for (const [k, { newValue }] of Object.entries(changes)) if (k in DEFAULTS) settings[k] = newValue;
+    for (const [k, { newValue }] of Object.entries(changes)) if (k in NV.DEFAULTS) settings[k] = newValue ?? NV.DEFAULTS[k];
+    // A voice picked in the popup or settings replaces one picked in the player.
+    const picked = (k) => (k === "langVoices" ? Object.values(changes[k].newValue || {}) : [changes[k].newValue]);
+    if (["voice", "voiceSv", "fixedVoice", "langVoices"].some((k) => k in changes && !picked(k).includes(player.override))) player.override = null;
+    if ("volume" in changes) player.setVolume();
+    if ("highlight" in changes) player.redrawHighlights();
     player.settingsChanged();
     ui.sync();
   });
 
   // ---------------------------------------------------------------- text extraction
 
-  const SKIP = "script,style,noscript,template,svg,canvas,textarea,input,select,button,iframe,object,math,kokoro-reader,[aria-hidden=true],[hidden]";
+  const SKIP = "script,style,noscript,template,svg,canvas,textarea,input,select,button,iframe,object,math,neural-voices-player,[aria-hidden=true],[hidden]";
   const BOILERPLATE = "nav,header,footer,aside,[role=navigation],[role=banner],[role=contentinfo],[role=complementary],[role=search],.mw-editsection,.noprint";
   const ACCEPT = NodeFilter.FILTER_ACCEPT;
   const SKIPNODE = NodeFilter.FILTER_SKIP;
@@ -192,7 +189,7 @@
     ];
   }
 
-  // Cut the text where reading starts into growing pieces (about 45, 100, 200 characters), so the first
+  // Cut the text where reading starts into growing pieces (about 45, 80, 140, 220 characters), so the first
   // sound comes quickly and each next piece is rendered while the one before it plays.
   function stageStart(segs, i) {
     segs = segs.slice();
@@ -216,7 +213,7 @@
     }
   }
 
-  // Match the server's word timings to positions in the sentence.
+  // Match the engine's (estimated) word timings to positions in the sentence.
   function wordRanges(seg, words) {
     const out = [];
     let cur = 0;
@@ -245,10 +242,13 @@
   // ---------------------------------------------------------------- highlighting
 
   const HAS_HL = typeof CSS !== "undefined" && CSS.highlights && typeof Highlight === "function";
-  function highlight(name, range) {
+  // kind is "sentence" or "word". Each highlight style has its own names in content.css (nv-<style>-<kind>).
+  const shownRanges = { sentence: null, word: null };
+  function highlight(kind, range) {
+    shownRanges[kind] = range;
     if (!HAS_HL) return;
-    if (range) CSS.highlights.set(name, new Highlight(range));
-    else CSS.highlights.delete(name);
+    for (const style of Object.keys(NV.HIGHLIGHTS)) CSS.highlights.delete(`nv-${style}-${kind}`);
+    if (range && settings.highlight !== "off") CSS.highlights.set(`nv-${settings.highlight}-${kind}`, new Highlight(range));
   }
 
   let lastUserScroll = 0;
@@ -293,12 +293,15 @@
 
     lang: "en",
 
-    voice() {
-      return settings[VOICE_KEY[this.lang]] || settings.voice;
+    override: null, // a voice picked in the player while reading: used until reading stops
+
+    // The voice for piece i: the one picked in the player, else the default for that paragraph's language.
+    voice(i = this.i) {
+      return this.override || NV.voiceFor(this.segs[i]?.lang || this.lang, settings, voices);
     },
 
     key(i) {
-      return `${i}|${this.voice()}|${settings.speed}`;
+      return `${i}|${this.voice(i)}|${settings.speed}`;
     },
 
     fetch(i) {
@@ -306,9 +309,11 @@
       if (!this.cache.has(key)) {
         const seg = this.segs[i];
         const p = chrome.runtime
-          .sendMessage({ type: "tts", text: seg.text, voice: this.voice(), speed: settings.speed })
+          .sendMessage({ type: "tts", text: seg.text, voice: this.voice(i), speed: settings.speed })
           .then(async (res) => {
-            if (!res || res.error) return { error: res?.error || "offline" };
+            if (!res || res.error) return { error: res?.error || "offline", fatal: !!res?.fatal };
+            this.download = null;
+            if (res.timing?.first) console.debug(`[Neural Voices] engine start-up: ${JSON.stringify(res.timing)}`);
             const buffer = await this.ctx.decodeAudioData(b64ToBytes(res.audio));
             this.durations.set(key, buffer.duration);
             return { buffer, words: res.words };
@@ -319,8 +324,8 @@
       return this.cache.get(key);
     },
 
-    // Render ahead one request at a time, in order (the server renders one at a time anyway),
-    // until AHEAD_SECONDS of audio is ready. The server never sits idle while there's room in the buffer.
+    // Render ahead one request at a time, in order (the engine renders one at a time anyway),
+    // until AHEAD_SECONDS of audio is ready. The engine never sits idle while there's room in the buffer.
     pump() {
       if (this.inflight || this.state === "idle") return;
       let ahead = 0;
@@ -345,6 +350,7 @@
       if (!segs.length) return ui.flash("No readable text found");
       this.segs = stageStart(segs, i);
       this.lang = lang;
+      this.override = null;
       this.stats = { t0: performance.now(), first: null, waits: 0, waitTime: 0 };
       this.ctx ??= new AudioContext();
       this.ctx.resume().catch(() => {});
@@ -358,10 +364,11 @@
       if (i < 0) i = 0;
       if (i >= this.segs.length) return this.finish();
       this.i = i;
+      this.playingVoice = this.voice(i);
       const seg = this.segs[i];
       const sentence = makeRange(seg.chunk, seg.start, seg.end);
-      highlight("kokoro-sentence", sentence);
-      highlight("kokoro-word", null);
+      highlight("sentence", sentence);
+      highlight("word", null);
       scrollToRange(sentence);
       if (this.state !== "paused") this.setState("loading");
       this.pump();
@@ -374,22 +381,22 @@
       if (st.first !== null && waited > 150 && this.state !== "paused") {
         st.waits++;
         st.waitTime += waited;
-        console.debug(`[Read Aloud] waited ${(waited / 1000).toFixed(1)} s for piece ${i} (${seg.text.length} chars)`);
+        console.debug(`[Neural Voices] waited ${(waited / 1000).toFixed(1)} s for piece ${i} (${seg.text.length} chars)`);
       }
       if (res.error) {
         this.cache.delete(this.key(i));
-        if (res.error === "offline") {
-          this.error = "TTS server offline — run start-server.sh";
+        if (res.error === "offline" || res.fatal) {
+          this.error = res.fatal ? res.error : "The speech engine didn't answer. Reload the page and try again.";
           return this.stop(true);
         }
-        console.warn("[Read Aloud] skipping sentence:", res.error, seg.text);
+        console.warn("[Neural Voices] skipping sentence:", res.error, seg.text);
         return this.playIndex(i + 1, 0);
       }
       this.words = wordRanges(seg, res.words);
       this.wordIdx = -1;
       const src = this.ctx.createBufferSource();
       src.buffer = res.buffer;
-      src.connect(this.ctx.destination);
+      src.connect(this.output());
       src.onended = () => {
         if (this.source !== src) return;
         this.source = null;
@@ -422,7 +429,7 @@
       for (let k = 0; k < this.words.length && this.words[k].s <= t; k++) w = k;
       if (w !== this.wordIdx) {
         this.wordIdx = w;
-        highlight("kokoro-word", w >= 0 ? this.words[w].r : null);
+        highlight("word", w >= 0 ? this.words[w].r : null);
       }
       requestAnimationFrame(() => this.tick(id));
     },
@@ -470,15 +477,15 @@
       this.halt();
       const st = this.stats;
       if (st?.first != null) {
-        console.info(`[Read Aloud] first sound after ${(st.first / 1000).toFixed(2)} s; waited ${st.waits} times (${(st.waitTime / 1000).toFixed(1)} s) after that`);
+        console.info(`[Neural Voices] first sound after ${(st.first / 1000).toFixed(2)} s; waited ${st.waits} times (${(st.waitTime / 1000).toFixed(1)} s) after that`);
       }
       this.stats = null;
       this.cache.clear();
       this.durations.clear();
-      highlight("kokoro-sentence", null);
-      highlight("kokoro-word", null);
+      highlight("sentence", null);
+      highlight("word", null);
       if (!keepError) this.error = "";
-      this.ctx?.resume().catch(() => {});
+      this.ctx?.suspend().catch(() => {}); // a running audio context keeps using CPU, even when silent
       this.setState("idle");
     },
 
@@ -486,11 +493,54 @@
       this.stop();
     },
 
-    // Voice or speed changed: keep the sentence that's playing, re-render the ones after it.
+    // Settings changed (here, in the popup or on the settings page). A new voice restarts the
+    // current sentence in that voice; a new speed keeps it and re-renders the ones after it.
     settingsChanged() {
       if (this.state === "idle") return;
-      for (const k of [...this.cache.keys()]) if (parseInt(k) !== this.i) this.cache.delete(k);
-      this.pump();
+      this.dropStale();
+      if (this.voice() !== this.playingVoice) this.restart();
+      else this.pump();
+    },
+
+    // Start the current sentence again in the new voice, cut into short pieces like at the start of
+    // reading, so the new voice is heard quickly. Pieces are numbered, so the cache starts over.
+    restart() {
+      console.debug(`[Neural Voices] new voice ${this.voice()}: restarting sentence ${this.i + 1}`);
+      this.cache.clear();
+      this.durations.clear();
+      this.segs = stageStart(this.segs, this.i);
+      this.playIndex(this.i, 0);
+    },
+
+    // Audio goes through a volume control.
+    output() {
+      if (!this.gain) {
+        this.gain = this.ctx.createGain();
+        this.gain.connect(this.ctx.destination);
+      }
+      this.setVolume();
+      return this.gain;
+    },
+
+    setVolume() {
+      if (this.gain) this.gain.gain.value = settings.volume ?? 1;
+    },
+
+    redrawHighlights() {
+      highlight("sentence", shownRanges.sentence);
+      highlight("word", shownRanges.word);
+    },
+
+    // Forget rendered pieces in another voice or speed (except the one playing).
+    dropStale() {
+      for (const k of [...this.cache.keys()]) if (parseInt(k) !== this.i && k !== this.key(parseInt(k))) this.cache.delete(k);
+    },
+
+    // A voice picked in the player: restart the current sentence in that voice right away.
+    useVoice(id) {
+      if (this.state === "idle" || id === this.voice()) return;
+      this.override = id;
+      this.restart();
     },
 
     setState(s) {
@@ -510,8 +560,8 @@
   const EN_WORDS = new Set("the and to of is that it in for with on was as are this be by not you he she they have from or but at an his her which were would there".split(" "));
 
   function pageLang(el = document.documentElement) {
-    const attr = (el.closest?.("[lang]")?.lang || document.documentElement.lang || "").toLowerCase();
-    return attr.startsWith("sv") ? "sv" : "en";
+    const attr = (el.closest?.("[lang]")?.lang || document.documentElement.lang || "").toLowerCase().slice(0, 2);
+    return { nb: "no", nn: "no" }[attr] || attr || "en";
   }
 
   // The words decide; the page's lang attribute only breaks ties (many sites leave lang="en" in their template).
@@ -524,8 +574,11 @@
       if (EN_WORDS.has(w)) en++;
     }
     sv += (text.slice(0, 3000).match(/[åäö]/gi) || []).length / 4;
-    if (words.length >= 3 && sv !== en) return sv > en ? "sv" : "en";
-    return pageLang(el);
+    const attr = pageLang(el);
+    // On a page marked as another language, only overrule it when the text is clearly English or Swedish.
+    const clear = ["en", "sv"].includes(attr) || Math.max(sv, en) / words.length > 0.12;
+    if (words.length >= 3 && sv !== en && clear) return sv > en ? "sv" : "en";
+    return attr;
   }
 
   function readRange(range, root, skipBoilerplate, startAt) {
@@ -534,13 +587,13 @@
   }
 
   // Start rendering the first words of a selection before the speaker button is clicked.
-  // The server keeps the result, so the click plays it almost at once.
+  // The engine keeps the result, so the click plays it almost at once.
   function prewarmSelection() {
     const sel = getSelection();
     if (!sel.rangeCount || sel.isCollapsed || player.state !== "idle") return;
     const { segs, lang } = plan(sel.getRangeAt(0), document.body, false);
     if (!segs.length) return;
-    const voice = settings[VOICE_KEY[lang]] || settings.voice;
+    const voice = NV.voiceFor(segs[0].lang || lang, settings, voices);
     const first = stageStart(segs, 0)[0];
     chrome.runtime.sendMessage({ type: "tts", text: first.text, voice, speed: settings.speed }).catch(() => {});
   }
@@ -548,7 +601,19 @@
   function plan(range, root, skipBoilerplate, startAt) {
     const segs = toSentences(collectChunks(range, root, skipBoilerplate));
     const container = range.commonAncestorContainer;
-    const lang = detectLang(segs.slice(0, 40).map((s) => s.text).join(" "), container.nodeType === 1 ? container : container.parentElement);
+    const el = container.nodeType === 1 ? container : container.parentElement;
+    const lang = detectLang(segs.slice(0, 40).map((s) => s.text).join(" "), el);
+    // Mixed pages: each paragraph gets its own language when it has enough words to tell;
+    // short ones (headings, captions) keep the language of the paragraph before.
+    let cur = lang;
+    const langOf = new Map();
+    for (const s of segs) {
+      if (!langOf.has(s.chunk)) {
+        if ((s.chunk.text.match(/\p{L}+/gu) || []).length >= 8) cur = detectLang(s.chunk.text, s.chunk.pieces[0]?.node.parentElement || el);
+        langOf.set(s.chunk, cur);
+      }
+      s.lang = langOf.get(s.chunk);
+    }
     let i = 0;
     if (startAt) {
       for (const [k, s] of segs.entries()) {
@@ -616,9 +681,9 @@
   let clickMode = false;
   let hoverEl = null;
   function setHover(el) {
-    hoverEl?.classList.remove("kokoro-hover");
+    hoverEl?.classList.remove("nv-hover");
     hoverEl = el;
-    el?.classList.add("kokoro-hover");
+    el?.classList.add("nv-hover");
   }
   function setClickMode(on) {
     clickMode = on;
@@ -637,8 +702,11 @@
     e.stopPropagation();
     readFrom(e.target, e.clientX, e.clientY);
   }, true);
+  // Escape leaves click-to-read, or stops reading (but not while typing in a field).
   addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && clickMode) setClickMode(false);
+    if (e.key !== "Escape") return;
+    if (clickMode) setClickMode(false);
+    else if (player.state !== "idle" && !e.target.closest?.("input, textarea, select, [contenteditable]")) player.stop();
   });
 
   // ---------------------------------------------------------------- UI (floating player + selection bubble)
@@ -710,7 +778,7 @@
 
     build() {
       if (this.host) return;
-      this.host = document.createElement("kokoro-reader");
+      this.host = document.createElement("neural-voices-player");
       const root = this.host.attachShadow({ mode: "closed" });
       root.innerHTML = `<style>${CSS_TEXT}</style>
         <div class="bar" role="toolbar" aria-label="Read aloud">
@@ -743,7 +811,8 @@
       this.els.speed.onchange = () => chrome.storage.local.set({ speed: parseFloat(this.els.speed.value) });
       this.els.voice.onchange = () => {
         const id = this.els.voice.value;
-        chrome.storage.local.set({ [VOICE_KEY[voiceLang(id)] || "voice"]: id });
+        chrome.storage.local.set(NV.pick(id, settings, voices)); // remembered for next time
+        player.useVoice(id);
       };
       const bubble = this.els.bubble;
       bubble.onmousedown = (e) => e.preventDefault(); // keep the selection
@@ -754,15 +823,7 @@
       };
       this.makeDraggable($(".grip"));
       document.documentElement.appendChild(this.host);
-      this.loadVoices();
       this.sync();
-    },
-
-    loadVoices() {
-      chrome.runtime.sendMessage({ type: "health" }).then((res) => {
-        if (res?.voices?.length) voices = res.voices;
-        this.sync();
-      }).catch(() => {});
     },
 
     makeDraggable(grip) {
@@ -806,16 +867,19 @@
         speed.add(new Option(`${settings.speed}×`, String(settings.speed)));
       }
       speed.value = String(settings.speed);
-      if (voice.options.length !== voices.length) {
-        voice.innerHTML = voiceOptions(voices);
-      }
-      const key = VOICE_KEY[player.state === "idle" ? pageLang() : player.lang];
-      voice.value = settings[key] || settings.voice;
-      if (!voice.value && voices.length > 1) voice.value = DEFAULTS[key]; // saved voice was removed
+      const current = player.state === "idle" ? NV.voiceFor(pageLang(), settings, voices) : player.voice();
+      const list = NV.shownVoices(voices, settings);
+      if (!list.some((v) => v.id === current)) list.push(voices.find((v) => v.id === current) || { id: current, label: current, lang: "" });
+      const html = NV.voiceOptions(list);
+      if (this.voiceHtml !== html) voice.innerHTML = this.voiceHtml = html;
+      voice.value = current;
       status.classList.toggle("err", !!player.error);
+      const dl = player.download;
       status.textContent =
         player.error ||
-        (s === "loading" ? (player.stats?.waits && !player.voice().startsWith("piper:") ? "Rendering… (a light voice won't pause)" : "Rendering…") : s === "idle" && clickMode ? "Click a paragraph to start" : s === "idle" ? "" : `${player.i + 1} / ${player.segs.length}`);
+        (s === "loading" && dl ? `Downloading ${dl.label}… ${dl.pct}% (first time only)` : "") ||
+        (s === "loading" && player.stats?.first === null ? "Starting the voice…" : "") ||
+        (s === "loading" ? "Rendering…" : s === "idle" && clickMode ? "Click a paragraph to start" : s === "idle" ? "" : `${player.i + 1} / ${player.segs.length}`);
     },
   };
 
@@ -863,7 +927,14 @@
       case "clickMode":
         setClickMode(!clickMode);
         break;
+      case "voiceProgress": {
+        const label = voices.find((v) => v.id === msg.voice)?.label || msg.voice;
+        player.download = msg.loaded < msg.total ? { label, pct: Math.floor((100 * msg.loaded) / msg.total) } : null;
+        ui.sync();
+        return; // no reply needed
+      }
     }
-    sendResponse({ state: player.state, clickMode, hasSelection: !getSelection().isCollapsed });
+    const voice = player.state === "idle" ? NV.voiceFor(pageLang(), settings, voices) : player.voice();
+    sendResponse({ state: player.state, clickMode, hasSelection: !getSelection().isCollapsed, voice });
   });
 })();

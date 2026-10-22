@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Read Aloud (Kokoro)",
-  "version": "0.1.0",
-  "description": "Reads web pages aloud with natural Kokoro voices running on your own computer.",
+  "name": "Neural Voices",
+  "version": "0.3.0",
+  "description": "Reads web pages aloud with natural Piper voices that run inside your browser. English and Swedish. Your text never leaves your computer.",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
@@ -11,14 +11,15 @@
   },
   "permissions": [
     "storage",
-    "contextMenus"
-  ],
-  "host_permissions": [
-    "http://127.0.0.1:5123/*"
+    "contextMenus",
+    "offscreen"
   ],
   "background": {
     "service_worker": "background.js",
     "scripts": [
+      "catalog.js",
+      "common.js",
+      "engine/host.js",
       "background.js"
     ]
   },
@@ -28,6 +29,7 @@
         "<all_urls>"
       ],
       "js": [
+        "common.js",
         "content.js"
       ],
       "css": [
@@ -37,7 +39,7 @@
     }
   ],
   "action": {
-    "default_title": "Read Aloud",
+    "default_title": "Neural Voices",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
@@ -60,13 +62,20 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "read-aloud-kokoro@localhost",
-      "strict_min_version": "128.0",
+      "id": "neural-voices@jca374.github.io",
+      "strict_min_version": "140.0",
       "data_collection_permissions": {
         "required": [
           "none"
         ]
       }
     }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
   }
 }

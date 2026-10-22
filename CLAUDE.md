@@ -1,7 +1,7 @@
-# Read Aloud add-on
+# Neural Voices add-on
 
-Browser extension (`extension/`, Firefox + Chromium, MV3) + local TTS server
-(`server/tts_server.py`, Piper and Kokoro on 127.0.0.1:5123). See README.md.
+Browser add-on (`extension/`, Firefox + Chromium, MV3) that reads web pages aloud with Piper voices running
+inside the browser (WebAssembly, `extension/engine/`). No server. See README.md.
 
 ## The project page: About tab + Development tab
 
@@ -39,11 +39,8 @@ The user finds long terminal replies hard to read. Report progress on the projec
 ## Skills and tests
 
 - `status-page`: the steps to update and publish the page (above).
-- `addon-tests`: which browser tests to run, how, and logging them in `tests/RESULTS.md` (on the
-  `neural-voices` branch). Check that log first: don't re-run a test when nothing it covers has changed.
+- `addon-tests`: which browser tests to run, how, and logging them in `tests/RESULTS.md`.
+  Check that log first: don't re-run a test when nothing it covers has changed.
 - `release`: packaging, licences and signing (step 4 of the brief).
-
-Neural Voices (the version with no server) is developed on the `neural-voices` branch, checked out
-in its own folder next to this one. `main` keeps the server-based version working.
 
 Machine-specific notes (setup, testing quirks) are in `CLAUDE.local.md`, which is not committed.

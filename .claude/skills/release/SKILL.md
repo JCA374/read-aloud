@@ -6,7 +6,7 @@ description: Package and sign the Neural Voices add-on (step 4 of the brief): ve
 # Release the add-on
 
 The owner decides when to release; don't push towards a public listing. Signing and listing on
-addons.mozilla.org (AMO) are free. Work on the `neural-voices` branch (its worktree is the folder next to the main checkout).
+addons.mozilla.org (AMO) are free.
 
 1. **Ready?** The tests for everything changed since the last release are logged as passing in
    `tests/RESULTS.md` (the `addon-tests` skill). No open "Built, not tested" item that would embarrass a user.
@@ -18,8 +18,7 @@ addons.mozilla.org (AMO) are free. Work on the `neural-voices` branch (its workt
    `browser_specific_settings.gecko.id` (`neural-voices@jca374.github.io`): signing and updates depend on it.
 4. **Build and lint.** `./build.sh` → `dist/neural-voices.zip` (no tests, docs or dev files).
    `npx web-ext lint --source-dir extension` and fix errors; explain warnings in the submission notes
-   (WebAssembly needs `'wasm-unsafe-eval'`; voice models download from huggingface.co; Kokoro's
-   `127.0.0.1` permission is optional).
+   (WebAssembly needs `'wasm-unsafe-eval'`; voice models download from huggingface.co).
 5. **Sign unlisted.** Either the owner uploads the zip at addons.mozilla.org/developers → *Submit a New
    Add-on* → *On your own*, or with their API keys: `npx web-ext sign --channel=unlisted --source-dir extension`.
    AMO may ask for source code: point to the public repo. Signing can take up to a day.

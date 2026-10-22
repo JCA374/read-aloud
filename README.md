@@ -1,56 +1,34 @@
-# Read Aloud (Kokoro)
+# Neural Voices
 
-A NaturalReader-style "read this page to me" browser extension. The voices run on
-this computer, so it's free and nothing you read leaves the machine. There are two engines,
-and you pick one by choosing a voice:
+A browser add-on that reads web pages aloud with natural-sounding Piper voices. The voices run
+**inside the browser** (WebAssembly), so there's nothing else to install, it's free, and the text you
+read never leaves your computer. It starts with English and Swedish voices (Swedish text is detected
+automatically), and 170 voices in 49 languages can be added.
 
-| Engine | Voices | RAM | Speed on a 4-core laptop CPU |
-|---|---|---|---|
-| **Piper** (default) | UK: Cori, Alba, Northern English. Swedish: Alma, Lisa, NST | ~200 MB | ~10× faster than real time, even when the CPU is busy |
-| **Kokoro** | Heart (US), Emma, Isabella, George, Fable, Lewis (UK). Most natural | ~1.2 GB | ~1.7× faster than real time when the CPU is idle, slow when it's busy |
+| Voices | Size | Speed |
+|---|---|---|
+| Starts with UK: Cori, Alba, Northern English and Swedish: Alma, Lisa, NST. 170 voices in 49 languages can be added in Settings | ~20–110 MB each (most ~63 MB), downloaded once on first use | ~3× faster than real time on one CPU core |
 
-An engine loads the first time one of its voices is used, so Kokoro's RAM is only taken if you
-pick a Kokoro voice. Piper voices download on first use (~60 MB each, to
-`~/.local/share/read-aloud/piper/`). Word highlighting is exact with Kokoro and estimated with Piper.
-Swedish text is detected automatically and read with your chosen Swedish voice (Kokoro has no Swedish).
+Word highlighting is estimated (Piper doesn't report word times). A voice downloads from
+huggingface.co/rhasspy/piper-voices the first time it's used and is kept in the browser's cache.
+That download is the add-on's only network request.
 
 ```
-extension/   the browser extension (Firefox + Chromium, Manifest V3)
-server/      tts_server.py: Kokoro + Piper behind http://127.0.0.1:5123 (localhost only)
-start-server.sh
+extension/          the add-on (Firefox + Chromium, Manifest V3)
+extension/engine/   Piper in a Web Worker: ONNX Runtime Web + espeak-ng (piper_phonemize), see engine/vendor/README.md
+tests/              browser tests and their results log (tests/README.md, tests/RESULTS.md)
+tools/              make-catalog.mjs: builds extension/catalog.js from the Piper voice collection
 ```
 
-## Permanent setup (Linux, systemd)
+## Load the add-on
 
-- **Server:** copy `systemd/read-aloud-tts.{socket,service}` to `~/.config/systemd/user/` (fix the path in
-  `ExecStart`), then run `systemctl --user enable --now read-aloud-tts.socket`. systemd starts the server the first time the extension needs it. It exits after 30 idle minutes
-  to free the ~1 GB of RAM. Turn this off with `systemctl --user disable --now read-aloud-tts.socket`.
-- **Icon:** *Read Aloud* in the app menu and on the desktop (`read-aloud.sh`). It loads the voices
-  ahead of time, and the first time it sees a signed `dist/*.xpi` it opens that file in Firefox to install it.
-- **Firefox signing:** `./build.sh` → upload `dist/read-aloud-kokoro.zip` at
-  addons.mozilla.org/developers as *On your own* (unlisted) → save the signed `.xpi` to `dist/`.
+**Firefox:** `about:debugging#/runtime/this-firefox` → *Load Temporary Add-on…* → pick
+`extension/manifest.json`. Firefox removes temporary add-ons when it restarts; to keep it, sign it
+for free as an unlisted add-on on addons.mozilla.org (`./build.sh` makes `dist/neural-voices.zip`).
 
-## 1. Start the voice server (manual alternative)
+**Chromium:** `chrome://extensions` → *Developer mode* → *Load unpacked* → the `extension` folder.
 
-```bash
-./start-server.sh
-```
-
-It prints `Listening on …` right away and loads a voice engine when one is first needed.
-Leave it running in a terminal.
-It runs with `./.venv` (torch CPU, kokoro, piper-tts, soundfile, en_core_web_sm). If that is missing, `start-server.sh` prints the commands to create it.
-
-## 2. Load the extension
-
-**Chromium:** go to `chrome://extensions` → turn on *Developer mode* → *Load unpacked* →
-pick the `extension` folder. It stays installed.
-
-**Firefox:** go to `about:debugging#/runtime/this-firefox` → *Load Temporary Add-on…* →
-pick `extension/manifest.json`. Firefox removes temporary add-ons when it
-restarts. To keep it, sign it for free as an "unlisted" add-on on addons.mozilla.org, or use
-Firefox Developer Edition with `xpinstall.signatures.required = false`.
-
-Pages that were already open need a reload before the extension works on them.
+Pages that were already open need a reload before the add-on works on them.
 
 ## Using it
 
@@ -61,20 +39,55 @@ Pages that were already open need a reload before the extension works on them.
 | Toolbar icon → *Click-to-read*, then click any sentence | reads from that sentence on (Esc to leave) |
 | Right-click → *Read aloud from here* | reads from that spot on |
 | `Alt+Shift+R` | read selection or page / pause / resume |
-| `Alt+Shift+X` | stop |
+| `Alt+Shift+X` or `Esc` | stop |
 
-The floating player has previous/next sentence, speed (0.75–2×) and voice controls,
-plus a grip on the left for dragging it. The current sentence is highlighted, the current word more
-strongly, and the page scrolls along unless you scroll yourself.
+Picking another voice in the player or the popup while it reads restarts the current sentence in
+that voice.
+
+**Settings** (popup → *Settings*, or the add-on's options):
+- *Your voices*: the voices in the player and popup. Download a voice ahead of time, delete a
+  download to free disk space, or remove it from the list. Each shows its size and licence.
+- *Add voices*: browse the catalogue by language and add voices to your list.
+- *Language*: detection on or off, and the default voice for each language in your list (or, with
+  detection off, the one voice to always use). English and Swedish are recognised from the words,
+  paragraph by paragraph, so a page that mixes them switches voice; other languages come from the
+  page's `lang` attribute.
+- *Playback*: speed, volume, and the highlight style (yellow/orange, blue, green, underline, off).
+
+Only one tab reads at a time. The floating player has previous/next sentence, speed (0.75–2×) and
+voice controls. The current sentence is highlighted, the current word more strongly.
 
 ## How it works
 
-The content script splits the text into sentences and sends them to the server one
-at a time. Where reading starts, it cuts the text into growing pieces (about 45, 100, then 200
-characters), so the first sound comes after a short clip and each piece renders while the one
-before it plays. After that it keeps the server busy until about 60 seconds of audio is ready
-ahead. Hovering over the speaker button already renders the first words of the selection. Kokoro returns a WAV plus a time for each word,
-which drives the word highlighting (CSS Custom Highlight API, so the page's HTML is never
-modified). The server keeps the last 300 sentences in memory, so jumping back is instant.
+The content script splits the text into sentences. Where reading starts, it cuts the text into
+growing pieces (about 45, 80, 140, then 220 characters), so the first sound comes quickly and each
+piece renders while the one before it plays. After that it keeps about 60 seconds of audio ready
+ahead. The background script hands each piece to the Piper worker (Firefox: started from the
+background page; Chromium: from an offscreen page, since service workers can't start workers).
+espeak-ng turns the text into phonemes, ONNX Runtime runs the voice, and the result comes back as
+a WAV with estimated word times. Speed is set in the model (Piper's length scale), so the pitch
+stays natural; the model shortens pauses less than sounds, so the length scale follows a measured
+curve (`lengthFor` in `engine/piper-worker.js`) to make 2× really about 2×. The last 100 sentences are kept, so jumping back is instant. The engine is
+stopped after 5 idle minutes to free its memory. Opening the popup loads your voice early (only if
+it's already downloaded), because starting a voice takes a few seconds: most of it is ONNX Runtime
+setting up the model.
 
-If Kokoro falls behind on a busy CPU, you'll see the spinner between sentences. Switch to a Piper voice.
+## Where voices come from
+
+Voices download straight from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) on
+Hugging Face, the official Piper voice collection, **pinned to one revision** (a fixed commit), so the
+files can't change under the add-on. `extension/catalog.js` lists each voice with that revision, the
+expected size of every file and the licence from its model card. A download is checked against that
+size, tried up to 3 times, and a voice that fails to load is deleted so it downloads again.
+No mirror is used: it would cost hosting and add a party to trust, for no gain at this size.
+To update the voice list: `node tools/make-catalog.mjs` (uses the newest revision). Voices that the
+bundled espeak-ng can't handle (Chinese, Japanese, Thai, Hebrew, Lithuanian, one Ukrainian) are left out.
+
+Voices are data with their own licences (CC0, CC BY, CC BY-SA, some non-commercial). They aren't
+bundled; each one's licence is shown in Settings with a link to its model card.
+
+## History
+
+The first version used a local Python server (Piper and Kokoro voices on `127.0.0.1`). Neural
+Voices replaced it: everything now runs inside the browser. The server code is in the git history
+before the merge of the `neural-voices` branch.

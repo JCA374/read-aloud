@@ -1,5 +1,46 @@
-// Relays TTS requests to the local Kokoro server and routes menu/shortcut commands to the tab.
-const SERVER = "http://127.0.0.1:5123";
+// Neural Voices background: renders speech and routes menu/shortcut commands to the tab.
+// Speech comes from Piper running in the add-on itself (WebAssembly worker, engine/), as
+// {audio: base64 WAV, words, duration} or {error, fatal}.
+
+// Firefox loads these before this file (manifest); Chromium's service worker imports them here.
+if (typeof NV === "undefined") importScripts("catalog.js", "common.js");
+
+// The voices the add-on offers, without the download details.
+const PIPER_VOICES = NV_CATALOG.voices.map(({ id, label, lang, langName }) => ({ id, label, lang, langName, engine: "piper" }));
+
+// Firefox: this is a background page, so the worker runs here (engine/host.js is loaded before
+// this file). Chromium: a service worker can't start workers, so an offscreen page hosts it.
+// type is "tts", "download", "unload" or "warm".
+async function engine(type, msg) {
+  if (typeof piperHost !== "undefined") return piperHost[type](type === "tts" ? msg : msg.voice);
+  if (!(await chrome.offscreen.hasDocument())) {
+    await chrome.offscreen
+      .createDocument({ url: "offscreen.html", reasons: ["WORKERS"], justification: "Runs the speech engine." })
+      .catch(() => {}); // two requests at once: the other one created it
+  }
+  return chrome.runtime.sendMessage({ ...msg, type, target: "offscreen" });
+}
+
+// Download progress goes to the tabs waiting for speech (and, by runtime message, to the settings page).
+const waitingTabs = new Map(); // tab id -> number of requests in progress
+function relayProgress(p) {
+  for (const tabId of waitingTabs.keys()) toTab(tabId, { ...p, cmd: "voiceProgress" });
+}
+if (typeof piperHost !== "undefined") {
+  piperHost.onProgress = (p) => {
+    relayProgress(p);
+    chrome.runtime.sendMessage({ ...p, type: "voiceProgress" }).catch(() => {});
+  };
+}
+
+function piperTts(msg, tabId) {
+  if (tabId != null) waitingTabs.set(tabId, (waitingTabs.get(tabId) || 0) + 1);
+  return engine("tts", msg).finally(() => {
+    if (tabId == null) return;
+    const n = waitingTabs.get(tabId) - 1;
+    n > 0 ? waitingTabs.set(tabId, n) : waitingTabs.delete(tabId);
+  });
+}
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({ id: "read-selection", title: "Read aloud", contexts: ["selection"] });
@@ -48,22 +89,27 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     onReading(sender.tab.id, msg.state);
     return;
   }
+  if (msg.type === "engineIdle") {
+    console.debug("[Neural Voices] engine idle: closing the engine page");
+    chrome.offscreen.closeDocument().catch((e) => console.warn("[Neural Voices] couldn't close the engine page:", e)); // Chromium
+    return;
+  }
+  if (msg.type === "voiceProgress") {
+    relayProgress(msg); // Chromium: from the offscreen page
+    return;
+  }
   if (msg.type === "tts") {
-    fetch(`${SERVER}/tts`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: msg.text, voice: msg.voice, speed: msg.speed }),
-    })
-      .then(async (r) => (r.ok ? r.json() : { error: (await r.json().catch(() => ({}))).error || `HTTP ${r.status}` }))
-      .then(sendResponse)
-      .catch(() => sendResponse({ error: "offline" }));
+    piperTts(msg, sender.tab?.id)
+      .catch((e) => ({ error: String(e?.message || e) }))
+      .then(sendResponse);
     return true;
   }
-  if (msg.type === "health") {
-    fetch(`${SERVER}/health`)
-      .then((r) => r.json())
-      .then(sendResponse)
-      .catch(() => sendResponse({ ok: false }));
+  if (msg.type === "voices") {
+    sendResponse(PIPER_VOICES);
+    return;
+  }
+  if (["download", "unload", "warm"].includes(msg.type) && !msg.target) {
+    engine(msg.type, msg).catch((e) => ({ error: String(e?.message || e) })).then(sendResponse);
     return true;
   }
 });

@@ -5,13 +5,13 @@ description: Decide which browser tests to run after changing the Neural Voices 
 
 # Browser tests for the add-on
 
-Tests live on the `neural-voices` branch (`tests/` in the `neural-voices` worktree, the folder next to the main checkout). `tests/README.md` lists every
+Tests live in `tests/`. `tests/README.md` lists every
 test, its options and how long it takes; `tests/RESULTS.md` has the newest result of each.
 
 1. **Don't repeat tests needlessly.** For each section of `tests/RESULTS.md`, compare its "re-run when"
    files with the commit of the last run: `git diff --stat <commit> -- <files>`. Only run tests whose
    files changed, or that cover the change you just made. Say which tests you skipped and why.
-2. **Run** with the runners (they handle the profiles, the test pages on port 8799 and the optional server):
+2. **Run** with the runners (they handle the profiles and the test pages on port 8799):
    `tests/chromium.sh tests/chromium/<test>.mjs` and `tests/firefox.sh tests/firefox/<test>.mjs`.
    - `KEEP=1` saves re-downloading voices, but after a `background.js` change use a fresh profile:
      a kept Chromium profile keeps running the old service worker.

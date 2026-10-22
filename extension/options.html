@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neural Voices settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <header>
+      <img src="icons/icon48.png" alt="">
+      <div>
+        <h1>Neural Voices</h1>
+        <p class="sub">Settings are saved as soon as you change them.</p>
+      </div>
+      <span id="saved" class="saved" aria-live="polite"></span>
+    </header>
+
+    <section>
+      <h2>Your voices</h2>
+      <p class="hint">These show in the player and popup. A voice downloads once, the first time it's used, or now with <b>Download</b>. It's then kept in the browser and works offline.</p>
+      <div id="mine" class="rows"></div>
+    </section>
+
+    <section>
+      <h2>Add voices</h2>
+      <label class="row">Language <select id="addLang"></select></label>
+      <div id="add" class="rows"></div>
+    </section>
+
+    <section>
+      <h2>Language</h2>
+      <label class="check"><input type="checkbox" id="autoDetect"> Detect the language of the text and pick the voice for it</label>
+      <p class="hint">English and Swedish are recognised from the words. Other languages come from what the web page says it's written in.</p>
+      <div id="defaults"></div>
+    </section>
+
+    <section>
+      <h2>Playback</h2>
+      <label class="row">Speed <output id="speedOut"></output>
+        <input id="speed" type="range" min="0.75" max="2" step="0.05">
+      </label>
+      <p class="hint">Speed is changed inside the voice, so the pitch stays natural.</p>
+      <label class="row">Volume <output id="volumeOut"></output>
+        <input id="volume" type="range" min="0.1" max="1" step="0.05">
+      </label>
+      <label class="row">Highlight <select id="highlight"></select></label>
+      <p class="hint">How the sentence and the word being read are marked on the page.</p>
+    </section>
+
+    <section>
+      <h2>Credits</h2>
+      <p class="hint">Neural Voices runs these inside your browser. Your text never leaves your computer; the only network use is downloading voices.</p>
+      <ul class="credits">
+        <li><b>Piper</b> voice models and format, by Michael Hansen and the Piper contributors (<a href="https://github.com/rhasspy/piper" target="_blank" rel="noopener">source</a>). Each voice's own licence is shown next to it above.</li>
+        <li><b>ONNX Runtime Web</b> 1.30, by Microsoft. MIT licence (<a href="https://github.com/microsoft/onnxruntime" target="_blank" rel="noopener">source</a>).</li>
+        <li><b>espeak-ng</b>, turns text into speech sounds. GPL-3.0 (<a href="https://github.com/espeak-ng/espeak-ng" target="_blank" rel="noopener">source</a>). Built for the browser as <b>piper-wasm</b> 1.0 by Diffusion Studio (<a href="https://github.com/diffusion-studio/piper-wasm" target="_blank" rel="noopener">source</a>).</li>
+        <li id="source"></li>
+      </ul>
+    </section>
+  </main>
+  <script src="catalog.js"></script>
+  <script src="common.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
