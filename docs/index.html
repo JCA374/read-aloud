@@ -307,7 +307,7 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 22 October 2026, after step 3 of Neural Voices: speed, memory, long and mixed pages.</p>
+    <p class="meta">Updated 22 October 2026, after saving the browser tests with a results log, and adding project skills.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
@@ -459,6 +459,8 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
           <tr><td>Is the voice server running?</td><td><code>systemctl --user status read-aloud-tts</code></td></tr>
           <tr><td>See what it did</td><td><code>journalctl --user -u read-aloud-tts -n 30</code></td></tr>
           <tr><td>Turn auto-start off</td><td><code>systemctl --user disable --now read-aloud-tts.socket</code></td></tr>
+          <tr><td>Run a browser test (Neural Voices folder)</td><td><code>tests/chromium.sh tests/chromium/read-en-sv.mjs</code></td></tr>
+          <tr><td>Latest result of every test, and when to re-run it</td><td><code>tests/RESULTS.md</code></td></tr>
           <tr><td>Rebuild the upload file for Mozilla</td><td><code>./build.sh</code></td></tr>
           <tr><td>Where Piper voices are stored</td><td><code>~/.local/share/read-aloud/piper/</code></td></tr>
         </tbody>
