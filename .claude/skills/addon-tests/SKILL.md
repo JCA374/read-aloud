@@ -5,7 +5,7 @@ description: Decide which browser tests to run after changing the Neural Voices 
 
 # Browser tests for the add-on
 
-Tests live on the `neural-voices` branch (`~/code/neural-voices/tests/`). `tests/README.md` lists every
+Tests live on the `neural-voices` branch (`tests/` in the `neural-voices` worktree, the folder next to the main checkout). `tests/README.md` lists every
 test, its options and how long it takes; `tests/RESULTS.md` has the newest result of each.
 
 1. **Don't repeat tests needlessly.** For each section of `tests/RESULTS.md`, compare its "re-run when"
