@@ -1,4 +1,4 @@
-<title>Read Aloud</title>
+<title>Neural Voices</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;800&family=Atkinson+Hyperlegible+Mono:wght@400;600&display=swap">
@@ -187,7 +187,7 @@
 <div class="wrap">
 
   <nav class="topbar" aria-label="Site">
-    <a class="brand" href="#about"><span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15 8.5a5 5 0 0 1 0 7M17.5 6a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg></span>Read Aloud</a>
+    <a class="brand" href="#about"><span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15 8.5a5 5 0 0 1 0 7M17.5 6a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg></span>Neural Voices</a>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-about" aria-controls="about" aria-selected="true" type="button">About</button>
       <button role="tab" id="tab-dev" class="small" aria-controls="development" aria-selected="false" type="button">In development</button>
@@ -196,8 +196,8 @@
 
   <div class="panel" id="about" role="tabpanel" aria-labelledby="tab-about">
   <section class="hero" aria-labelledby="hero-h">
-    <h1 id="hero-h">Hear any web page, read by a voice on your own computer</h1>
-    <p class="lede">Read Aloud is a Firefox and Chromium add-on. Select text or press play, and it reads to you while highlighting each word. The voices run locally, so it's free and nothing you read leaves your machine.</p>
+    <h1 id="hero-h">Hear any web page, read by a natural voice inside your browser</h1>
+    <p class="lede">Neural Voices is a Firefox add-on (it also works in Chromium). Select text or press play, and it reads to you while highlighting each word. The voices run inside the browser itself: nothing else to install, free, and the text you read never leaves your computer.</p>
     <div class="reader" aria-label="Example of the reading highlight">
       <p id="demo"><span class="sent">The storm arrived just after midnight, and the light kept turning.</span> She counted the seconds between each flash.</p>
       <div class="player" aria-hidden="true">
@@ -217,38 +217,33 @@
       <div class="feature"><h3>Read a selection</h3><p>Select text and a speaker button appears where you let go of the mouse. Click it to listen.</p></div>
       <div class="feature"><h3>Read the whole page</h3><p>Starts at the title of the article. Skips menus, sidebars, footers and footnote marks like [1].</p></div>
       <div class="feature"><h3>Click to read</h3><p>Turn it on, then click any sentence. Reading starts at that exact sentence and carries on from there.</p></div>
-      <div class="feature"><h3>Follow along</h3><p>The sentence is shaded and the spoken word is marked. The page scrolls with the reading unless you scroll yourself.</p></div>
-      <div class="feature"><h3>English and Swedish</h3><p>Swedish text is recognised automatically and read with a Swedish voice. Each language remembers its own voice.</p></div>
-      <div class="feature"><h3>Starts fast, doesn't stall</h3><p>The first words play within about half a second, and the add-on keeps a minute of audio ready ahead. Only one tab reads at a time.</p></div>
+      <div class="feature"><h3>Follow along</h3><p>The sentence is shaded and the spoken word is marked, in the colours you choose. The page scrolls with the reading unless you scroll yourself.</p></div>
+      <div class="feature"><h3>Many languages</h3><p>English and Swedish are recognised from the words, paragraph by paragraph, so mixed pages switch voice. Other languages follow what the page says it's written in.</p></div>
+      <div class="feature"><h3>Starts fast, doesn't stall</h3><p>Reading starts with a short piece and keeps a minute of audio ready ahead. Opening the toolbar popup gets your voice ready, so the first words come in under a second.</p></div>
+      <div class="feature"><h3>Your own voice list</h3><p>Keep just the voices you like in the player. Pick a default voice for each language. Change voice while it reads and the sentence starts again in the new voice.</p></div>
+      <div class="feature"><h3>Natural at any speed</h3><p>Speed is changed inside the voice, so it never sounds squeaky or slowed down. 0.75× to 2×.</p></div>
+      <div class="feature"><h3>Light when idle</h3><p>Only one tab reads at a time. After you stop, it uses no CPU, and after a few quiet minutes it frees its memory.</p></div>
     </div>
   </section>
 
   <section aria-labelledby="voice-h">
     <h2 id="voice-h">Voices</h2>
-    <p>Pick a voice from the player or the toolbar popup. Only the engine you use is loaded into memory.</p>
+    <p>Neural Voices uses <a href="https://github.com/rhasspy/piper">Piper</a> voices. It starts with six, and Settings has <b>170 voices in 49 languages</b> to add. A voice downloads once, the first time you use it (most are about 63 MB), and then works offline. Settings shows each voice's size and licence, and lets you delete downloads.</p>
     <div class="voicecols">
       <div class="vgroup">
-        <h3>Light and fast <span class="tag">· Piper · about 200 MB of memory</span></h3>
-        <p class="note">Renders many times faster than it speaks, even on a busy computer. A little flatter in tone.</p>
+        <h3>English <span class="tag">· starter voices</span></h3>
         <ul class="vlist">
           <li><span>Cori</span><span class="who">UK English, woman</span></li>
           <li><span>Alba</span><span class="who">Scottish English, woman</span></li>
           <li><span>Northern English</span><span class="who">UK English, man</span></li>
-          <li><span>Alma</span><span class="who">Swedish, woman</span></li>
-          <li><span>Lisa</span><span class="who">Swedish, woman</span></li>
-          <li><span>NST</span><span class="who">Swedish, man</span></li>
         </ul>
       </div>
       <div class="vgroup">
-        <h3>Natural <span class="tag">· Kokoro · about 1.2 GB of memory</span></h3>
-        <p class="note">The most natural sound, with exact word timing. Needs a fairly idle CPU to keep up. English only.</p>
+        <h3>Swedish <span class="tag">· starter voices</span></h3>
         <ul class="vlist">
-          <li><span>Heart</span><span class="who">US English, woman</span></li>
-          <li><span>Emma</span><span class="who">UK English, woman</span></li>
-          <li><span>Isabella</span><span class="who">UK English, woman</span></li>
-          <li><span>George</span><span class="who">UK English, man</span></li>
-          <li><span>Fable</span><span class="who">UK English, man</span></li>
-          <li><span>Lewis</span><span class="who">UK English, man</span></li>
+          <li><span>Alma</span><span class="who">Swedish, woman</span></li>
+          <li><span>Lisa</span><span class="who">Swedish, woman</span></li>
+          <li><span>NST</span><span class="who">Swedish, man</span></li>
         </ul>
       </div>
     </div>
@@ -256,22 +251,13 @@
 
   <section class="install" id="install" aria-labelledby="inst-h">
     <h2 id="inst-h">Install</h2>
-    <p>Tested on Linux. The add-on talks to a small voice server on your computer, so you set up both.</p>
+    <p>There's no signed release yet, so for now you load it from the source code. Nothing else needs installing.</p>
     <ol class="steps">
-      <li><div><span><b>Get the code</b></span>
-        <div class="cmdwrap"><pre class="cmd" id="c1">git clone https://github.com/JCA374/read-aloud.git
-cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button></div></div></li>
-      <li><div><span><b>Install the voices.</b> This gives you both engines. For the light voices only, run just <code>python3 -m venv .venv</code> and <code>.venv/bin/pip install piper-tts soundfile</code>.</span>
-        <div class="cmdwrap"><pre class="cmd" id="c2">python3 -m venv .venv
-.venv/bin/pip install torch --index-url https://download.pytorch.org/whl/cpu
-.venv/bin/pip install kokoro piper-tts soundfile
-.venv/bin/python -m spacy download en_core_web_sm</pre><button class="cp" data-copy="c2" type="button">Copy</button></div></div></li>
-      <li><div><span><b>Start the voice server.</b> Leave it running. Piper voices download the first time you use them, about 60 MB each.</span>
-        <div class="cmdwrap"><pre class="cmd" id="c3">./start-server.sh</pre><button class="cp" data-copy="c3" type="button">Copy</button></div>
-        <span class="note">Or let it start by itself when needed: copy the two files in <code>systemd/</code> to <code>~/.config/systemd/user/</code>, fix the path in the <code>.service</code> file, then run <code>systemctl --user enable --now read-aloud-tts.socket</code>.</span></div></li>
-      <li><div><span><b>Load the add-on.</b></span>
-        <span><b>Firefox:</b> open <code>about:debugging#/runtime/this-firefox</code>, click <b>Load Temporary Add-on…</b> and pick <code>extension/manifest.json</code>. Firefox removes it when it restarts, until there is a signed version.</span>
-        <span><b>Chromium:</b> open <code>chrome://extensions</code>, turn on <b>Developer mode</b>, click <b>Load unpacked</b> and pick the <code>extension</code> folder.</span></div></li>
+      <li><div><span><b>Get the code</b> (or download it as a ZIP from GitHub and unpack it)</span>
+        <div class="cmdwrap"><pre class="cmd" id="c1">git clone https://github.com/JCA374/read-aloud.git</pre><button class="cp" data-copy="c1" type="button">Copy</button></div></div></li>
+      <li><div><span><b>Firefox:</b> open <code>about:debugging#/runtime/this-firefox</code>, click <b>Load Temporary Add-on…</b> and pick <code>extension/manifest.json</code>. Firefox removes it when it restarts, until there's a signed version.</span>
+        <span><b>Chromium:</b> open <code>chrome://extensions</code>, turn on <b>Developer mode</b>, click <b>Load unpacked</b> and pick the <code>extension</code> folder. It stays installed.</span></div></li>
+      <li><div><span><b>Reload</b> the pages you want to hear, then select text and click the speaker, or press <b>Read page</b> in the toolbar popup. The first time, the voice downloads (a few seconds).</span></div></li>
     </ol>
   </section>
 
@@ -282,7 +268,7 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
         <tbody>
           <tr><td><kbd>Alt+Shift+R</kbd></td><td>Read the selection or the page. Press again to pause or resume, from any tab.</td></tr>
           <tr><td><kbd>Alt+Shift+X</kbd></td><td>Stop reading.</td></tr>
-          <tr><td><kbd>Esc</kbd></td><td>Leave click-to-read.</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>Stop reading, or leave click-to-read.</td></tr>
           <tr><td>Right-click</td><td><b>Read aloud</b> for a selection, or <b>Read aloud from here</b> anywhere on the page.</td></tr>
         </tbody>
       </table>
@@ -291,7 +277,12 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
 
   <section aria-labelledby="priv-h">
     <h2 id="priv-h">Privacy</h2>
-    <p>The voices run on your computer. The add-on sends text only to the voice server at <code>127.0.0.1</code>, and that server accepts connections only from your own machine. Web pages can't use it, and nothing is sent anywhere else. The only downloads are the voice files, the first time you use each voice.</p>
+    <p>Everything runs inside your browser: the text you read is never sent anywhere. The only network use is downloading a voice the first time you use it, from Piper's official voice collection on huggingface.co, pinned to a fixed version and size-checked. No analytics, no accounts. Settings are stored in your browser.</p>
+  </section>
+
+  <section aria-labelledby="cred-h">
+    <h2 id="cred-h">Credits</h2>
+    <p>Built on <a href="https://github.com/rhasspy/piper">Piper</a> (voices), <a href="https://github.com/microsoft/onnxruntime">ONNX Runtime Web</a> (runs the voice, MIT licence) and <a href="https://github.com/espeak-ng/espeak-ng">espeak-ng</a> (turns text into speech sounds, GPL-3.0), compiled for the browser by <a href="https://github.com/diffusion-studio/piper-wasm">piper-wasm</a>. Each voice has its own licence, shown in Settings.</p>
   </section>
   </div>
 
@@ -299,147 +290,119 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 22 October 2026, after saving the browser tests with a results log, and adding project skills.</p>
+    <p class="meta">Updated 22 October 2026, after removing the old voice server: Neural Voices is now the only version, and step 4 is planned below.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
-      <div class="tile ok"><span class="n">25</span><span class="l">Working and tested</span><span class="d">Reading, fast start, one tab at a time, highlighting, Swedish, both voice engines, auto-start, Neural Voices with no server, settings, instant voice change, voice downloads, 170-voice catalogue, other languages, highlight styles, mixed pages, quick start, true speeds, nothing left running</span></div>
-      <div class="tile warn"><span class="n">7</span><span class="l">Built, not tested yet</span><span class="d">A really slow computer, clicking through Firefox by hand, Kokoro inside Neural Voices, listening by ear</span></div>
-      <div class="tile todo"><span class="n">3</span><span class="l">Left to do</span><span class="d">Listen to the speed samples, use it for a while, then signing and the licence work</span></div>
+      <div class="tile ok"><span class="n">17</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan: reading with no server, settings and voice list, 170 voices, downloads, mixed languages, natural speeds, steady memory, nothing left running</span></div>
+      <div class="tile warn"><span class="n">5</span><span class="l">Built, not tested yet</span><span class="d">A really slow computer, clicking through Firefox by hand, listening by ear, word timing, keyboard shortcuts</span></div>
+      <div class="tile todo"><span class="n">6</span><span class="l">Left to do</span><span class="d">Step 4: licence, privacy note, permissions, clean build, signing, optional public listing</span></div>
     </div>
   </section>
 
   <section class="next" aria-labelledby="next-h">
-    <h2 id="next-h">Do this next: try it in Firefox</h2>
-    <p>This installs it until you close Firefox. The voice server starts by itself.</p>
+    <h2 id="next-h">Do this next: reload it from its new place</h2>
+    <p>The separate Neural Voices folder is gone: the add-on now lives in the main project folder, and the old server setup has been removed from your computer.</p>
     <ol class="steps">
-      <li><span>Type this in the Firefox address bar and press Enter:
-        <span class="copy"><code id="u1">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u1" type="button">Copy</button></span></span></li>
-      <li><span>Click <b>Load Temporary Add-on…</b> and open <code>extension/manifest.json</code> in the project folder.</span></li>
-      <li><span><b>Reload</b> the page you want to hear. Pages that were already open don't have the add-on yet.</span></li>
-      <li><span>Select some text and click the orange speaker. Or click the add-on icon in the toolbar and press <b>Read page</b>.</span></li>
-      <li><span>Tell me what you hear and what looks wrong. I'll fix it and update this page.</span></li>
+      <li><span>Open
+        <span class="copy"><code id="u1">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u1" type="button">Copy</button></span>
+        and <b>Remove</b> the Neural Voices add-on that's loaded now (it points at the old folder).</span></li>
+      <li><span>Click <b>Load Temporary Add-on…</b> and pick <code>extension/manifest.json</code> in the project folder. Then reload the pages you read. Your downloaded voices are kept by Firefox, so they don't download again.</span></li>
+      <li><span>Listen to <code>dist/speed-samples/</code> in the project folder: "in-voice" is how the add-on changes speed, "played-faster" is the cheap way, for comparison. Tell me if 2× sounds too rushed.</span></li>
+      <li><span>Use it for a while. When you want it to stay installed, or to share it, say <b>go for step 4</b>.</span></li>
     </ol>
-    <h3>Try Neural Voices (the version with no server)</h3>
-    <ol class="steps">
-      <li><span>In the project folder, switch to the new version:
-        <span class="copy"><code id="u2">git checkout neural-voices</code><button class="cp" data-copy="u2" type="button">Copy</button></span></span></li>
-      <li><span>In <code>about:debugging</code>, <b>remove</b> the old Read Aloud add-on if it's loaded (both use the same shortcuts), then <b>Load Temporary Add-on…</b> → <code>extension/manifest.json</code>.</span></li>
-      <li><span>Reload a page and read it. The first time, each voice downloads once (63 MB), so the first sound takes 5–7 seconds. After that, about 3 seconds when the voice starts up, and no pauses.</span></li>
-      <li><span>Already loaded it? On <code>about:debugging</code>, click <b>Reload</b> under Neural Voices, then reload the pages you read.</span></li>
-      <li><span>Open <b>Settings</b> from the popup: tick your voices, and pick a default voice for English and for Swedish.</span></li>
-      <li><span>In Settings, try <b>Add voices</b>: pick a language, add a voice, press <b>Download</b>. Delete downloads you don't need.</span></li>
-      <li><span>Listen to the speed samples in <code>dist/speed-samples/</code> in the Neural Voices folder. "in-voice" is how the add-on changes speed; "played-faster" is the cheap way, for comparison. Tell me if 2× sounds too rushed.</span></li>
-      <li><span>Then use it for a while. The plan's next part, when you decide to share it: a licence file, credits file, privacy note and signing.</span></li>
-      <li><span>To go back to the server version: <code>git checkout main</code>.</span></li>
-    </ol>
+  </section>
+
+  <section aria-labelledby="step4-h">
+    <h2 id="step4-h">Step 4: packaging and signing (planned, when you decide)</h2>
+    <p>The plan says to use it yourself first and only release it when it feels clean and fast. Signing and listing on Mozilla's add-ons site are free.</p>
+    <ul class="status">
+      <li><span class="chip todo">To do</span><span class="item"><b>Licence check.</b> espeak-ng, which the add-on includes, is GPL-3.0, so the add-on itself becomes GPL-3.0 with its source public (it already is). Add a <code>LICENSE</code> file and a <code>THIRD-PARTY-NOTICES</code> file crediting every included part and the voices. Flag anything unclear for you to check.</span></li>
+      <li><span class="chip todo">To do</span><span class="item"><b>Privacy note.</b> Text never leaves the computer; the only network use is the one-time voice download.</span></li>
+      <li><span class="chip todo">To do</span><span class="item"><b>Fewest permissions.</b> Now that the server is gone, the add-on asks for no website access of its own, only to run on the pages you read. Write a one-line reason for each permission.</span></li>
+      <li><span class="chip todo">To do</span><span class="item"><b>Clean build and Mozilla's check.</b> <code>./build.sh</code> makes the upload file; run Mozilla's automatic checker and explain its warnings (WebAssembly, voice downloads).</span></li>
+      <li><span class="chip todo">To do</span><span class="item"><b>Signing (unlisted).</b> Upload to addons.mozilla.org as "On your own". It comes back signed (can take up to a day), stays installed in normal Firefox, and can be sent to friends, also on Android.</span></li>
+      <li><span class="chip todo">Optional</span><span class="item"><b>Public listing.</b> A store description, screenshots and an icon, if you decide to publish it later. Chrome's store would be an optional extra with a small one-off fee.</span></li>
+    </ul>
   </section>
 
   <section aria-labelledby="works-h">
     <h2 id="works-h">What works</h2>
     <ul class="status">
-      <li><span class="chip ok">Tested</span><span class="item"><b>Read a selection.</b> Select text, click the speaker bubble.<span class="how">Checked in Chromium with real mouse clicks.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Read the whole page.</b> Starts at the title. Skips menus, footers and footnote marks like [1].<span class="how">Checked in Chromium on a test article.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Click-to-read.</b> Click any sentence and it reads from that exact sentence.<span class="how">Clicked the word "four", and it started at "She counted…"</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Fast start, no waiting.</b> Reading starts with a short clip, then bigger pieces, and keeps a minute of audio ready ahead. Hovering over the speaker starts rendering before you click.<span class="how">Light voice on a busy CPU: first sound after 0.4–0.7 s (was 2.8 s), and no pauses in 3 of 4 runs (one 1.6 s pause; before: one 10 s pause). Kokoro: 5.4 s → 3.3 s with hover.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>One tab at a time.</b> Starting to read in a tab stops any other tab that's reading. The shortcuts act on the tab that's reading, even from another tab.<span class="how">Two tabs in Chromium: starting the second stopped the first, and back again. The shortcuts weren't tested, since headless Chromium has no keyboard shortcuts.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Neural Voices: reads with no server.</b> The add-on now runs Piper itself, as WebAssembly in a background worker. It's renamed Neural Voices and lives on the <code>neural-voices</code> branch. Buffering, highlighting, Swedish detection and one-tab-at-a-time work as before. All engine code ships in the add-on (13 MB zipped); only the voices download, once.<span class="how">Voice server switched off. Automated reading of an English and a Swedish page in Firefox 158 and Chromium: words highlighted along with the audio, no pauses, no errors. First sound when the voice has to start up: 2.7–3.9 s (Chromium) and 2.9–3.7 s (Firefox). Text already rendered: 0.05 s. First use with download: 5–7 s. The whole test Firefox used about 440–470 MB. The first version paused once for 0.6 s near the start; growing the first pieces more gently (45, 80, 140, 220 characters) fixed it in all 4 later runs.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Settings page (Neural Voices).</b> Tick which voices show in your lists. Turn language detection on or off. Pick a default voice for each language, from your list only; with detection off, pick the one voice to always use. Kokoro is now off by default, so the add-on no longer wakes the old voice server (about 230 MB) every time the player opens.<span class="how">Chromium: unticked three voices and the lists in the settings page, popup and player showed only the other three. With no Swedish voice ticked, the page says Swedish text will use the English voice. Turning detection off showed one picker. The settings page also opened in Firefox.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Changing voice takes effect at once (Neural Voices).</b> Picking a voice in the player, the popup or settings while it reads restarts the current sentence in the new voice. It's also saved as your default for that language.<span class="how">Chromium, while reading: switched in the player, and the same sentence restarted in the new voice after 3.4 s (most of that is loading the voice). Switching back from the popup took about 1.5 s. First use of a voice adds its download: 7 s.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Voice downloads with progress (Neural Voices).</b> The player shows "Downloading Cori… 40% (first time only)". Each file's size is checked, a failed download is tried 3 times, and then reading stops with a clear message instead of skipping sentences. A damaged voice file is deleted so it downloads again.<span class="how">Fresh Chromium profile: the player went 0% → 19% → 40% → 60% → 82% and then started reading. With the download site blocked, it stopped after 6.6 s with "Couldn't download the voice Cori… Check your internet connection". In Firefox, voices downloaded before this change were found and reused.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Voice catalogue and your voice list (Neural Voices).</b> Settings lists 170 Piper voices in 49 languages. Each shows its size and licence, with a link to its model card. Add voices to your list, download them ahead of time, delete downloads to free space, or remove them. Downloads come from Piper's official collection, pinned to one fixed version.<span class="how">Chromium: added Thorsten (German), downloaded it with a progress bar (8 steps to "✓ Downloaded"), deleted it, and the row went back to "Download". The settings page shows the same downloaded state in Firefox.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Other languages (Neural Voices).</b> English and Swedish are still recognised from the words. Other languages follow what the page says it's written in, and use your default voice for that language.<span class="how">A German test page was read with Thorsten (first word "Der"), after it downloaded again.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Highlight styles and volume (Neural Voices).</b> Settings has yellow/orange, blue, green, underline only, or off, and a volume slider. Both apply while it reads.<span class="how">Switching style while reading changed the highlight on the page at once, and "off" removed it. The volume setting was saved, but nobody has listened to it.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Nothing left running after Stop (Neural Voices).</b> After Stop the page's audio is paused, and after 5 quiet minutes the engine shuts down, frees its memory and kept audio, and (in Chromium) closes its hidden page.<span class="how">Firefox: memory went back to where it started within 2 minutes, and CPU dropped to 0 within a minute. Before the fix, Firefox kept using about 8% of a core after Stop, because the audio output kept running. Chromium: CPU 0 right after Stop, and 210 MB freed at the 5-minute mark.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Steady memory on long reads (Neural Voices).</b> Reading uses about 300–550 MB more while it runs, and it stays flat.<span class="how">Read a 400-paragraph test page for 6 minutes at 2× in Chromium and 3 minutes in Firefox, sampling every 30 s: no steady climb. The page itself used under 3 MB.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Quick start (Neural Voices).</b> Opening the popup loads your voice in the background, if it's already downloaded, so reading starts at once. Otherwise the player says "Starting the voice…".<span class="how">Chromium, twice each: first sound after 3.4–3.8 s from cold, and 0.74–0.76 s after a warm-up. Most of the cold start is the engine setting up the voice model (about 2–4 s), which a setting can't speed up: all four optimisation levels were benchmarked.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Speed keeps the voice natural, and 2× means 2× (Neural Voices).</b> Speed is changed inside the voice, so the pitch doesn't move. The model shortens pauses less than sounds, so a measured curve corrects for that.<span class="how">Pitch measured from the audio: Alma 176–181 Hz at every speed from 0.75× to 2× (playing faster instead: 133–356 Hz). Length: 2× was really 1.6× before the fix, and 1.9× after. Samples to listen to are in <code>dist/speed-samples/</code>.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Pages that mix English and Swedish (Neural Voices).</b> Each paragraph is read in the voice for its own language. Short lines, like headings, keep the language of the paragraph before.<span class="how">A test page alternating English and Swedish paragraphs: Cori read the English ones and Alma the Swedish ones, switching every paragraph.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Controls with the new engine (Neural Voices).</b> Pause, resume, next, previous, speed, Stop, and now Escape (except while you type in a field).<span class="how">On a 400-paragraph page: pause held the audio and highlight, next and previous moved one sentence, a speed change took effect while reading, Escape and Stop both stopped it and cleared the highlight. Preparing that whole page froze it for 0.13–0.17 s.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Highlighting.</b> The sentence is shaded yellow and the spoken word is orange.<span class="how">Watched the word highlight move with the audio.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Pause, resume, skip, stop.</b><span class="how">While paused, the audio and the highlight both stay put.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Light voices (Piper).</b> 0.4 seconds to make 3 seconds of speech, even with the CPU busy. UK: Cori, Alba, Northern English.<span class="how">Tested against the server directly.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Swedish.</b> Swedish text is recognised and read with your Swedish voice: Alma, Lisa (women) or NST (man). English pages keep your English voice.<span class="how">Read a Swedish page that was wrongly marked as English. It picked Alma, and "t.ex." didn't split the sentence.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Natural voices (Kokoro)</b> still work from the new Python environment.<span class="how">Tested against the server directly.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>The voice server starts by itself</b> when the add-on needs it, and stops after 30 idle minutes to free memory.<span class="how">Stopped it, then made a request. It started and answered.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Desktop icon script.</b> Wakes the server and shows a "voices ready" notification.<span class="how">Ran the script. Didn't click the icon itself.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Reads with no server.</b> Piper runs as WebAssembly in a background worker inside the add-on. All engine code ships in the add-on (13 MB zipped); only the voices download.<span class="how">Firefox 158 and Chromium, automated: English and Swedish pages read with words highlighted, no errors. Re-run after the server code was removed: still passing.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Read a selection, the page, or from a click.</b> Starts at the title, skips menus, footers and footnote marks.<span class="how">Selection and click-to-read were checked with real mouse clicks in Chromium; page reading in every test run since. The text handling hasn't changed since then.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Fast start, no pauses.</b> Reading starts with short pieces (45, 80, 140, 220 characters) and then keeps a minute of audio ready.<span class="how">With the voice ready: first sound 3–4 s from cold, and no pauses in any run on one full CPU core.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Quick start.</b> Opening the popup gets your voice ready if it's downloaded; otherwise the player says "Starting the voice…".<span class="how">Chromium: first sound 3.4–3.8 s cold, 0.74–0.76 s after the warm-up.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>One tab at a time.</b> Starting in a tab stops any other tab that's reading.<span class="how">Two tabs in Chromium: starting the second stopped the first, and back again.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Controls.</b> Pause, resume, next, previous, speed, Stop and Escape.<span class="how">On a 400-paragraph page: pause held the audio and highlight, next and previous moved one sentence, speed changed live, Escape and Stop both stopped and cleared the highlight. Preparing that page froze it for 0.13–0.17 s.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Highlighting and its styles.</b> Yellow/orange, blue, green, underline only, or off.<span class="how">Switching style while reading changed the highlight at once; "off" removed it.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Swedish, mixed pages and other languages.</b> Each paragraph gets the voice for its language; other languages follow the page's language tag.<span class="how">A Swedish page marked as English was read with Alma. A page alternating English and Swedish switched between Cori and Alma every paragraph. A German page was read with Thorsten.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Settings and your voice list.</b> Tick the voices for the player and popup, a default voice per language, language detection on or off, speed, volume, highlight style.<span class="how">Chromium: lists showed only ticked voices; with no Swedish voice, Settings says Swedish text uses the English voice; detection off shows one picker. Firefox: the page and popup render.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Changing voice applies at once.</b> The current sentence starts again in the new voice.<span class="how">3.4 s to a downloaded voice that wasn't loaded, about 1.5 s back to a loaded one.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Voice catalogue.</b> 170 voices in 49 languages, with size and licence. Add, download ahead, delete downloads, remove. Pinned to one fixed version of Piper's collection.<span class="how">Added Thorsten (German), downloaded it with a progress bar, deleted it.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Safe downloads.</b> Progress in the player, size check, 3 tries, then a clear message. A damaged voice re-downloads.<span class="how">Player went 0% → 82% then read. With the download site blocked, it stopped after 6.6 s with "Couldn't download the voice Cori… Check your internet connection".</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Natural speed, and 2× means 2×.</b><span class="how">Pitch measured: Alma 176–181 Hz at every speed (playing faster: 133–356 Hz). 2× was really 1.6× before a correction, 1.9× after.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Steady memory.</b> About 300–550 MB more while reading, flat over time.<span class="how">6 minutes at 2× on a 400-paragraph page in Chromium, 3 minutes in Firefox, sampled every 30 s.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Nothing left running.</b> After Stop the audio pauses; after 5 quiet minutes the engine shuts down and frees its memory.<span class="how">Firefox: CPU 0 within a minute and memory back to the start within 2 minutes (it used to keep about 8% of a core busy; fixed). Chromium: CPU 0, 210 MB freed, hidden engine page closed.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Old server removed.</b> No server code, no Kokoro, no permission to talk to <code>127.0.0.1</code>. On this computer: the auto-start service, menu icon, Python environment (1.6 GB) and server voices (242 MB) are deleted.<span class="how">Tests re-run afterwards in both browsers: passing. The project and its pages no longer mention the server except as history.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Tests are saved and logged.</b> 10 browser tests and 3 engine measurements in <code>tests/</code>, with the latest result of each and when to re-run it in <code>tests/RESULTS.md</code>.<span class="how">Both runners checked by re-running a test in each browser.</span></span></li>
     </ul>
   </section>
 
   <section aria-labelledby="untested-h">
     <h2 id="untested-h">Built, not tested yet</h2>
     <ul class="status">
-      <li><span class="chip warn">Not tested</span><span class="item"><b>A really slow computer.</b> Not tried on real slow hardware. A simulation squeezed the whole browser into half a CPU core: the first sound took 39 s, and speech then rendered a bit slower than it plays. At 30% of a core it never started within a minute. With one full core it's fine. On a slow machine, the popup warm-up helps most.</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>Clicking through Firefox by hand.</b> Reading in Firefox was tested by a script, not by a person using the speaker bubble, the popup and the player.</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>Kokoro voices inside Neural Voices.</b> They should appear when the local server runs, but this wasn't checked after the change.</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>Listening by ear.</b> The pitch and speed were measured, but nobody has listened to the samples or the volume slider yet.</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>The voice lists</b> in the player and the popup: grouped by language and engine, with separate English and Swedish choices.</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>Word highlighting with Piper voices.</b> Piper doesn't say when each word starts, so the add-on estimates it. It may run a little ahead or behind.</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>Clicking the desktop icon.</b> If GNOME shows a warning, right-click the icon and choose <b>Allow Launching</b>.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>A really slow computer.</b> Not tried on real slow hardware. A simulation that squeezed the whole browser into half a CPU core took 39 s to the first sound, and then rendered a bit slower than it speaks. With one full core it's fine. The popup warm-up helps most on slow machines.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Clicking through Firefox by hand.</b> Firefox was tested by scripts, not by a person using the speaker bubble, popup and player.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Listening by ear.</b> Speed and pitch were measured; nobody has listened to the samples or the volume slider yet.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Word timing.</b> Piper doesn't say when each word starts, so the highlight is estimated. It may run a little ahead or behind.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Keyboard shortcuts.</b> The test browsers can't press add-on shortcuts. They use the same code as the popup buttons, which are tested.</span></li>
     </ul>
   </section>
 
   <section aria-labelledby="perm-h">
     <h2 id="perm-h">How it becomes permanent</h2>
-    <p>There are three parts. Two are already set up.</p>
     <div class="pipe">
-      <div class="box"><span class="chip todo">Needs you</span><h3>Add-on in Firefox</h3><p>Firefox only keeps add-ons that Mozilla has signed. Signing is free, and the add-on stays private.</p></div>
+      <div class="box"><span class="chip ok">Done</span><h3>The add-on</h3><p>Works on its own in Firefox and Chromium. Nothing else to install or keep running.</p></div>
       <span class="arrow" aria-hidden="true">→</span>
-      <div class="box"><span class="chip ok">Done</span><h3>Auto-start</h3><p>systemd waits for the add-on on <code>127.0.0.1:5123</code> and starts the server when needed.</p></div>
+      <div class="box"><span class="chip todo">Step 4</span><h3>Signed by Mozilla</h3><p>Firefox only keeps add-ons that Mozilla has signed. Free, and it can stay unlisted.</p></div>
       <span class="arrow" aria-hidden="true">→</span>
-      <div class="box"><span class="chip ok">Done</span><h3>Voice server</h3><p>Loads Piper or Kokoro, depending on the voice you pick. Runs from the project's <code>.venv</code>.</p></div>
+      <div class="box"><span class="chip todo">Then</span><h3>Installed for good</h3><p>Open the signed <code>.xpi</code> file in Firefox and click <b>Add</b>. Send the same file to friends.</p></div>
     </div>
-
-    <h3>Getting the add-on signed (about 5 minutes)</h3>
-    <ol class="steps">
-      <li><span>Open <a href="https://addons.mozilla.org/developers/" target="_blank" rel="noopener">addons.mozilla.org/developers</a> and log in with a Firefox account.</span></li>
-      <li><span>Click <b>Submit a New Add-on</b>, then choose <b>On your own</b>. This keeps it unlisted, so only you have it.</span></li>
-      <li><span>Upload <code>dist/read-aloud-kokoro.zip</code> (made by <code>./build.sh</code>). A warning about <code>127.0.0.1</code> is expected. If it asks for source code, answer No.</span></li>
-      <li><span>Download the signed <code>.xpi</code> file into the <code>dist</code> folder.</span></li>
-      <li><span>Click the <b>Read Aloud</b> icon on your desktop. Firefox asks to add the add-on. Click <b>Add</b>.</span></li>
-    </ol>
     <p class="meta">In Chromium, "Load unpacked" from <code>chrome://extensions</code> is already permanent.</p>
   </section>
 
   <section aria-labelledby="voices-h">
-    <h2 id="voices-h">The two voice engines</h2>
+    <h2 id="voices-h">The engine in numbers</h2>
     <div class="tbl">
       <table>
-        <thead><tr><th>Engine</th><th>Memory</th><th>Time for 3 s of speech*</th><th>First start</th><th>Sound</th></tr></thead>
         <tbody>
-          <tr class="best"><td>Piper (default)</td><td class="num">~230 MB</td><td class="num">0.4 s</td><td class="num">~1 s</td><td>Clear, a bit flat. 3 UK and 3 Swedish voices.</td></tr>
-          <tr><td>Piper in the browser (Neural Voices)</td><td class="num">~450 MB*</td><td class="num">1.0 s</td><td class="num">~2.5 s</td><td>The same Piper voices with no server. Uses one CPU core so far. Stops after 5 idle minutes to free memory. *Whole browser.</td></tr>
-          <tr><td>Kokoro</td><td class="num">~1.2 GB</td><td class="num">~15 s</td><td class="num">~40 s</td><td>Most natural. Heart (US) and 5 UK voices. English only. Exact word timing. Pauses when the CPU is busy, because it then renders slower than it speaks.</td></tr>
+          <tr><td>Engine download (in the add-on)</td><td class="num">13 MB zipped</td></tr>
+          <tr><td>Each voice, downloaded once</td><td class="num">most 63 MB (21–137 MB)</td></tr>
+          <tr><td>Extra memory while reading</td><td class="num">300–550 MB</td></tr>
+          <tr><td>Time to make 3 s of speech (one core)</td><td class="num">about 1 s</td></tr>
+          <tr><td>First sound: voice ready / cold / first download</td><td class="num">0.75 s / 3–4 s / 5–8 s</td></tr>
+          <tr><td>After Stop</td><td class="num">CPU 0; memory freed after 5 min</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="meta">* Measured while other heavy programs were using the CPU. On an idle laptop Kokoro keeps up with speech. Only the engine you use loads into memory.</p>
   </section>
 
   <section class="review" aria-labelledby="review-h">
-    <h2 id="review-h">How the lower-effort model did</h2>
+    <h2 id="review-h">How the session went</h2>
     <div class="verdict">
-      <p><b>Short version:</b> it got everything built and tested. It made small mistakes that cost retries, and it caught each one itself. None of them touched your files or your other programs.</p>
-      <p>This was one session, so there is no higher-effort run to compare it with. The list below is what actually happened.</p>
+      <p><b>Short version:</b> built by Claude (Opus 5.5) in one long session, working through the plan's steps 0 to 3 with automated tests after each. The mistakes below cost retries; each was caught by checking numbers that looked wrong. None touched your files or other programs.</p>
     </div>
     <h3>Slips along the way</h3>
     <div class="slips">
-      <div class="slip"><span class="what">A test command stopped itself, twice.</span><span class="cost">The cleanup pattern matched its own command line. Fixed by looking up the process first. Nothing else was stopped.</span></div>
-      <div class="slip"><span class="what">It assumed a test port was free.</span><span class="cost">Another program already used it. The first test failed. It moved to a different port and left the other program alone.</span></div>
+      <div class="slip"><span class="what">A test command stopped itself, three times.</span><span class="cost">The cleanup pattern matched its own command line, even after the project notes warned about it. Fixed by looking up processes first. Nothing else was stopped.</span></div>
+      <div class="slip"><span class="what">It assumed a test port was free.</span><span class="cost">Another program already used it. It moved to a different port and left that program alone.</span></div>
       <div class="slip"><span class="what">The selection speaker first appeared in the middle of the line.</span><span class="cost">Seen in a screenshot. It now appears where you let go of the mouse.</span></div>
-      <div class="slip"><span class="what">It nearly set the server to offline mode.</span><span class="cost">That would have blocked downloading new voices. Spotted and removed before it caused a problem.</span></div>
-      <div class="slip"><span class="what">A false "installer stopped" alarm.</span><span class="cost">The progress check looked for the wrong process name. It confirmed the install was still running and fixed the check.</span></div>
-      <div class="slip"><span class="what">A test said nothing was read.</span><span class="cost">The test started before the browser was ready. A rerun showed the add-on worked. It cost one extra test run.</span></div>
-      <div class="slip"><span class="what">A speed test measured nothing for Kokoro.</span><span class="cost">The test started before Kokoro had loaded (65 s on a busy CPU). It found that out, reran, and got real numbers. It cost about 5 minutes.</span></div>
-      <div class="slip"><span class="what">The same self-stopping test command, a third time.</span><span class="cost">In the Neural Voices test, the cleanup step matched its own command again, even though the project notes warn about it. Nothing else was stopped, and the rerun took a minute.</span></div>
-      <div class="slip"><span class="what">The first step-1 test read nothing.</span><span class="cost">The test script looked up tabs by their address, which the add-on isn't allowed to see. That's a known quirk from earlier tests. One wasted run of about 2 minutes; the add-on itself was fine.</span></div>
-      <div class="slip"><span class="what">A false alarm in the Firefox test.</span><span class="cost">The test profile still had the add-on's old file list cached, so the new shared settings file was missing. Clearing that cache fixed it. The add-on was fine. It cost one extra run.</span></div>
-      <div class="slip"><span class="what">Two broken test runs in step 2.</span><span class="cost">The test browser didn't start because of a quoting mistake in its launch command, and the Firefox test still looked for a part of the old settings page. Each cost one rerun of 1–2 minutes. The add-on was fine both times.</span></div>
-      <div class="slip"><span class="what">Four misleading test runs in step 3.</span><span class="cost">The first CPU limit didn't apply to the browser, the memory script crashed at the end of its loop, the first Firefox memory numbers missed most of Firefox's processes, and a reused test profile ran the old background script. Each was caught because the numbers looked wrong. Together they cost about 25 minutes, mostly waiting for long runs.</span></div>
-      <div class="slip"><span class="what">Too much text in the terminal.</span><span class="cost">You said the replies were hard to read. That's why this page exists, and future updates will come here.</span></div>
+      <div class="slip"><span class="what">Several test runs measured the wrong thing.</span><span class="cost">Tabs looked up by address, a stale cached file list, a quoting mistake, a renamed settings page, a CPU limit that didn't apply, a crashed memory script, half of Firefox's processes missed, and a reused profile running old code. Each cost a rerun; together about 35 minutes, mostly waiting for long runs. The tests are now saved with these fixes.</span></div>
+      <div class="slip"><span class="what">Too much text in the terminal.</span><span class="cost">You said the replies were hard to read. That's why this page exists.</span></div>
     </div>
     <div class="verdict">
-      <p><b>Suggestion:</b> lower effort works well for building and trying things in this project. Before you submit to Mozilla, run one careful review with <code>/code-review high</code>. It catches the kind of mistakes listed above before they reach a signed release.</p>
+      <p><b>Suggestion:</b> before signing, run one careful review with <code>/code-review high</code>. It catches the kind of mistakes listed above before they reach a signed release.</p>
     </div>
   </section>
 
@@ -448,13 +411,11 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
     <div class="tbl">
       <table>
         <tbody>
-          <tr><td>Is the voice server running?</td><td><code>systemctl --user status read-aloud-tts</code></td></tr>
-          <tr><td>See what it did</td><td><code>journalctl --user -u read-aloud-tts -n 30</code></td></tr>
-          <tr><td>Turn auto-start off</td><td><code>systemctl --user disable --now read-aloud-tts.socket</code></td></tr>
-          <tr><td>Run a browser test (Neural Voices folder)</td><td><code>tests/chromium.sh tests/chromium/read-en-sv.mjs</code></td></tr>
+          <tr><td>Build the upload file for Mozilla</td><td><code>./build.sh</code></td></tr>
+          <tr><td>Run a browser test</td><td><code>tests/chromium.sh tests/chromium/read-en-sv.mjs</code></td></tr>
           <tr><td>Latest result of every test, and when to re-run it</td><td><code>tests/RESULTS.md</code></td></tr>
-          <tr><td>Rebuild the upload file for Mozilla</td><td><code>./build.sh</code></td></tr>
-          <tr><td>Where Piper voices are stored</td><td><code>~/.local/share/read-aloud/piper/</code></td></tr>
+          <tr><td>Update the voice catalogue</td><td><code>node tools/make-catalog.mjs</code></td></tr>
+          <tr><td>Where Firefox keeps the voices</td><td>In Firefox's own storage for the add-on. Delete them in Settings.</td></tr>
         </tbody>
       </table>
     </div>
@@ -462,7 +423,7 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
 
   </div>
 
-  <footer>Read Aloud · <a href="https://github.com/JCA374/read-aloud">github.com/JCA374/read-aloud</a> · Page source: <code>docs/page.html</code></footer>
+  <footer>Neural Voices · <a href="https://github.com/JCA374/read-aloud">github.com/JCA374/read-aloud</a> · Page source: <code>docs/page.html</code></footer>
 </div>
 
 <script>
