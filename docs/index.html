@@ -143,12 +143,12 @@
     <span class="eyebrow">Project status</span>
     <h1>Read Aloud</h1>
     <p class="demo"><span class="s">A browser add-on that reads web pages to you with voices that run on <span class="w">your</span> own computer.</span></p>
-    <p class="meta">Updated 22 October 2026, after adding Swedish voices and trimming the voice list.</p>
+    <p class="meta">Updated 22 October 2026, after making reading start faster and buffer ahead.</p>
   </header>
 
   <section aria-label="At a glance">
     <div class="glance">
-      <div class="tile ok"><span class="n">10</span><span class="l">Working and tested</span><span class="d">Reading, highlighting, Swedish, both voice engines, auto-start</span></div>
+      <div class="tile ok"><span class="n">11</span><span class="l">Working and tested</span><span class="d">Reading, fast start, highlighting, Swedish, both voice engines, auto-start</span></div>
       <div class="tile warn"><span class="n">4</span><span class="l">Built, not tested yet</span><span class="d">Mostly Firefox itself, which only you can click through</span></div>
       <div class="tile todo"><span class="n">2</span><span class="l">Left to do</span><span class="d">Try it in Firefox, then get it signed so it stays</span></div>
     </div>
@@ -173,6 +173,7 @@
       <li><span class="chip ok">Tested</span><span class="item"><b>Read a selection.</b> Select text, click the speaker bubble.<span class="how">Checked in Chromium with real mouse clicks.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Read the whole page.</b> Starts at the title. Skips menus, footers and footnote marks like [1].<span class="how">Checked in Chromium on a test article.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Click-to-read.</b> Click any sentence and it reads from that exact sentence.<span class="how">Clicked the word "four", and it started at "She counted…"</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Fast start, no waiting.</b> Reading starts with a short clip, then bigger pieces, and keeps a minute of audio ready ahead. Hovering over the speaker starts rendering before you click.<span class="how">Light voice on a busy CPU: first sound after 0.4–0.7 s (was 2.8 s), and no pauses in 3 of 4 runs (one 1.6 s pause; before: one 10 s pause). Kokoro: 5.4 s → 3.3 s with hover.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Highlighting.</b> The sentence is shaded yellow and the spoken word is orange.<span class="how">Watched the word highlight move with the audio.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Pause, resume, skip, stop.</b><span class="how">While paused, the audio and the highlight both stay put.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Light voices (Piper).</b> 0.4 seconds to make 3 seconds of speech, even with the CPU busy. UK: Cori, Alba, Northern English.<span class="how">Tested against the server directly.</span></span></li>
@@ -222,7 +223,7 @@
         <thead><tr><th>Engine</th><th>Memory</th><th>Time for 3 s of speech*</th><th>First start</th><th>Sound</th></tr></thead>
         <tbody>
           <tr class="best"><td>Piper (default)</td><td class="num">~230 MB</td><td class="num">0.4 s</td><td class="num">~1 s</td><td>Clear, a bit flat. 3 UK and 3 Swedish voices.</td></tr>
-          <tr><td>Kokoro</td><td class="num">~1.2 GB</td><td class="num">~15 s</td><td class="num">~40 s</td><td>Most natural. Heart (US) and 5 UK voices. English only. Exact word timing.</td></tr>
+          <tr><td>Kokoro</td><td class="num">~1.2 GB</td><td class="num">~15 s</td><td class="num">~40 s</td><td>Most natural. Heart (US) and 5 UK voices. English only. Exact word timing. Pauses when the CPU is busy, because it then renders slower than it speaks.</td></tr>
         </tbody>
       </table>
     </div>
@@ -243,6 +244,7 @@
       <div class="slip"><span class="what">It nearly set the server to offline mode.</span><span class="cost">That would have blocked downloading new voices. Spotted and removed before it caused a problem.</span></div>
       <div class="slip"><span class="what">A false "installer stopped" alarm.</span><span class="cost">The progress check looked for the wrong process name. It confirmed the install was still running and fixed the check.</span></div>
       <div class="slip"><span class="what">A test said nothing was read.</span><span class="cost">The test started before the browser was ready. A rerun showed the add-on worked. It cost one extra test run.</span></div>
+      <div class="slip"><span class="what">A speed test measured nothing for Kokoro.</span><span class="cost">The test started before Kokoro had loaded (65 s on a busy CPU). It found that out, reran, and got real numbers. It cost about 5 minutes.</span></div>
       <div class="slip"><span class="what">Too much text in the terminal.</span><span class="cost">You said the replies were hard to read. That's why this page exists, and future updates will come here.</span></div>
     </div>
     <div class="verdict">

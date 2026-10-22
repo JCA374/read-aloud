@@ -70,7 +70,10 @@ strongly, and the page scrolls along unless you scroll yourself.
 ## How it works
 
 The content script splits the text into sentences and sends them to the server one
-at a time, rendering up to 3 sentences ahead. Kokoro returns a WAV plus a time for each word,
+at a time. Where reading starts, it cuts the text into growing pieces (about 45, 100, then 200
+characters), so the first sound comes after a short clip and each piece renders while the one
+before it plays. After that it keeps the server busy until about 60 seconds of audio is ready
+ahead. Hovering over the speaker button already renders the first words of the selection. Kokoro returns a WAV plus a time for each word,
 which drives the word highlighting (CSS Custom Highlight API, so the page's HTML is never
 modified). The server keeps the last 300 sentences in memory, so jumping back is instant.
 

@@ -5,7 +5,9 @@
 
   const DEFAULTS = { voice: "piper:en_GB-cori-medium", voiceSv: "piper:sv_SE-alma-medium", speed: 1.0 };
   const SPEEDS = [0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
-  const AHEAD = 3; // sentences rendered ahead of the one playing
+  const AHEAD_SECONDS = 60; // keep this much audio rendered ahead of what's playing
+  const AHEAD_MAX = 30; // ...but never more than this many pieces
+  const STAGES = [45, 100, 200]; // max characters of the first pieces: short first, so sound starts fast
   let settings = { ...DEFAULTS };
   let voices = [{ id: "piper:en_GB-cori-medium", label: "Cori (UK, female)", engine: "piper", lang: "en" }];
 
@@ -143,7 +145,7 @@
     return out;
   }
 
-  // Chunks -> sentences: {chunk, start, end, text}. The first one is kept short so playback starts fast.
+  // Chunks -> sentences: {chunk, start, end, text}.
   function toSentences(chunks) {
     const segs = [];
     for (const chunk of chunks) {
@@ -159,7 +161,7 @@
       }
       if (pending) parts.push(pending);
       for (const [s0, e0] of parts) {
-        for (const [s, e] of splitLong(chunk.text, s0, e0, segs.length ? 300 : 140)) {
+        for (const [s, e] of splitLong(chunk.text, s0, e0, 300)) {
           let a = s;
           let b = e;
           while (a < b && /\s/.test(chunk.text[a])) a++;
@@ -168,6 +170,34 @@
           if (HAS_WORD.test(text)) segs.push({ chunk, start: a, end: b, text });
         }
       }
+    }
+    return segs;
+  }
+
+  // Split a sentence after a comma (or a space) before `max` characters: [head, rest], or [seg] if it's short.
+  function splitSeg(seg, max) {
+    const t = seg.text;
+    if (t.length <= max * 1.3) return [seg];
+    const w = t.slice(0, max);
+    let cut = Math.max(...[",", ";", ":", " –", " —"].map((p) => w.lastIndexOf(p + " ")));
+    if (cut >= 0 && t[cut] === " ") cut++; // keep the dash with the head
+    if (cut < max / 3) cut = w.lastIndexOf(" ") - 1;
+    if (cut < 8) return [seg];
+    const head = t.slice(0, cut + 1).trimEnd();
+    let a = cut + 1;
+    while (a < t.length && /\s/.test(t[a])) a++;
+    return [
+      { ...seg, end: seg.start + head.length, text: head },
+      { ...seg, start: seg.start + a, text: t.slice(a) },
+    ];
+  }
+
+  // Cut the text where reading starts into growing pieces (about 45, 100, 200 characters), so the first
+  // sound comes quickly and each next piece is rendered while the one before it plays.
+  function stageStart(segs, i) {
+    segs = segs.slice();
+    for (let k = 0, p = i; k < STAGES.length && p < segs.length; k++, p++) {
+      segs.splice(p, 1, ...splitSeg(segs[p], STAGES[k]));
     }
     return segs;
   }
@@ -257,7 +287,9 @@
     words: [],
     wordIdx: -1,
     cache: new Map(), // `${i}|${voice}|${speed}` -> Promise<{buffer, words} | {error}>
+    durations: new Map(), // same keys -> seconds of audio, once rendered
     inflight: false,
+    stats: null, // {t0, first, waits, waitTime}: how fast sound started, and any waits after that
 
     lang: "en",
 
@@ -278,6 +310,7 @@
           .then(async (res) => {
             if (!res || res.error) return { error: res?.error || "offline" };
             const buffer = await this.ctx.decodeAudioData(b64ToBytes(res.audio));
+            this.durations.set(key, buffer.duration);
             return { buffer, words: res.words };
           })
           .catch(() => ({ error: "offline" }));
@@ -286,11 +319,18 @@
       return this.cache.get(key);
     },
 
-    // Render ahead one request at a time, in order (the server renders one at a time anyway).
+    // Render ahead one request at a time, in order (the server renders one at a time anyway),
+    // until AHEAD_SECONDS of audio is ready. The server never sits idle while there's room in the buffer.
     pump() {
       if (this.inflight || this.state === "idle") return;
-      for (let j = this.i; j < Math.min(this.segs.length, this.i + 1 + AHEAD); j++) {
-        if (this.cache.has(this.key(j))) continue;
+      let ahead = 0;
+      for (let j = this.i; j < Math.min(this.segs.length, this.i + AHEAD_MAX); j++) {
+        const key = this.key(j);
+        if (this.cache.has(key)) {
+          if (j > this.i) ahead += this.durations.get(key) || 0;
+          if (ahead >= AHEAD_SECONDS) return;
+          continue;
+        }
         this.inflight = true;
         this.fetch(j).then(() => {
           this.inflight = false;
@@ -303,8 +343,9 @@
     async start(segs, i = 0, lang = "en") {
       this.stop();
       if (!segs.length) return ui.flash("No readable text found");
-      this.segs = segs;
+      this.segs = stageStart(segs, i);
       this.lang = lang;
+      this.stats = { t0: performance.now(), first: null, waits: 0, waitTime: 0 };
       this.ctx ??= new AudioContext();
       this.ctx.resume().catch(() => {});
       ui.show();
@@ -325,8 +366,16 @@
       if (this.state !== "paused") this.setState("loading");
       this.pump();
 
+      const waitFrom = performance.now();
       const res = await this.fetch(i);
       if (tok !== this.token) return;
+      const st = this.stats;
+      const waited = performance.now() - waitFrom;
+      if (st.first !== null && waited > 150 && this.state !== "paused") {
+        st.waits++;
+        st.waitTime += waited;
+        console.debug(`[Read Aloud] waited ${(waited / 1000).toFixed(1)} s for piece ${i} (${seg.text.length} chars)`);
+      }
       if (res.error) {
         this.cache.delete(this.key(i));
         if (res.error === "offline") {
@@ -351,8 +400,14 @@
       this.source = src;
       this.startAt = this.ctx.currentTime + gap;
       src.start(this.startAt);
+      if (st.first === null) st.first = performance.now() - st.t0;
       // Drop audio for sentences we've passed.
-      for (const k of this.cache.keys()) if (parseInt(k) < i - 2) this.cache.delete(k);
+      for (const k of [...this.cache.keys()]) {
+        if (parseInt(k) < i - 2) {
+          this.cache.delete(k);
+          this.durations.delete(k);
+        }
+      }
       if (this.state === "paused") return;
       this.setState("playing");
       if (this.ctx.state === "suspended") this.ctx.resume().catch(() => {});
@@ -413,7 +468,13 @@
     stop(keepError = false) {
       this.token++;
       this.halt();
+      const st = this.stats;
+      if (st?.first != null) {
+        console.info(`[Read Aloud] first sound after ${(st.first / 1000).toFixed(2)} s; waited ${st.waits} times (${(st.waitTime / 1000).toFixed(1)} s) after that`);
+      }
+      this.stats = null;
       this.cache.clear();
+      this.durations.clear();
       highlight("kokoro-sentence", null);
       highlight("kokoro-word", null);
       if (!keepError) this.error = "";
@@ -465,6 +526,23 @@
   }
 
   function readRange(range, root, skipBoilerplate, startAt) {
+    const { segs, lang, i } = plan(range, root, skipBoilerplate, startAt);
+    player.start(segs, i, lang);
+  }
+
+  // Start rendering the first words of a selection before the speaker button is clicked.
+  // The server keeps the result, so the click plays it almost at once.
+  function prewarmSelection() {
+    const sel = getSelection();
+    if (!sel.rangeCount || sel.isCollapsed || player.state !== "idle") return;
+    const { segs, lang } = plan(sel.getRangeAt(0), document.body, false);
+    if (!segs.length) return;
+    const voice = settings[VOICE_KEY[lang]] || settings.voice;
+    const first = stageStart(segs, 0)[0];
+    chrome.runtime.sendMessage({ type: "tts", text: first.text, voice, speed: settings.speed }).catch(() => {});
+  }
+
+  function plan(range, root, skipBoilerplate, startAt) {
     const segs = toSentences(collectChunks(range, root, skipBoilerplate));
     const container = range.commonAncestorContainer;
     const lang = detectLang(segs.slice(0, 40).map((s) => s.text).join(" "), container.nodeType === 1 ? container : container.parentElement);
@@ -478,7 +556,7 @@
         }
       }
     }
-    player.start(segs, i, lang);
+    return { segs, lang, i };
   }
 
   function readSelection() {
@@ -666,6 +744,7 @@
       };
       const bubble = this.els.bubble;
       bubble.onmousedown = (e) => e.preventDefault(); // keep the selection
+      bubble.onpointerenter = prewarmSelection;
       bubble.onclick = () => {
         bubble.classList.remove("open");
         readSelection();
@@ -733,7 +812,7 @@
       status.classList.toggle("err", !!player.error);
       status.textContent =
         player.error ||
-        (s === "loading" ? "Rendering…" : s === "idle" && clickMode ? "Click a paragraph to start" : s === "idle" ? "" : `${player.i + 1} / ${player.segs.length}`);
+        (s === "loading" ? (player.stats?.waits && !player.voice().startsWith("piper:") ? "Rendering… (a light voice won't pause)" : "Rendering…") : s === "idle" && clickMode ? "Click a paragraph to start" : s === "idle" ? "" : `${player.i + 1} / ${player.segs.length}`);
     },
   };
 
