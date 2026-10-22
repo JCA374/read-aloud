@@ -494,7 +494,10 @@
     },
 
     setState(s) {
+      const was = this.state;
       this.state = s;
+      // Tell the background when this tab starts or stops reading, so it can stop other tabs.
+      if ((was === "idle") !== (s === "idle")) chrome.runtime.sendMessage({ type: "reading", state: s }).catch(() => {});
       ui.sync();
     },
   };

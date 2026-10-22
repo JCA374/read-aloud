@@ -15,12 +15,39 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   toTab(tab.id, { cmd: info.menuItemId === "read-selection" ? "readSelection" : "readFromHere" });
 });
 
-chrome.commands.onCommand.addListener(async (command) => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (tab?.id) toTab(tab.id, { cmd: command === "stop" ? "stop" : "toggle" });
+// Only one tab reads at a time. The tab that's reading is kept in session storage,
+// because the background script can be unloaded between events.
+async function readingTab() {
+  return (await chrome.storage.session.get("readingTab")).readingTab ?? null;
+}
+
+async function onReading(tabId, state) {
+  const current = await readingTab();
+  if (state === "idle") {
+    if (current === tabId) await chrome.storage.session.remove("readingTab");
+    return;
+  }
+  if (current === tabId) return;
+  await chrome.storage.session.set({ readingTab: tabId });
+  if (current !== null) toTab(current, { cmd: "stop" }); // another tab started: stop the old one
+}
+
+chrome.tabs.onRemoved.addListener(async (tabId) => {
+  if ((await readingTab()) === tabId) await chrome.storage.session.remove("readingTab");
 });
 
-chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+// Shortcuts act on the tab that's reading, even from another tab; otherwise on the tab you're in.
+chrome.commands.onCommand.addListener(async (command) => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const target = (await readingTab()) ?? tab?.id;
+  if (target) toTab(target, { cmd: command === "stop" ? "stop" : "toggle" });
+});
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.type === "reading" && sender.tab?.id != null) {
+    onReading(sender.tab.id, msg.state);
+    return;
+  }
   if (msg.type === "tts") {
     fetch(`${SERVER}/tts`, {
       method: "POST",
