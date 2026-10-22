@@ -36,4 +36,14 @@ The user finds long terminal replies hard to read. Report progress on the projec
 - Update the "Updated <date>, after <what>" line every time.
 - Writing: short, plain sentences, no jargon without explanation.
 
+## Skills and tests
+
+- `status-page`: the steps to update and publish the page (above).
+- `addon-tests`: which browser tests to run, how, and logging them in `tests/RESULTS.md` (on the
+  `neural-voices` branch). Check that log first: don't re-run a test when nothing it covers has changed.
+- `release`: packaging, licences and signing (step 4 of the brief).
+
+Neural Voices (the version with no server) is developed on the `neural-voices` branch, checked out
+in its own folder next to this one. `main` keeps the server-based version working.
+
 Machine-specific notes (setup, testing quirks) are in `CLAUDE.local.md`, which is not committed.
