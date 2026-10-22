@@ -8,7 +8,7 @@
   const AHEAD_MAX = 30; // ...but never more than this many pieces
   const STAGES = [45, 80, 140, 220]; // max characters of the first pieces: short first, so sound starts fast
   let settings = { ...NV.DEFAULTS };
-  let voices = NV.PIPER_VOICES;
+  let voices = NV.STARTER_VOICES;
 
   function loadVoices() {
     NV.allVoices(settings).then((v) => {
@@ -25,7 +25,10 @@
     for (const [k, { newValue }] of Object.entries(changes)) if (k in NV.DEFAULTS) settings[k] = newValue ?? NV.DEFAULTS[k];
     if ("kokoro" in changes) loadVoices();
     // A voice picked in the popup or settings replaces one picked in the player.
-    if (["voice", "voiceSv", "fixedVoice"].some((k) => k in changes && changes[k].newValue !== player.override)) player.override = null;
+    const picked = (k) => (k === "langVoices" ? Object.values(changes[k].newValue || {}) : [changes[k].newValue]);
+    if (["voice", "voiceSv", "fixedVoice", "langVoices"].some((k) => k in changes && !picked(k).includes(player.override))) player.override = null;
+    if ("volume" in changes) player.setVolume();
+    if ("highlight" in changes) player.redrawHighlights();
     player.settingsChanged();
     ui.sync();
   });
@@ -240,10 +243,13 @@
   // ---------------------------------------------------------------- highlighting
 
   const HAS_HL = typeof CSS !== "undefined" && CSS.highlights && typeof Highlight === "function";
-  function highlight(name, range) {
+  // kind is "sentence" or "word". Each highlight style has its own names in content.css (nv-<style>-<kind>).
+  const shownRanges = { sentence: null, word: null };
+  function highlight(kind, range) {
+    shownRanges[kind] = range;
     if (!HAS_HL) return;
-    if (range) CSS.highlights.set(name, new Highlight(range));
-    else CSS.highlights.delete(name);
+    for (const style of Object.keys(NV.HIGHLIGHTS)) CSS.highlights.delete(`nv-${style}-${kind}`);
+    if (range && settings.highlight !== "off") CSS.highlights.set(`nv-${settings.highlight}-${kind}`, new Highlight(range));
   }
 
   let lastUserScroll = 0;
@@ -305,7 +311,8 @@
         const p = chrome.runtime
           .sendMessage({ type: "tts", text: seg.text, voice: this.voice(), speed: settings.speed })
           .then(async (res) => {
-            if (!res || res.error) return { error: res?.error || "offline" };
+            if (!res || res.error) return { error: res?.error || "offline", fatal: !!res?.fatal };
+            this.download = null;
             const buffer = await this.ctx.decodeAudioData(b64ToBytes(res.audio));
             this.durations.set(key, buffer.duration);
             return { buffer, words: res.words };
@@ -359,8 +366,8 @@
       this.playingVoice = this.voice();
       const seg = this.segs[i];
       const sentence = makeRange(seg.chunk, seg.start, seg.end);
-      highlight("kokoro-sentence", sentence);
-      highlight("kokoro-word", null);
+      highlight("sentence", sentence);
+      highlight("word", null);
       scrollToRange(sentence);
       if (this.state !== "paused") this.setState("loading");
       this.pump();
@@ -377,8 +384,8 @@
       }
       if (res.error) {
         this.cache.delete(this.key(i));
-        if (res.error === "offline") {
-          this.error = "Kokoro voices need the local voice server. Pick a Piper voice.";
+        if (res.error === "offline" || res.fatal) {
+          this.error = res.fatal ? res.error : "Kokoro voices need the local voice server. Pick a Piper voice.";
           return this.stop(true);
         }
         console.warn("[Neural Voices] skipping sentence:", res.error, seg.text);
@@ -388,7 +395,7 @@
       this.wordIdx = -1;
       const src = this.ctx.createBufferSource();
       src.buffer = res.buffer;
-      src.connect(this.ctx.destination);
+      src.connect(this.output());
       src.onended = () => {
         if (this.source !== src) return;
         this.source = null;
@@ -421,7 +428,7 @@
       for (let k = 0; k < this.words.length && this.words[k].s <= t; k++) w = k;
       if (w !== this.wordIdx) {
         this.wordIdx = w;
-        highlight("kokoro-word", w >= 0 ? this.words[w].r : null);
+        highlight("word", w >= 0 ? this.words[w].r : null);
       }
       requestAnimationFrame(() => this.tick(id));
     },
@@ -474,8 +481,8 @@
       this.stats = null;
       this.cache.clear();
       this.durations.clear();
-      highlight("kokoro-sentence", null);
-      highlight("kokoro-word", null);
+      highlight("sentence", null);
+      highlight("word", null);
       if (!keepError) this.error = "";
       this.ctx?.resume().catch(() => {});
       this.setState("idle");
@@ -502,6 +509,25 @@
       this.durations.clear();
       this.segs = stageStart(this.segs, this.i);
       this.playIndex(this.i, 0);
+    },
+
+    // Audio goes through a volume control.
+    output() {
+      if (!this.gain) {
+        this.gain = this.ctx.createGain();
+        this.gain.connect(this.ctx.destination);
+      }
+      this.setVolume();
+      return this.gain;
+    },
+
+    setVolume() {
+      if (this.gain) this.gain.gain.value = settings.volume ?? 1;
+    },
+
+    redrawHighlights() {
+      highlight("sentence", shownRanges.sentence);
+      highlight("word", shownRanges.word);
     },
 
     // Forget rendered pieces in another voice or speed (except the one playing).
@@ -534,8 +560,8 @@
   const EN_WORDS = new Set("the and to of is that it in for with on was as are this be by not you he she they have from or but at an his her which were would there".split(" "));
 
   function pageLang(el = document.documentElement) {
-    const attr = (el.closest?.("[lang]")?.lang || document.documentElement.lang || "").toLowerCase();
-    return attr.startsWith("sv") ? "sv" : "en";
+    const attr = (el.closest?.("[lang]")?.lang || document.documentElement.lang || "").toLowerCase().slice(0, 2);
+    return { nb: "no", nn: "no" }[attr] || attr || "en";
   }
 
   // The words decide; the page's lang attribute only breaks ties (many sites leave lang="en" in their template).
@@ -548,8 +574,11 @@
       if (EN_WORDS.has(w)) en++;
     }
     sv += (text.slice(0, 3000).match(/[åäö]/gi) || []).length / 4;
-    if (words.length >= 3 && sv !== en) return sv > en ? "sv" : "en";
-    return pageLang(el);
+    const attr = pageLang(el);
+    // On a page marked as another language, only overrule it when the text is clearly English or Swedish.
+    const clear = ["en", "sv"].includes(attr) || Math.max(sv, en) / words.length > 0.12;
+    if (words.length >= 3 && sv !== en && clear) return sv > en ? "sv" : "en";
+    return attr;
   }
 
   function readRange(range, root, skipBoilerplate, startAt) {
@@ -767,7 +796,7 @@
       this.els.speed.onchange = () => chrome.storage.local.set({ speed: parseFloat(this.els.speed.value) });
       this.els.voice.onchange = () => {
         const id = this.els.voice.value;
-        chrome.storage.local.set({ [NV.keyFor(id, settings, voices)]: id }); // remembered for next time
+        chrome.storage.local.set(NV.pick(id, settings, voices)); // remembered for next time
         player.useVoice(id);
       };
       const bubble = this.els.bubble;
@@ -830,8 +859,10 @@
       if (this.voiceHtml !== html) voice.innerHTML = this.voiceHtml = html;
       voice.value = current;
       status.classList.toggle("err", !!player.error);
+      const dl = player.download;
       status.textContent =
         player.error ||
+        (s === "loading" && dl ? `Downloading ${dl.label}… ${dl.pct}% (first time only)` : "") ||
         (s === "loading" ? (player.stats?.waits && !player.voice().startsWith("piper:") ? "Rendering… (a light voice won't pause)" : "Rendering…") : s === "idle" && clickMode ? "Click a paragraph to start" : s === "idle" ? "" : `${player.i + 1} / ${player.segs.length}`);
     },
   };
@@ -880,6 +911,12 @@
       case "clickMode":
         setClickMode(!clickMode);
         break;
+      case "voiceProgress": {
+        const label = voices.find((v) => v.id === msg.voice)?.label || msg.voice;
+        player.download = msg.loaded < msg.total ? { label, pct: Math.floor((100 * msg.loaded) / msg.total) } : null;
+        ui.sync();
+        return; // no reply needed
+      }
     }
     sendResponse({ state: player.state, clickMode, hasSelection: !getSelection().isCollapsed });
   });

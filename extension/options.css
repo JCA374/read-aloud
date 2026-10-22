@@ -26,3 +26,20 @@ input[type=range] { display: block; width: 100%; accent-color: var(--accent); }
 output { float: right; }
 .note { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
 code { font-size: 12px; }
+
+.rows { display: grid; gap: 8px; }
+.voice { display: flex; gap: 12px; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--field); }
+.voice .info { min-width: 0; }
+.voice .meta, .voice .licence { color: var(--muted); font-size: 12.5px; overflow-wrap: anywhere; }
+.voice .error { color: #d1242f; font-size: 12.5px; }
+.voice .side { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; flex: none; max-width: 50%; }
+.state { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.state.ok { color: var(--ok); }
+progress { width: 70px; accent-color: var(--accent); }
+button { font: inherit; font-size: 13px; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: default; }
+a { color: var(--accent); }
+.credits { padding-left: 18px; margin: 0; font-size: 13.5px; }
+.credits li { margin-bottom: 6px; }
+@media (max-width: 520px) { .voice { flex-direction: column; align-items: stretch; } .voice .side { max-width: none; justify-content: flex-start; } }

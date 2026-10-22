@@ -2,44 +2,113 @@
 // espeak-ng (in piper_phonemize) turns text into phoneme ids; ONNX Runtime runs the voice model.
 // All code ships in vendor/; only the voice model files are downloaded (and cached).
 //
-// Request:  {id, voice: "piper:sv_SE-alma-medium", text, speed}
-// Response: {id, audio: <base64 WAV>, words: [[text, start, end], ...], duration, timing} or {id, error}
+// Requests:  {id, type: "tts", voice: "piper:sv_SE-alma-medium", text, speed}
+//              -> {id, audio: <base64 WAV>, words: [[text, start, end], ...], duration, timing}
+//            {id, type: "download", voice} -> {id, ok: true}   (download only, e.g. from settings)
+//            {id, type: "unload", voice}   -> {id, ok: true}   (free its memory, e.g. after deleting it)
+// Failures:  {id, error, fatal}  (fatal: the voice itself failed, so there's no point trying the next sentence)
+// Progress:  {type: "progress", voice, loaded, total} while a voice downloads
 
-importScripts("vendor/piper_phonemize.js", "vendor/ort.wasm.min.js");
+importScripts("vendor/piper_phonemize.js", "vendor/ort.wasm.min.js", "../catalog.js");
 
 const VENDOR = new URL("vendor/", self.location).href;
-const PIPER_URL = "https://huggingface.co/rhasspy/piper-voices/resolve/main";
 const CACHE = "piper-voices";
+const OLD_BASE = "https://huggingface.co/rhasspy/piper-voices/resolve/main"; // before voices were pinned
+const CATALOG = Object.fromEntries(NV_CATALOG.voices.map((v) => [v.id, v]));
 
 ort.env.wasm.wasmPaths = VENDOR;
 ort.env.wasm.numThreads = 1; // threads need cross-origin isolation
 
-const voices = {}; // name -> {session, config}
+const voices = {}; // voice id -> Promise<{session, config}>
+const downloads = {}; // voice id -> Promise (download in progress)
 
-function modelUrl(name) {
-  const [region, speaker, quality] = name.split("-");
-  return `${PIPER_URL}/${region.split("_")[0]}/${region}/${speaker}/${quality}/${name}.onnx`;
+class VoiceError extends Error {}
+
+function entry(id) {
+  const v = CATALOG[id];
+  if (!v) throw new VoiceError(`Unknown voice: ${id}`);
+  return v;
 }
 
-async function cached(url) {
+// Download one file with progress, checking its size; 3 tries. Kept in the Cache API.
+async function download(id, file, onBytes) {
+  const url = `${NV_CATALOG.base}/${file.path}`;
   const cache = await caches.open(CACHE);
-  let res = await cache.match(url);
-  if (!res) {
-    res = await fetch(url);
-    if (!res.ok) throw new Error(`Voice download failed (${res.status})`);
-    await cache.put(url, res.clone());
+  if (await cache.match(url)) return;
+  const old = await cache.match(`${OLD_BASE}/${file.path}`); // downloaded before pinning: keep it
+  if (old) {
+    await cache.put(url, old);
+    await cache.delete(`${OLD_BASE}/${file.path}`);
+    return;
   }
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt) await new Promise((r) => setTimeout(r, 2000 * attempt));
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const bytes = new Uint8Array(file.size);
+      let got = 0;
+      const reader = res.body.getReader();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (got + value.length > file.size) throw new Error("file is larger than expected");
+        bytes.set(value, got);
+        got += value.length;
+        onBytes(got);
+      }
+      if (got !== file.size) throw new Error(`incomplete download (${got} of ${file.size} bytes)`);
+      await cache.put(url, new Response(bytes, { headers: { "Content-Type": "application/octet-stream" } }));
+      return;
+    } catch (e) {
+      lastError = e;
+      onBytes(0);
+    }
+  }
+  throw new VoiceError(`Couldn't download the voice ${entry(id).label} (${lastError.message}). Check your internet connection and try again.`);
+}
+
+function ensureDownloaded(id) {
+  downloads[id] ??= (async () => {
+    const v = entry(id);
+    const total = v.onnx.size + v.config.size;
+    let model = 0, config = 0, last = 0;
+    const report = () => {
+      const now = Date.now();
+      if (now - last < 250 && model + config < total) return;
+      last = now;
+      self.postMessage({ type: "progress", voice: id, loaded: model + config, total });
+    };
+    await download(id, v.config, (n) => ((config = n), report()));
+    await download(id, v.onnx, (n) => ((model = n), report()));
+  })().finally(() => delete downloads[id]);
+  return downloads[id];
+}
+
+async function readCached(file) {
+  const res = await (await caches.open(CACHE)).match(`${NV_CATALOG.base}/${file.path}`);
+  if (!res) throw new VoiceError("The voice file is missing. Try again to download it.");
   return res;
 }
 
-async function loadVoice(name) {
-  if (!voices[name]) {
-    const url = modelUrl(name);
-    const [model, config] = await Promise.all([cached(url), cached(url + ".json")]);
-    const session = await ort.InferenceSession.create(await model.arrayBuffer(), { executionProviders: ["wasm"] });
-    voices[name] = { session, config: await config.json() };
-  }
-  return voices[name];
+function loadVoice(id) {
+  voices[id] ??= (async () => {
+    await ensureDownloaded(id);
+    const v = entry(id);
+    const [model, config] = await Promise.all([readCached(v.onnx), readCached(v.config)]);
+    try {
+      const session = await ort.InferenceSession.create(await model.arrayBuffer(), { executionProviders: ["wasm"] });
+      return { session, config: await config.json() };
+    } catch (e) {
+      // A damaged file: remove it so the next try downloads it again.
+      const cache = await caches.open(CACHE);
+      await cache.delete(`${NV_CATALOG.base}/${v.onnx.path}`);
+      throw new VoiceError(`The voice ${v.label} couldn't be loaded, so it will be downloaded again next time.`);
+    }
+  })();
+  voices[id].catch(() => delete voices[id]);
+  return voices[id];
 }
 
 // One espeak-ng module is reused for every sentence; a fresh one is made if it fails.
@@ -107,7 +176,7 @@ function wavBase64(samples, sampleRate) {
 
 async function speak(voice, text, speed = 1) {
   const t0 = performance.now();
-  const { session, config } = await loadVoice(voice.replace(/^piper:/, ""));
+  const { session, config } = await loadVoice(voice);
   const t1 = performance.now();
   const ids = await phonemize(text, config.espeak.voice);
   const inf = config.inference;
@@ -128,14 +197,23 @@ async function speak(voice, text, speed = 1) {
   };
 }
 
-// One sentence at a time: they share one CPU core anyway.
+// One sentence at a time: they share one CPU core anyway. Downloads and unloads don't wait in line.
 let queue = Promise.resolve();
+const reply = (id, run) =>
+  run().then(
+    (result) => self.postMessage({ id, ...result }),
+    (e) => self.postMessage({ id, error: String(e?.message || e), fatal: e instanceof VoiceError }),
+  );
+
 self.onmessage = ({ data }) => {
-  queue = queue.then(async () => {
-    try {
-      self.postMessage({ id: data.id, ...(await speak(data.voice, data.text, data.speed)) });
-    } catch (e) {
-      self.postMessage({ id: data.id, error: String(e?.message || e) });
-    }
-  });
+  if (data.type === "download") return reply(data.id, () => ensureDownloaded(data.voice).then(() => ({ ok: true })));
+  if (data.type === "unload") {
+    return reply(data.id, async () => {
+      const v = await voices[data.voice]?.catch(() => null);
+      delete voices[data.voice];
+      v?.session.release?.();
+      return { ok: true };
+    });
+  }
+  queue = queue.then(() => reply(data.id, () => speak(data.voice, data.text, data.speed)));
 };

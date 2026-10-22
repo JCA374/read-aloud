@@ -14,6 +14,7 @@ const piperHost = (() => {
   function start() {
     worker = new Worker(chrome.runtime.getURL("engine/piper-worker.js"));
     worker.onmessage = ({ data }) => {
+      if (data.type === "progress") return host.onProgress(data);
       pending.get(data.id)?.(data);
       pending.delete(data.id);
     };
@@ -29,13 +30,13 @@ const piperHost = (() => {
     worker = null;
   }
 
-  function render(req) {
+  function call(msg) {
     if (!worker) start();
     clearTimeout(idleTimer);
     const id = nextId++;
     return new Promise((resolve) => {
       pending.set(id, resolve);
-      worker.postMessage({ id, voice: req.voice, text: req.text, speed: req.speed });
+      worker.postMessage({ id, ...msg });
     }).finally(() => {
       if (!pending.size) idleTimer = setTimeout(stop, IDLE_MS);
     });
@@ -49,7 +50,7 @@ const piperHost = (() => {
       cache.set(key, p);
       return p;
     }
-    const p = render(req).then((res) => {
+    const p = call({ type: "tts", voice: req.voice, text: req.text, speed: req.speed }).then((res) => {
       if (res.error) cache.delete(key); // don't keep failures
       return res;
     });
@@ -58,5 +59,10 @@ const piperHost = (() => {
     return p;
   }
 
-  return { tts };
+  // Download a voice without speaking (settings page), or free one that was deleted.
+  const download = (voice) => call({ type: "download", voice });
+  const unload = (voice) => (worker ? call({ type: "unload", voice }) : Promise.resolve({ ok: true }));
+
+  const host = { tts, download, unload, onProgress: () => {} };
+  return host;
 })();

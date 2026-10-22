@@ -5,19 +5,44 @@
 //   Kokoro  optional: only when the local Python server (server/tts_server.py) is running.
 const SERVER = "http://127.0.0.1:5123";
 
-// Firefox loads common.js before this file (manifest); Chromium's service worker imports it here.
-if (typeof NV === "undefined") importScripts("common.js");
+// Firefox loads these before this file (manifest); Chromium's service worker imports them here.
+if (typeof NV === "undefined") importScripts("catalog.js", "common.js");
+
+// The voices the add-on offers, without the download details.
+const PIPER_VOICES = NV_CATALOG.voices.map(({ id, label, lang, langName }) => ({ id, label, lang, langName, engine: "piper" }));
 
 // Firefox: this is a background page, so the worker runs here (engine/host.js is loaded before
 // this file). Chromium: a service worker can't start workers, so an offscreen page hosts it.
-async function piperTts(req) {
-  if (typeof piperHost !== "undefined") return piperHost.tts(req);
+// type is "tts", "download" or "unload".
+async function engine(type, msg) {
+  if (typeof piperHost !== "undefined") return piperHost[type](type === "tts" ? msg : msg.voice);
   if (!(await chrome.offscreen.hasDocument())) {
     await chrome.offscreen
       .createDocument({ url: "offscreen.html", reasons: ["WORKERS"], justification: "Runs the speech engine." })
       .catch(() => {}); // two requests at once: the other one created it
   }
-  return chrome.runtime.sendMessage({ ...req, target: "offscreen" });
+  return chrome.runtime.sendMessage({ ...msg, type, target: "offscreen" });
+}
+
+// Download progress goes to the tabs waiting for speech (and, by runtime message, to the settings page).
+const waitingTabs = new Map(); // tab id -> number of requests in progress
+function relayProgress(p) {
+  for (const tabId of waitingTabs.keys()) toTab(tabId, { ...p, cmd: "voiceProgress" });
+}
+if (typeof piperHost !== "undefined") {
+  piperHost.onProgress = (p) => {
+    relayProgress(p);
+    chrome.runtime.sendMessage({ ...p, type: "voiceProgress" }).catch(() => {});
+  };
+}
+
+function piperTts(msg, tabId) {
+  if (tabId != null) waitingTabs.set(tabId, (waitingTabs.get(tabId) || 0) + 1);
+  return engine("tts", msg).finally(() => {
+    if (tabId == null) return;
+    const n = waitingTabs.get(tabId) - 1;
+    n > 0 ? waitingTabs.set(tabId, n) : waitingTabs.delete(tabId);
+  });
 }
 
 async function serverTts(req) {
@@ -38,7 +63,7 @@ async function serverTts(req) {
 async function serverVoices() {
   try {
     const r = await fetch(`${SERVER}/health`, { signal: AbortSignal.timeout(1500) });
-    return (await r.json()).voices.filter((v) => v.engine === "kokoro");
+    return (await r.json()).voices.filter((v) => v.engine === "kokoro").map((v) => ({ ...v, langName: "English" }));
   } catch {
     return [];
   }
@@ -91,14 +116,22 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     onReading(sender.tab.id, msg.state);
     return;
   }
+  if (msg.type === "voiceProgress") {
+    relayProgress(msg); // Chromium: from the offscreen page
+    return;
+  }
   if (msg.type === "tts") {
-    (msg.voice.startsWith("piper:") ? piperTts(msg) : serverTts(msg))
+    (msg.voice.startsWith("piper:") ? piperTts(msg, sender.tab?.id) : serverTts(msg))
       .catch((e) => ({ error: String(e?.message || e) }))
       .then(sendResponse);
     return true;
   }
-  if (msg.type === "health") {
-    serverVoices().then((kokoro) => sendResponse({ ok: true, voices: [...NV.PIPER_VOICES, ...kokoro] }));
+  if (msg.type === "voices") {
+    (msg.kokoro ? serverVoices() : Promise.resolve([])).then((kokoro) => sendResponse([...PIPER_VOICES, ...kokoro]));
+    return true;
+  }
+  if ((msg.type === "download" || msg.type === "unload") && !msg.target) {
+    engine(msg.type, msg).catch((e) => ({ error: String(e?.message || e) })).then(sendResponse);
     return true;
   }
 });

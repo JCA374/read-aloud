@@ -27,19 +27,19 @@ function render(status) {
 function renderVoices(settings, voices) {
   const shown = NV.shownVoices(voices, settings);
   const pickers = settings.autoDetect
-    ? Object.entries(NV.LANGS)
-        .map(([lang, name]) => ({ lang, title: `${name} voice`, list: shown.filter((v) => v.lang === lang) }))
-        .filter((p) => p.list.length)
+    ? NV.listLangs(voices, settings).map(([lang, name]) => ({ lang, title: `${name} voice`, list: shown.filter((v) => v.lang === lang) }))
     : [{ lang: null, title: "Voice", list: shown }];
   $("voices").replaceChildren(
     ...pickers.map(({ lang, title, list }) => {
       const label = document.createElement("label");
       label.textContent = title;
-      if (lang && pickers.length > 1) label.append(" ", Object.assign(document.createElement("small"), { textContent: "(used automatically)" }));
       const select = document.createElement("select");
       select.innerHTML = NV.voiceOptions(list);
       select.value = NV.voiceFor(lang || "en", settings, voices);
-      select.onchange = () => chrome.storage.local.set({ [NV.keyFor(select.value, settings, voices)]: select.value });
+      select.onchange = async () => {
+        const now = await chrome.storage.local.get(NV.DEFAULTS); // langVoices may have changed meanwhile
+        chrome.storage.local.set(NV.pick(select.value, now, voices));
+      };
       label.append(select);
       return label;
     }),
