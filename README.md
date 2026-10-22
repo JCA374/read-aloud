@@ -6,7 +6,7 @@ read never leaves your computer. English and Swedish; Swedish text is detected a
 
 | Voices | Size | Speed |
 |---|---|---|
-| Starts with UK: Cori, Alba, Northern English and Swedish: Alma, Lisa, NST. 170 voices in about 45 languages can be added in Settings | ~20–110 MB each (most ~63 MB), downloaded once on first use | ~3× faster than real time on one CPU core |
+| Starts with UK: Cori, Alba, Northern English and Swedish: Alma, Lisa, NST. 170 voices in 49 languages can be added in Settings | ~20–110 MB each (most ~63 MB), downloaded once on first use | ~3× faster than real time on one CPU core |
 
 Word highlighting is estimated (Piper doesn't report word times). A voice downloads from
 huggingface.co/rhasspy/piper-voices the first time it's used and is kept in the browser's cache.
