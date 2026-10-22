@@ -21,12 +21,7 @@
     <button id="stop">Stop</button>
   </div>
 
-  <label>English voice
-    <select id="voice"></select>
-  </label>
-  <label>Swedish voice <small>(used automatically on Swedish text)</small>
-    <select id="voiceSv"></select>
-  </label>
+  <div id="voices"></div>
   <label>Speed <output id="speedOut"></output>
     <input id="speed" type="range" min="0.75" max="2" step="0.05">
   </label>
@@ -35,6 +30,8 @@
     <kbd>Alt+Shift+R</kbd> read / pause &nbsp; <kbd>Alt+Shift+X</kbd> stop<br>
     Select text and click the speaker, or right-click → “Read aloud”.
   </p>
+  <button id="settings" class="link">Settings: voice list, languages…</button>
+  <script src="common.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

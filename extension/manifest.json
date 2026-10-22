@@ -20,6 +20,7 @@
   "background": {
     "service_worker": "background.js",
     "scripts": [
+      "common.js",
       "engine/host.js",
       "background.js"
     ]
@@ -30,6 +31,7 @@
         "<all_urls>"
       ],
       "js": [
+        "common.js",
         "content.js"
       ],
       "css": [
@@ -73,5 +75,9 @@
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
   }
 }

@@ -39,6 +39,14 @@ Pages that were already open need a reload before the add-on works on them.
 | `Alt+Shift+R` | read selection or page / pause / resume |
 | `Alt+Shift+X` | stop |
 
+Picking another voice in the player or the popup while it reads restarts the current sentence in
+that voice.
+
+**Settings** (popup → *Settings*, or the add-on's options): tick the voices you want in your list,
+turn language detection on or off, and pick the default voice for each language from your list
+(or, with detection off, the one voice to always use). Kokoro voices from the optional local
+server are off by default, because asking for them starts that server.
+
 Only one tab reads at a time. The floating player has previous/next sentence, speed (0.75–2×) and
 voice controls. The current sentence is highlighted, the current word more strongly.
 

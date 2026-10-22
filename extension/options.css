@@ -1,0 +1,28 @@
+:root {
+  --bg: #f6f7f9; --card: #ffffff; --fg: #1f2328; --muted: #6a737d; --line: #e3e6ea; --field: #f6f7f9;
+  --accent: #e8590c; --ok: #1a7f37;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #1c1e22; --card: #24272c; --fg: #e8eaed; --muted: #9aa0a6; --line: #3a3f45; --field: #2d3136; --ok: #4ac26b; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 640px; margin: 0 auto; padding: 24px 16px 48px; }
+header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+header img { width: 40px; height: 40px; }
+header > div { flex: 1; }
+h1 { font-size: 22px; margin: 0; }
+.sub, .hint { color: var(--muted); font-size: 13px; margin: 2px 0 10px; }
+.saved { color: var(--ok); font-size: 13px; min-width: 50px; text-align: right; }
+section { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+h2 { font-size: 16px; margin: 0 0 4px; }
+h3 { font-size: 13px; color: var(--muted); font-weight: 600; margin: 12px 0 4px; text-transform: uppercase; letter-spacing: .03em; }
+label.check { display: flex; gap: 10px; align-items: baseline; padding: 6px 0; cursor: pointer; }
+label.check small { color: var(--muted); }
+input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; flex: none; transform: translateY(2px); }
+label.row { display: block; margin: 10px 0 4px; }
+select { display: block; width: 100%; margin-top: 4px; padding: 7px; border-radius: 6px; border: 1px solid var(--line); background: var(--field); color: var(--fg); font: inherit; }
+input[type=range] { display: block; width: 100%; accent-color: var(--accent); }
+output { float: right; }
+.note { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+code { font-size: 12px; }

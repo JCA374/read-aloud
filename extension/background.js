@@ -5,14 +5,8 @@
 //   Kokoro  optional: only when the local Python server (server/tts_server.py) is running.
 const SERVER = "http://127.0.0.1:5123";
 
-const PIPER_VOICES = [
-  ["piper:en_GB-cori-medium", "Cori (UK, female)"],
-  ["piper:en_GB-alba-medium", "Alba (Scottish, female)"],
-  ["piper:en_GB-northern_english_male-medium", "Northern English (UK, male)"],
-  ["piper:sv_SE-alma-medium", "Alma (svenska, kvinna)"],
-  ["piper:sv_SE-lisa-medium", "Lisa (svenska, kvinna)"],
-  ["piper:sv_SE-nst-medium", "NST (svenska, man)"],
-].map(([id, label]) => ({ id, label, engine: "piper", lang: id.slice(6, 8) }));
+// Firefox loads common.js before this file (manifest); Chromium's service worker imports it here.
+if (typeof NV === "undefined") importScripts("common.js");
 
 // Firefox: this is a background page, so the worker runs here (engine/host.js is loaded before
 // this file). Chromium: a service worker can't start workers, so an offscreen page hosts it.
@@ -39,7 +33,8 @@ async function serverTts(req) {
   }
 }
 
-// Kokoro voices are listed only while the local server answers.
+// Kokoro voices are listed only while the local server answers. Only asked when Kokoro is turned on in
+// settings, because asking starts the server (systemd socket activation).
 async function serverVoices() {
   try {
     const r = await fetch(`${SERVER}/health`, { signal: AbortSignal.timeout(1500) });
@@ -103,7 +98,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true;
   }
   if (msg.type === "health") {
-    serverVoices().then((kokoro) => sendResponse({ ok: true, voices: [...PIPER_VOICES, ...kokoro] }));
+    serverVoices().then((kokoro) => sendResponse({ ok: true, voices: [...NV.PIPER_VOICES, ...kokoro] }));
     return true;
   }
 });

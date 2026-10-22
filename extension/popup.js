@@ -1,11 +1,4 @@
 const $ = (id) => document.getElementById(id);
-const DEFAULTS = { voice: "piper:en_GB-cori-medium", voiceSv: "piper:sv_SE-alma-medium", speed: 1.0 };
-const VOICE_GROUPS = { piper: "Piper · runs in your browser", kokoro: "Kokoro · needs the local server" };
-function voiceOptions(voices) {
-  const groups = {};
-  for (const v of voices) (groups[v.engine || "kokoro"] ??= []).push(`<option value="${v.id}">${v.label}</option>`);
-  return Object.entries(groups).map(([g, opts]) => `<optgroup label="${VOICE_GROUPS[g] || g}">${opts.join("")}</optgroup>`).join("");
-}
 
 async function activeTab() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -29,28 +22,35 @@ function render(status) {
   $("click").classList.toggle("on", status.clickMode);
 }
 
+// With language detection on: one voice picker per language that has voices in your list.
+// With it off: a single voice picker.
+function renderVoices(settings, voices) {
+  const shown = NV.shownVoices(voices, settings);
+  const pickers = settings.autoDetect
+    ? Object.entries(NV.LANGS)
+        .map(([lang, name]) => ({ lang, title: `${name} voice`, list: shown.filter((v) => v.lang === lang) }))
+        .filter((p) => p.list.length)
+    : [{ lang: null, title: "Voice", list: shown }];
+  $("voices").replaceChildren(
+    ...pickers.map(({ lang, title, list }) => {
+      const label = document.createElement("label");
+      label.textContent = title;
+      if (lang && pickers.length > 1) label.append(" ", Object.assign(document.createElement("small"), { textContent: "(used automatically)" }));
+      const select = document.createElement("select");
+      select.innerHTML = NV.voiceOptions(list);
+      select.value = NV.voiceFor(lang || "en", settings, voices);
+      select.onchange = () => chrome.storage.local.set({ [NV.keyFor(select.value, settings, voices)]: select.value });
+      label.append(select);
+      return label;
+    }),
+  );
+}
+
 async function init() {
-  const settings = await chrome.storage.local.get(DEFAULTS);
+  const settings = await chrome.storage.local.get(NV.DEFAULTS);
   $("speed").value = settings.speed;
   $("speedOut").textContent = `${settings.speed}×`;
-
-  const health = await chrome.runtime.sendMessage({ type: "health" });
-  const voices = health?.voices || [
-    { id: settings.voice, label: settings.voice, lang: "en" },
-    { id: settings.voiceSv, label: settings.voiceSv, lang: "sv" },
-  ];
-  $("voice").innerHTML = voiceOptions(voices.filter((v) => (v.lang || "en") === "en"));
-  $("voice").value = settings.voice;
-  $("voiceSv").innerHTML = voiceOptions(voices.filter((v) => v.lang === "sv"));
-  $("voiceSv").value = settings.voiceSv;
-  // A saved voice that no longer exists: switch to the default.
-  for (const [id, key] of [["voice", "voice"], ["voiceSv", "voiceSv"]]) {
-    if (!$(id).value) {
-      $(id).value = DEFAULTS[key];
-      chrome.storage.local.set({ [key]: DEFAULTS[key] });
-    }
-  }
-
+  renderVoices(settings, await NV.allVoices(settings));
   render(await send("status"));
 }
 
@@ -63,8 +63,10 @@ $("click").onclick = async () => {
   window.close();
 };
 $("stop").onclick = async () => render(await send("stop"));
-$("voice").onchange = () => chrome.storage.local.set({ voice: $("voice").value });
-$("voiceSv").onchange = () => chrome.storage.local.set({ voiceSv: $("voiceSv").value });
+$("settings").onclick = () => {
+  chrome.runtime.openOptionsPage();
+  window.close();
+};
 $("speed").oninput = () => {
   const speed = Math.round(parseFloat($("speed").value) * 100) / 100;
   $("speedOut").textContent = `${speed}×`;

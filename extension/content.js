@@ -3,34 +3,29 @@
   if (window.__kokoroReader) return;
   window.__kokoroReader = true;
 
-  const DEFAULTS = { voice: "piper:en_GB-cori-medium", voiceSv: "piper:sv_SE-alma-medium", speed: 1.0 };
   const SPEEDS = [0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
   const AHEAD_SECONDS = 60; // keep this much audio rendered ahead of what's playing
   const AHEAD_MAX = 30; // ...but never more than this many pieces
   const STAGES = [45, 80, 140, 220]; // max characters of the first pieces: short first, so sound starts fast
-  let settings = { ...DEFAULTS };
-  let voices = [{ id: "piper:en_GB-cori-medium", label: "Cori (UK, female)", engine: "piper", lang: "en" }];
+  let settings = { ...NV.DEFAULTS };
+  let voices = NV.PIPER_VOICES;
 
-  const VOICE_GROUPS = {
-    "kokoro|en": "English · Kokoro (needs the local server)",
-    "piper|en": "English · Piper",
-    "piper|sv": "Svenska · Piper",
-  };
-  function voiceOptions(voices) {
-    const groups = {};
-    for (const v of voices) (groups[`${v.engine || "kokoro"}|${v.lang || "en"}`] ??= []).push(`<option value="${v.id}">${v.label}</option>`);
-    return Object.entries(groups).map(([g, opts]) => `<optgroup label="${VOICE_GROUPS[g] || g}">${opts.join("")}</optgroup>`).join("");
+  function loadVoices() {
+    NV.allVoices(settings).then((v) => {
+      voices = v;
+      ui.sync();
+    });
   }
-  const voiceLang = (id) => voices.find((v) => v.id === id)?.lang || (id.startsWith("piper:sv") ? "sv" : "en");
-  // Which voice setting a language uses. Each language remembers its own voice.
-  const VOICE_KEY = { en: "voice", sv: "voiceSv" };
 
-  chrome.storage.local.get(DEFAULTS).then((s) => {
+  chrome.storage.local.get(NV.DEFAULTS).then((s) => {
     settings = s;
-    ui.sync();
+    loadVoices();
   });
   chrome.storage.onChanged.addListener((changes) => {
-    for (const [k, { newValue }] of Object.entries(changes)) if (k in DEFAULTS) settings[k] = newValue;
+    for (const [k, { newValue }] of Object.entries(changes)) if (k in NV.DEFAULTS) settings[k] = newValue ?? NV.DEFAULTS[k];
+    if ("kokoro" in changes) loadVoices();
+    // A voice picked in the popup or settings replaces one picked in the player.
+    if (["voice", "voiceSv", "fixedVoice"].some((k) => k in changes && changes[k].newValue !== player.override)) player.override = null;
     player.settingsChanged();
     ui.sync();
   });
@@ -293,8 +288,10 @@
 
     lang: "en",
 
+    override: null, // a voice picked in the player while reading: used until reading stops
+
     voice() {
-      return settings[VOICE_KEY[this.lang]] || settings.voice;
+      return this.override || NV.voiceFor(this.lang, settings, voices);
     },
 
     key(i) {
@@ -345,6 +342,7 @@
       if (!segs.length) return ui.flash("No readable text found");
       this.segs = stageStart(segs, i);
       this.lang = lang;
+      this.override = null;
       this.stats = { t0: performance.now(), first: null, waits: 0, waitTime: 0 };
       this.ctx ??= new AudioContext();
       this.ctx.resume().catch(() => {});
@@ -358,6 +356,7 @@
       if (i < 0) i = 0;
       if (i >= this.segs.length) return this.finish();
       this.i = i;
+      this.playingVoice = this.voice();
       const seg = this.segs[i];
       const sentence = makeRange(seg.chunk, seg.start, seg.end);
       highlight("kokoro-sentence", sentence);
@@ -486,11 +485,36 @@
       this.stop();
     },
 
-    // Voice or speed changed: keep the sentence that's playing, re-render the ones after it.
+    // Settings changed (here, in the popup or on the settings page). A new voice restarts the
+    // current sentence in that voice; a new speed keeps it and re-renders the ones after it.
     settingsChanged() {
       if (this.state === "idle") return;
-      for (const k of [...this.cache.keys()]) if (parseInt(k) !== this.i) this.cache.delete(k);
-      this.pump();
+      this.dropStale();
+      if (this.voice() !== this.playingVoice) this.restart();
+      else this.pump();
+    },
+
+    // Start the current sentence again in the new voice, cut into short pieces like at the start of
+    // reading, so the new voice is heard quickly. Pieces are numbered, so the cache starts over.
+    restart() {
+      console.debug(`[Neural Voices] new voice ${this.voice()}: restarting sentence ${this.i + 1}`);
+      this.cache.clear();
+      this.durations.clear();
+      this.segs = stageStart(this.segs, this.i);
+      this.playIndex(this.i, 0);
+    },
+
+    // Forget rendered pieces in another voice or speed (except the one playing).
+    dropStale() {
+      const tail = `|${this.voice()}|${settings.speed}`;
+      for (const k of [...this.cache.keys()]) if (parseInt(k) !== this.i && !k.endsWith(tail)) this.cache.delete(k);
+    },
+
+    // A voice picked in the player: restart the current sentence in that voice right away.
+    useVoice(id) {
+      if (this.state === "idle" || id === this.voice()) return;
+      this.override = id;
+      this.restart();
     },
 
     setState(s) {
@@ -540,7 +564,7 @@
     if (!sel.rangeCount || sel.isCollapsed || player.state !== "idle") return;
     const { segs, lang } = plan(sel.getRangeAt(0), document.body, false);
     if (!segs.length) return;
-    const voice = settings[VOICE_KEY[lang]] || settings.voice;
+    const voice = NV.voiceFor(lang, settings, voices);
     const first = stageStart(segs, 0)[0];
     chrome.runtime.sendMessage({ type: "tts", text: first.text, voice, speed: settings.speed }).catch(() => {});
   }
@@ -743,7 +767,8 @@
       this.els.speed.onchange = () => chrome.storage.local.set({ speed: parseFloat(this.els.speed.value) });
       this.els.voice.onchange = () => {
         const id = this.els.voice.value;
-        chrome.storage.local.set({ [VOICE_KEY[voiceLang(id)] || "voice"]: id });
+        chrome.storage.local.set({ [NV.keyFor(id, settings, voices)]: id }); // remembered for next time
+        player.useVoice(id);
       };
       const bubble = this.els.bubble;
       bubble.onmousedown = (e) => e.preventDefault(); // keep the selection
@@ -754,15 +779,7 @@
       };
       this.makeDraggable($(".grip"));
       document.documentElement.appendChild(this.host);
-      this.loadVoices();
       this.sync();
-    },
-
-    loadVoices() {
-      chrome.runtime.sendMessage({ type: "health" }).then((res) => {
-        if (res?.voices?.length) voices = res.voices;
-        this.sync();
-      }).catch(() => {});
     },
 
     makeDraggable(grip) {
@@ -806,12 +823,12 @@
         speed.add(new Option(`${settings.speed}×`, String(settings.speed)));
       }
       speed.value = String(settings.speed);
-      if (voice.options.length !== voices.length) {
-        voice.innerHTML = voiceOptions(voices);
-      }
-      const key = VOICE_KEY[player.state === "idle" ? pageLang() : player.lang];
-      voice.value = settings[key] || settings.voice;
-      if (!voice.value && voices.length > 1) voice.value = DEFAULTS[key]; // saved voice was removed
+      const current = player.state === "idle" ? NV.voiceFor(pageLang(), settings, voices) : player.voice();
+      const list = NV.shownVoices(voices, settings);
+      if (!list.some((v) => v.id === current)) list.push(voices.find((v) => v.id === current) || { id: current, label: current, lang: "" });
+      const html = NV.voiceOptions(list);
+      if (this.voiceHtml !== html) voice.innerHTML = this.voiceHtml = html;
+      voice.value = current;
       status.classList.toggle("err", !!player.error);
       status.textContent =
         player.error ||

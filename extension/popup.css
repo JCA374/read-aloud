@@ -24,3 +24,4 @@ output { float: right; color: var(--fg); }
 .keys { color: var(--muted); font-size: 12px; margin: 4px 0 0; }
 kbd { font: 11px ui-monospace, monospace; padding: 1px 4px; border: 1px solid var(--line); border-radius: 4px; }
 label small { font-size: 11px; }
+button.link { display: block; width: 100%; margin-top: 10px; background: none; border: 0; color: var(--accent); text-decoration: underline; padding: 4px 0; }
