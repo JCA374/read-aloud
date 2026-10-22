@@ -13,7 +13,7 @@ const PIPER_VOICES = NV_CATALOG.voices.map(({ id, label, lang, langName }) => ({
 
 // Firefox: this is a background page, so the worker runs here (engine/host.js is loaded before
 // this file). Chromium: a service worker can't start workers, so an offscreen page hosts it.
-// type is "tts", "download" or "unload".
+// type is "tts", "download", "unload" or "warm".
 async function engine(type, msg) {
   if (typeof piperHost !== "undefined") return piperHost[type](type === "tts" ? msg : msg.voice);
   if (!(await chrome.offscreen.hasDocument())) {
@@ -116,6 +116,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     onReading(sender.tab.id, msg.state);
     return;
   }
+  if (msg.type === "engineIdle") {
+    console.debug("[Neural Voices] engine idle: closing the engine page");
+    chrome.offscreen.closeDocument().catch((e) => console.warn("[Neural Voices] couldn't close the engine page:", e)); // Chromium
+    return;
+  }
   if (msg.type === "voiceProgress") {
     relayProgress(msg); // Chromium: from the offscreen page
     return;
@@ -130,7 +135,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     (msg.kokoro ? serverVoices() : Promise.resolve([])).then((kokoro) => sendResponse([...PIPER_VOICES, ...kokoro]));
     return true;
   }
-  if ((msg.type === "download" || msg.type === "unload") && !msg.target) {
+  if (["download", "unload", "warm"].includes(msg.type) && !msg.target) {
     engine(msg.type, msg).catch((e) => ({ error: String(e?.message || e) })).then(sendResponse);
     return true;
   }

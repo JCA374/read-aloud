@@ -50,8 +50,11 @@ async function init() {
   const settings = await chrome.storage.local.get(NV.DEFAULTS);
   $("speed").value = settings.speed;
   $("speedOut").textContent = `${settings.speed}×`;
+  const status = await send("status");
+  // You'll probably read soon: load the voice now (only if it's already downloaded).
+  if (status?.voice?.startsWith("piper:") && status.state === "idle") chrome.runtime.sendMessage({ type: "warm", voice: status.voice }).catch(() => {});
   renderVoices(settings, await NV.allVoices(settings));
-  render(await send("status"));
+  render(status);
 }
 
 $("read").onclick = async () => {

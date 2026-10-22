@@ -296,12 +296,13 @@
 
     override: null, // a voice picked in the player while reading: used until reading stops
 
-    voice() {
-      return this.override || NV.voiceFor(this.lang, settings, voices);
+    // The voice for piece i: the one picked in the player, else the default for that paragraph's language.
+    voice(i = this.i) {
+      return this.override || NV.voiceFor(this.segs[i]?.lang || this.lang, settings, voices);
     },
 
     key(i) {
-      return `${i}|${this.voice()}|${settings.speed}`;
+      return `${i}|${this.voice(i)}|${settings.speed}`;
     },
 
     fetch(i) {
@@ -309,10 +310,11 @@
       if (!this.cache.has(key)) {
         const seg = this.segs[i];
         const p = chrome.runtime
-          .sendMessage({ type: "tts", text: seg.text, voice: this.voice(), speed: settings.speed })
+          .sendMessage({ type: "tts", text: seg.text, voice: this.voice(i), speed: settings.speed })
           .then(async (res) => {
             if (!res || res.error) return { error: res?.error || "offline", fatal: !!res?.fatal };
             this.download = null;
+            if (res.timing?.first) console.debug(`[Neural Voices] engine start-up: ${JSON.stringify(res.timing)}`);
             const buffer = await this.ctx.decodeAudioData(b64ToBytes(res.audio));
             this.durations.set(key, buffer.duration);
             return { buffer, words: res.words };
@@ -363,7 +365,7 @@
       if (i < 0) i = 0;
       if (i >= this.segs.length) return this.finish();
       this.i = i;
-      this.playingVoice = this.voice();
+      this.playingVoice = this.voice(i);
       const seg = this.segs[i];
       const sentence = makeRange(seg.chunk, seg.start, seg.end);
       highlight("sentence", sentence);
@@ -484,7 +486,7 @@
       highlight("sentence", null);
       highlight("word", null);
       if (!keepError) this.error = "";
-      this.ctx?.resume().catch(() => {});
+      this.ctx?.suspend().catch(() => {}); // a running audio context keeps using CPU, even when silent
       this.setState("idle");
     },
 
@@ -532,8 +534,7 @@
 
     // Forget rendered pieces in another voice or speed (except the one playing).
     dropStale() {
-      const tail = `|${this.voice()}|${settings.speed}`;
-      for (const k of [...this.cache.keys()]) if (parseInt(k) !== this.i && !k.endsWith(tail)) this.cache.delete(k);
+      for (const k of [...this.cache.keys()]) if (parseInt(k) !== this.i && k !== this.key(parseInt(k))) this.cache.delete(k);
     },
 
     // A voice picked in the player: restart the current sentence in that voice right away.
@@ -593,7 +594,7 @@
     if (!sel.rangeCount || sel.isCollapsed || player.state !== "idle") return;
     const { segs, lang } = plan(sel.getRangeAt(0), document.body, false);
     if (!segs.length) return;
-    const voice = NV.voiceFor(lang, settings, voices);
+    const voice = NV.voiceFor(segs[0].lang || lang, settings, voices);
     const first = stageStart(segs, 0)[0];
     chrome.runtime.sendMessage({ type: "tts", text: first.text, voice, speed: settings.speed }).catch(() => {});
   }
@@ -601,7 +602,19 @@
   function plan(range, root, skipBoilerplate, startAt) {
     const segs = toSentences(collectChunks(range, root, skipBoilerplate));
     const container = range.commonAncestorContainer;
-    const lang = detectLang(segs.slice(0, 40).map((s) => s.text).join(" "), container.nodeType === 1 ? container : container.parentElement);
+    const el = container.nodeType === 1 ? container : container.parentElement;
+    const lang = detectLang(segs.slice(0, 40).map((s) => s.text).join(" "), el);
+    // Mixed pages: each paragraph gets its own language when it has enough words to tell;
+    // short ones (headings, captions) keep the language of the paragraph before.
+    let cur = lang;
+    const langOf = new Map();
+    for (const s of segs) {
+      if (!langOf.has(s.chunk)) {
+        if ((s.chunk.text.match(/\p{L}+/gu) || []).length >= 8) cur = detectLang(s.chunk.text, s.chunk.pieces[0]?.node.parentElement || el);
+        langOf.set(s.chunk, cur);
+      }
+      s.lang = langOf.get(s.chunk);
+    }
     let i = 0;
     if (startAt) {
       for (const [k, s] of segs.entries()) {
@@ -690,8 +703,11 @@
     e.stopPropagation();
     readFrom(e.target, e.clientX, e.clientY);
   }, true);
+  // Escape leaves click-to-read, or stops reading (but not while typing in a field).
   addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && clickMode) setClickMode(false);
+    if (e.key !== "Escape") return;
+    if (clickMode) setClickMode(false);
+    else if (player.state !== "idle" && !e.target.closest?.("input, textarea, select, [contenteditable]")) player.stop();
   });
 
   // ---------------------------------------------------------------- UI (floating player + selection bubble)
@@ -863,6 +879,7 @@
       status.textContent =
         player.error ||
         (s === "loading" && dl ? `Downloading ${dl.label}… ${dl.pct}% (first time only)` : "") ||
+        (s === "loading" && player.stats?.first === null ? "Starting the voice…" : "") ||
         (s === "loading" ? (player.stats?.waits && !player.voice().startsWith("piper:") ? "Rendering… (a light voice won't pause)" : "Rendering…") : s === "idle" && clickMode ? "Click a paragraph to start" : s === "idle" ? "" : `${player.i + 1} / ${player.segs.length}`);
     },
   };
@@ -918,6 +935,7 @@
         return; // no reply needed
       }
     }
-    sendResponse({ state: player.state, clickMode, hasSelection: !getSelection().isCollapsed });
+    const voice = player.state === "idle" ? NV.voiceFor(pageLang(), settings, voices) : player.voice();
+    sendResponse({ state: player.state, clickMode, hasSelection: !getSelection().isCollapsed, voice });
   });
 })();

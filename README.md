@@ -37,7 +37,7 @@ Pages that were already open need a reload before the add-on works on them.
 | Toolbar icon → *Click-to-read*, then click any sentence | reads from that sentence on (Esc to leave) |
 | Right-click → *Read aloud from here* | reads from that spot on |
 | `Alt+Shift+R` | read selection or page / pause / resume |
-| `Alt+Shift+X` | stop |
+| `Alt+Shift+X` or `Esc` | stop |
 
 Picking another voice in the player or the popup while it reads restarts the current sentence in
 that voice.
@@ -47,8 +47,9 @@ that voice.
   download to free disk space, or remove it from the list. Each shows its size and licence.
 - *Add voices*: browse the catalogue by language and add voices to your list.
 - *Language*: detection on or off, and the default voice for each language in your list (or, with
-  detection off, the one voice to always use). English and Swedish are recognised from the words;
-  other languages come from the page's `lang` attribute.
+  detection off, the one voice to always use). English and Swedish are recognised from the words,
+  paragraph by paragraph, so a page that mixes them switches voice; other languages come from the
+  page's `lang` attribute.
 - *Playback*: speed, volume, and the highlight style (yellow/orange, blue, green, underline, off).
 - *Advanced*: Kokoro voices from the optional local server (off by default, because asking for
   them starts that server).
@@ -65,8 +66,11 @@ ahead. The background script hands each piece to the Piper worker (Firefox: star
 background page; Chromium: from an offscreen page, since service workers can't start workers).
 espeak-ng turns the text into phonemes, ONNX Runtime runs the voice, and the result comes back as
 a WAV with estimated word times. Speed is set in the model (Piper's length scale), so the pitch
-stays natural. The last 100 sentences are kept, so jumping back is instant. The engine is
-stopped after 5 idle minutes to free its memory.
+stays natural; the model shortens pauses less than sounds, so the length scale follows a measured
+curve (`lengthFor` in `engine/piper-worker.js`) to make 2× really about 2×. The last 100 sentences are kept, so jumping back is instant. The engine is
+stopped after 5 idle minutes to free its memory. Opening the popup loads your voice early (only if
+it's already downloaded), because starting a voice takes a few seconds: most of it is ONNX Runtime
+setting up the model.
 
 ## Where voices come from
 

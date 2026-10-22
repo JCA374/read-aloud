@@ -6,10 +6,14 @@
 //              -> {id, audio: <base64 WAV>, words: [[text, start, end], ...], duration, timing}
 //            {id, type: "download", voice} -> {id, ok: true}   (download only, e.g. from settings)
 //            {id, type: "unload", voice}   -> {id, ok: true}   (free its memory, e.g. after deleting it)
+//            {id, type: "warm", voice}     -> {id, ok}         (load it now if it's downloaded, e.g. popup opened)
 // Failures:  {id, error, fatal}  (fatal: the voice itself failed, so there's no point trying the next sentence)
 // Progress:  {type: "progress", voice, loaded, total} while a voice downloads
 
+const STARTED = performance.now();
 importScripts("vendor/piper_phonemize.js", "vendor/ort.wasm.min.js", "../catalog.js");
+const SCRIPTS_MS = performance.now() - STARTED;
+let firstTiming = { scriptsMs: Math.round(SCRIPTS_MS) }; // startup costs, reported with the first sentence
 
 const VENDOR = new URL("vendor/", self.location).href;
 const CACHE = "piper-voices";
@@ -94,11 +98,16 @@ async function readCached(file) {
 
 function loadVoice(id) {
   voices[id] ??= (async () => {
+    let t = performance.now();
     await ensureDownloaded(id);
     const v = entry(id);
     const [model, config] = await Promise.all([readCached(v.onnx), readCached(v.config)]);
+    const bytes = await model.arrayBuffer();
+    if (firstTiming) firstTiming.downloadOrReadMs = Math.round(performance.now() - t);
+    t = performance.now();
     try {
-      const session = await ort.InferenceSession.create(await model.arrayBuffer(), { executionProviders: ["wasm"] });
+      const session = await ort.InferenceSession.create(bytes, { executionProviders: ["wasm"] });
+      if (firstTiming) firstTiming.sessionMs = Math.round(performance.now() - t);
       return { session, config: await config.json() };
     } catch (e) {
       // A damaged file: remove it so the next try downloads it again.
@@ -135,6 +144,20 @@ async function phonemize(text, espeakVoice) {
     phonemizer = null;
   }
   throw new Error("Could not phonemize the text");
+}
+
+// Speed is set inside the voice (Piper's length scale), so the pitch stays natural. The model doesn't
+// shorten its pauses as much as its sounds, so a plain 1/speed gives only 1.6× at "2×": this curve was
+// measured to give 0.75×, 1.25×, 1.5×, 1.75× and about 1.9× (Alma and Cori).
+function lengthFor(speed) {
+  const k = speed <= 1 ? 1.4 : 1.4 + 0.4 * (speed - 1);
+  return 1 / speed ** k;
+}
+
+function takeFirstTiming() {
+  const t = firstTiming;
+  firstTiming = null;
+  return t ? { first: t } : {};
 }
 
 // Piper gives no word timings: spread the words over the audio by length, with pauses at punctuation.
@@ -179,11 +202,12 @@ async function speak(voice, text, speed = 1) {
   const { session, config } = await loadVoice(voice);
   const t1 = performance.now();
   const ids = await phonemize(text, config.espeak.voice);
+  const t2 = performance.now();
   const inf = config.inference;
   const feeds = {
     input: new ort.Tensor("int64", BigInt64Array.from(ids, BigInt), [1, ids.length]),
     input_lengths: new ort.Tensor("int64", BigInt64Array.from([BigInt(ids.length)]), [1]),
-    scales: new ort.Tensor("float32", Float32Array.from([inf.noise_scale, inf.length_scale / speed, inf.noise_w]), [3]),
+    scales: new ort.Tensor("float32", Float32Array.from([inf.noise_scale, inf.length_scale * lengthFor(speed), inf.noise_w]), [3]),
   };
   if (config.num_speakers > 1) feeds.sid = new ort.Tensor("int64", BigInt64Array.from([0n]), [1]);
   const { output } = await session.run(feeds);
@@ -193,7 +217,7 @@ async function speak(voice, text, speed = 1) {
     audio: wavBase64(output.data, sr),
     words: estimateWords(text, duration),
     duration: Math.round(duration * 1000) / 1000,
-    timing: { loadMs: Math.round(t1 - t0), renderMs: Math.round(performance.now() - t1) },
+    timing: { loadMs: Math.round(t1 - t0), phonemizeMs: Math.round(t2 - t1), renderMs: Math.round(performance.now() - t2), ...takeFirstTiming() },
   };
 }
 
@@ -207,6 +231,18 @@ const reply = (id, run) =>
 
 self.onmessage = ({ data }) => {
   if (data.type === "download") return reply(data.id, () => ensureDownloaded(data.voice).then(() => ({ ok: true })));
+  if (data.type === "warm") {
+    // Load a voice that's already downloaded, so reading starts sooner. Never downloads.
+    return reply(data.id, async () => {
+      const v = entry(data.voice);
+      const cache = await caches.open(CACHE);
+      const have = (await cache.match(`${NV_CATALOG.base}/${v.onnx.path}`)) || (await cache.match(`${OLD_BASE}/${v.onnx.path}`));
+      if (!have) return { ok: false };
+      phonemizer ??= newPhonemizer();
+      await loadVoice(data.voice);
+      return { ok: true };
+    });
+  }
   if (data.type === "unload") {
     return reply(data.id, async () => {
       const v = await voices[data.voice]?.catch(() => null);

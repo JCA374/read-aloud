@@ -4,7 +4,7 @@
 
 const piperHost = (() => {
   const IDLE_MS = 5 * 60 * 1000;
-  const CACHE_SIZE = 100; // recent sentences, so jumping back or replaying is instant
+  const CACHE_SIZE = 30; // recent sentences, so jumping back or replaying is instant (~10 MB at most)
   const cache = new Map(); // key -> Promise<result>
   const pending = new Map(); // request id -> resolve
   let worker = null;
@@ -30,6 +30,13 @@ const piperHost = (() => {
     worker = null;
   }
 
+  // Nothing to do for a while: free the engine, the voices and the kept audio.
+  function idle() {
+    stop();
+    cache.clear();
+    host.onIdle();
+  }
+
   function call(msg) {
     if (!worker) start();
     clearTimeout(idleTimer);
@@ -38,7 +45,7 @@ const piperHost = (() => {
       pending.set(id, resolve);
       worker.postMessage({ id, ...msg });
     }).finally(() => {
-      if (!pending.size) idleTimer = setTimeout(stop, IDLE_MS);
+      if (!pending.size) idleTimer = setTimeout(idle, IDLE_MS);
     });
   }
 
@@ -62,7 +69,8 @@ const piperHost = (() => {
   // Download a voice without speaking (settings page), or free one that was deleted.
   const download = (voice) => call({ type: "download", voice });
   const unload = (voice) => (worker ? call({ type: "unload", voice }) : Promise.resolve({ ok: true }));
+  const warm = (voice) => call({ type: "warm", voice });
 
-  const host = { tts, download, unload, onProgress: () => {} };
+  const host = { tts, download, unload, warm, onProgress: () => {}, onIdle: () => {} };
   return host;
 })();
