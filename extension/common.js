@@ -17,7 +17,6 @@ var NV = (() => {
     autoDetect: true, // pick the voice by the language of the text
     fixedVoice: "", // the one voice used when autoDetect is off ("" = the English default)
     shown: STARTER_VOICES.map((v) => v.id), // the voices in your list
-    kokoro: false, // also offer Kokoro voices from the local server
     speed: 1.0,
     volume: 1.0,
     highlight: "classic", // classic | blue | green | underline | off
@@ -72,15 +71,15 @@ var NV = (() => {
     return { langVoices: { ...s.langVoices, [lang]: id } };
   }
 
-  // All voices: Piper always; Kokoro only if turned on and the local server answers.
-  async function allVoices(s) {
-    const list = await chrome.runtime.sendMessage({ type: "voices", kokoro: !!s.kokoro }).catch(() => null);
+  // All voices in the catalogue (the content script doesn't load it, so ask the background).
+  async function allVoices() {
+    const list = await chrome.runtime.sendMessage({ type: "voices" }).catch(() => null);
     return list?.length ? list : STARTER_VOICES;
   }
 
   function voiceOptions(voices) {
     const groups = {};
-    for (const v of voices) (groups[`${v.langName || v.lang}${v.engine === "kokoro" ? " · Kokoro (local server)" : ""}`] ??= []).push(v);
+    for (const v of voices) (groups[v.langName || v.lang] ??= []).push(v);
     const esc = (t) => String(t).replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
     return Object.entries(groups)
       .map(([g, vs]) => `<optgroup label="${esc(g)}">${vs.map((v) => `<option value="${esc(v.id)}">${esc(v.label)}</option>`).join("")}</optgroup>`)

@@ -10,8 +10,7 @@ tests/chromium.sh tests/chromium/<test>.mjs     # KEEP=1 reuses the profile (voi
 tests/firefox.sh  tests/firefox/<test>.mjs      # FRESH=1 starts with an empty profile
 ```
 
-Both serve `tests/site/` on port 8799. If the optional Kokoro server's socket is active, the Chromium
-runner pauses it during the test, so a pass proves the add-on works without it.
+Both serve `tests/site/` on port 8799.
 
 | Test | What it checks | Takes |
 |---|---|---|
@@ -30,8 +29,8 @@ Engine measurements (not browser tests):
 
 | Script | What it does |
 |---|---|
-| `engine/speed-pitch.py <out dir>` | Renders Alma and Cori at 0.75–2× the way the add-on does (length scale) and by playing faster; prints length and pitch. Needs the Python `piper-tts` package and the voices in `~/.local/share/read-aloud/piper/` (the optional server's setup) |
-| `engine/speed-calibration.py` | Measures how fast each length scale really is; used to fit `lengthFor` in `engine/piper-worker.js` |
+| `engine/speed-pitch.py <voices dir> <out dir>` | Renders Alma and Cori at 0.75–2× the way the add-on does (length scale) and by playing faster; prints length and pitch. Needs Python with `piper-tts`, `soundfile`, `numpy`, and the two voices' `.onnx` + `.onnx.json` files |
+| `engine/speed-calibration.py <voices dir>` | Measures how fast each length scale really is; used to fit `lengthFor` in `engine/piper-worker.js` |
 | `engine/ort-optimisation-bench.mjs <model.onnx>` | Model set-up time and speed for each ONNX Runtime optimisation level. Needs `npm i onnxruntime-web` next to it |
 
 Test pages: `site/long.html` (English article with menus and footer), `sv.html` (Swedish, marked

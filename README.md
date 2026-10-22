@@ -2,7 +2,8 @@
 
 A browser add-on that reads web pages aloud with natural-sounding Piper voices. The voices run
 **inside the browser** (WebAssembly), so there's nothing else to install, it's free, and the text you
-read never leaves your computer. English and Swedish; Swedish text is detected automatically.
+read never leaves your computer. It starts with English and Swedish voices (Swedish text is detected
+automatically), and 170 voices in 49 languages can be added.
 
 | Voices | Size | Speed |
 |---|---|---|
@@ -15,7 +16,8 @@ That download is the add-on's only network request.
 ```
 extension/          the add-on (Firefox + Chromium, Manifest V3)
 extension/engine/   Piper in a Web Worker: ONNX Runtime Web + espeak-ng (piper_phonemize), see engine/vendor/README.md
-server/             optional: local Python server for the Kokoro voices (see below)
+tests/              browser tests and their results log (tests/README.md, tests/RESULTS.md)
+tools/              make-catalog.mjs: builds extension/catalog.js from the Piper voice collection
 ```
 
 ## Load the add-on
@@ -51,8 +53,6 @@ that voice.
   paragraph by paragraph, so a page that mixes them switches voice; other languages come from the
   page's `lang` attribute.
 - *Playback*: speed, volume, and the highlight style (yellow/orange, blue, green, underline, off).
-- *Advanced*: Kokoro voices from the optional local server (off by default, because asking for
-  them starts that server).
 
 Only one tab reads at a time. The floating player has previous/next sentence, speed (0.75–2×) and
 voice controls. The current sentence is highlighted, the current word more strongly.
@@ -86,9 +86,8 @@ bundled espeak-ng can't handle (Chinese, Japanese, Thai, Hebrew, Lithuanian, one
 Voices are data with their own licences (CC0, CC BY, CC BY-SA, some non-commercial). They aren't
 bundled; each one's licence is shown in Settings with a link to its model card.
 
-## Optional: Kokoro voices via a local server
+## History
 
-Kokoro (Heart, Emma, Isabella, George, Fable, Lewis; English only, ~1.2 GB RAM) runs in a local
-Python server, not in the browser. When `./start-server.sh` is running on `127.0.0.1:5123`, its
-voices appear in the voice lists. `systemd/` has user units that start it on demand. The server
-has no CORS headers, so web pages can't call it; only the add-on can.
+The first version used a local Python server (Piper and Kokoro voices on `127.0.0.1`). Neural
+Voices replaced it: everything now runs inside the browser. The server code is in the git history
+before the merge of the `neural-voices` branch.

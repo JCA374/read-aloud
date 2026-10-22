@@ -1,7 +1,8 @@
+# Needs: pip install piper-tts soundfile numpy; the .onnx + .onnx.json voice files in <voices dir>.
 # Speed samples: Piper length scale (what the add-on does) vs. playing faster (pitch goes up).
 import sys, numpy as np, soundfile as sf
 from piper import PiperVoice, SynthesisConfig
-out = sys.argv[1]
+VOICES, out = sys.argv[1], sys.argv[2]
 TEXT = {"sv_SE-alma-medium": "Fyren stod på klipporna i mer än hundra år, och varje kväll tändes lampan.",
         "en_GB-cori-medium": "The lighthouse stood on the rocks for more than a hundred years, and every evening the lamp was lit."}
 def f0(x, sr):
@@ -16,7 +17,7 @@ def f0(x, sr):
         if ac[k] > 0.5 * ac[0]: vals.append(sr / k)
     return np.median(vals)
 for name, text in TEXT.items():
-    v = PiperVoice.load(f"{__import__('os').path.expanduser('~')}/.local/share/read-aloud/piper/{name}.onnx")
+    v = PiperVoice.load(f"{VOICES}/{name}.onnx")
     base = None
     for speed in [0.75, 1.0, 1.5, 2.0]:
         chunks = list(v.synthesize(text, syn_config=SynthesisConfig(length_scale=1/speed**(1.4 if speed <= 1 else 1.4 + 0.4*(speed-1)))))

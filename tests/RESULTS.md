@@ -11,6 +11,8 @@ Re-run when: `extension/content.js`, `background.js`, `engine/`, `offscreen.*`, 
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-22 | (Kokoro removed) | chromium/read-en-sv (fresh) | Pass. First word 8.2 s EN (includes downloading Cori), 6.6 s SV (download), 0.3 s cached. No errors |
+| 2026-10-22 | (Kokoro removed) | firefox/read-en-sv | Pass. Popup lists 6 voices; first sound 3.8 s EN, 3.0 s SV. No errors |
 | 2026-10-22 | 1ca18cf | chromium/read-en-sv (KEEP) | Pass. First word 3.6 s (EN, engine start), 7.4 s (SV, second voice loads), 0.3 s (text already rendered). No errors |
 | 2026-10-22 | 1ca18cf | firefox/read-en-sv | Pass. Settings page and popup list 6 voices. First sound 3.6 s (EN), 5.2 s (SV). No errors |
 | 2026-10-22 | 1ca18cf | chromium/warm-up (KEEP, ×2 each) | Pass. First sound 3.4–3.8 s cold, 0.74–0.76 s after warm-up (warm-up itself 2.6 s) |
@@ -21,6 +23,7 @@ Re-run when: `extension/options.*`, `popup.*`, `common.js`, `catalog.js`, `engin
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-22 | (Kokoro removed) | chromium/settings-voice-switch (KEEP) | Pass. Lists filtered; switch restarts the sentence (6.3 s here because Northern English had to download first). No errors |
 | 2026-10-22 | cc0f896 | chromium/voice-management (fresh) | Pass. Add Thorsten (de), download with progress (8 states to "✓ Downloaded"), delete. Player: "Downloading Cori… 0→82%". `lang="de"` page read with Thorsten. Highlight classic/blue/off switch live |
 | 2026-10-22 | cc0f896 | chromium/download-failure | Pass. Stops after 6.6 s (3 tries) with "Couldn't download the voice Cori… Check your internet connection" |
 | 2026-10-22 | 7c8f1af | chromium/settings-voice-switch (KEEP) | Pass. Lists filtered to ticked voices; voice switch while reading restarts the sentence: 3.4 s to new voice (cached), ~1.5 s back to a loaded one |

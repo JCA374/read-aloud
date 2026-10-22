@@ -53,7 +53,7 @@ async function init() {
   const status = await send("status");
   // You'll probably read soon: load the voice now (only if it's already downloaded).
   if (status?.voice?.startsWith("piper:") && status.state === "idle") chrome.runtime.sendMessage({ type: "warm", voice: status.voice }).catch(() => {});
-  renderVoices(settings, await NV.allVoices(settings));
+  renderVoices(settings, await NV.allVoices());
   render(status);
 }
 

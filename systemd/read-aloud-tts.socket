@@ -1,8 +1,0 @@
-[Unit]
-Description=Read Aloud (Kokoro) TTS server socket
-
-[Socket]
-ListenStream=127.0.0.1:5123
-
-[Install]
-WantedBy=sockets.target

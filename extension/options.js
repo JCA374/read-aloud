@@ -4,7 +4,7 @@ const OLD_BASE = "https://huggingface.co/rhasspy/piper-voices/resolve/main"; // 
 const DETAILS = Object.fromEntries(NV_CATALOG.voices.map((v) => [v.id, v]));
 
 let settings;
-let voices; // all voices (catalogue, plus Kokoro if turned on)
+let voices; // all voices in the catalogue
 let downloaded = new Set(); // voice ids whose files are in the cache
 const progress = {}; // voice id -> percent, while downloading
 const errors = {}; // voice id -> last download error
@@ -56,9 +56,7 @@ async function removeDownload(id) {
 // One voice: name, details, licence, and its buttons.
 function voiceRow(v, buttons) {
   const d = DETAILS[v.id];
-  const meta = d
-    ? [d.langName, d.country, d.quality !== "medium" && `${d.quality} quality`, mb(d.onnx.size)].filter(Boolean).join(" · ")
-    : "Kokoro · local server";
+  const meta = [d.langName, d.country, d.quality !== "medium" && `${d.quality} quality`, mb(d.onnx.size)].filter(Boolean).join(" · ");
   let state = null;
   if (d && progress[v.id] != null) state = el("span", { className: "state" }, el("progress", { max: 100, value: progress[v.id] }), ` ${progress[v.id]}%`);
   else if (d && downloaded.has(v.id)) state = el("span", { className: "state ok", textContent: "✓ Downloaded" });
@@ -148,7 +146,6 @@ function render() {
   $("volume").value = settings.volume;
   $("volumeOut").textContent = `${Math.round(settings.volume * 100)}%`;
   $("highlight").value = settings.highlight;
-  $("kokoro").checked = settings.kokoro;
 }
 
 $("addLang").onchange = renderAdd;
@@ -163,11 +160,6 @@ for (const [id, fmt] of [["speed", (x) => `${x}×`], ["volume", (x) => `${Math.r
 }
 $("highlight").replaceChildren(...Object.entries(NV.HIGHLIGHTS).map(([k, label]) => el("option", { value: k, textContent: label })));
 $("highlight").onchange = () => save({ highlight: $("highlight").value });
-$("kokoro").onchange = async () => {
-  settings.kokoro = $("kokoro").checked;
-  voices = await NV.allVoices(settings);
-  save({ kokoro: settings.kokoro });
-};
 $("source").append(
   el("b", { textContent: "Voices" }),
   " download from ",
@@ -183,7 +175,7 @@ chrome.runtime.onMessage.addListener((msg) => {
 
 (async () => {
   settings = await chrome.storage.local.get(NV.DEFAULTS);
-  voices = await NV.allVoices(settings);
+  voices = await NV.allVoices();
   await refreshDownloaded();
   render();
 })();

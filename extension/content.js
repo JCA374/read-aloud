@@ -1,7 +1,7 @@
-// Neural Voices: page text -> sentences -> TTS (in-browser Piper, or optional Kokoro server) -> playback with sentence + word highlighting.
+// Neural Voices: page text -> sentences -> speech (Piper, in the add-on) -> playback with sentence + word highlighting.
 (() => {
-  if (window.__kokoroReader) return;
-  window.__kokoroReader = true;
+  if (window.__neuralVoices) return;
+  window.__neuralVoices = true;
 
   const SPEEDS = [0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
   const AHEAD_SECONDS = 60; // keep this much audio rendered ahead of what's playing
@@ -11,7 +11,7 @@
   let voices = NV.STARTER_VOICES;
 
   function loadVoices() {
-    NV.allVoices(settings).then((v) => {
+    NV.allVoices().then((v) => {
       voices = v;
       ui.sync();
     });
@@ -23,7 +23,6 @@
   });
   chrome.storage.onChanged.addListener((changes) => {
     for (const [k, { newValue }] of Object.entries(changes)) if (k in NV.DEFAULTS) settings[k] = newValue ?? NV.DEFAULTS[k];
-    if ("kokoro" in changes) loadVoices();
     // A voice picked in the popup or settings replaces one picked in the player.
     const picked = (k) => (k === "langVoices" ? Object.values(changes[k].newValue || {}) : [changes[k].newValue]);
     if (["voice", "voiceSv", "fixedVoice", "langVoices"].some((k) => k in changes && !picked(k).includes(player.override))) player.override = null;
@@ -35,7 +34,7 @@
 
   // ---------------------------------------------------------------- text extraction
 
-  const SKIP = "script,style,noscript,template,svg,canvas,textarea,input,select,button,iframe,object,math,kokoro-reader,[aria-hidden=true],[hidden]";
+  const SKIP = "script,style,noscript,template,svg,canvas,textarea,input,select,button,iframe,object,math,neural-voices-player,[aria-hidden=true],[hidden]";
   const BOILERPLATE = "nav,header,footer,aside,[role=navigation],[role=banner],[role=contentinfo],[role=complementary],[role=search],.mw-editsection,.noprint";
   const ACCEPT = NodeFilter.FILTER_ACCEPT;
   const SKIPNODE = NodeFilter.FILTER_SKIP;
@@ -214,7 +213,7 @@
     }
   }
 
-  // Match the server's word timings to positions in the sentence.
+  // Match the engine's (estimated) word timings to positions in the sentence.
   function wordRanges(seg, words) {
     const out = [];
     let cur = 0;
@@ -325,8 +324,8 @@
       return this.cache.get(key);
     },
 
-    // Render ahead one request at a time, in order (the server renders one at a time anyway),
-    // until AHEAD_SECONDS of audio is ready. The server never sits idle while there's room in the buffer.
+    // Render ahead one request at a time, in order (the engine renders one at a time anyway),
+    // until AHEAD_SECONDS of audio is ready. The engine never sits idle while there's room in the buffer.
     pump() {
       if (this.inflight || this.state === "idle") return;
       let ahead = 0;
@@ -387,7 +386,7 @@
       if (res.error) {
         this.cache.delete(this.key(i));
         if (res.error === "offline" || res.fatal) {
-          this.error = res.fatal ? res.error : "Kokoro voices need the local voice server. Pick a Piper voice.";
+          this.error = res.fatal ? res.error : "The speech engine didn't answer. Reload the page and try again.";
           return this.stop(true);
         }
         console.warn("[Neural Voices] skipping sentence:", res.error, seg.text);
@@ -588,7 +587,7 @@
   }
 
   // Start rendering the first words of a selection before the speaker button is clicked.
-  // The server keeps the result, so the click plays it almost at once.
+  // The engine keeps the result, so the click plays it almost at once.
   function prewarmSelection() {
     const sel = getSelection();
     if (!sel.rangeCount || sel.isCollapsed || player.state !== "idle") return;
@@ -682,9 +681,9 @@
   let clickMode = false;
   let hoverEl = null;
   function setHover(el) {
-    hoverEl?.classList.remove("kokoro-hover");
+    hoverEl?.classList.remove("nv-hover");
     hoverEl = el;
-    el?.classList.add("kokoro-hover");
+    el?.classList.add("nv-hover");
   }
   function setClickMode(on) {
     clickMode = on;
@@ -779,7 +778,7 @@
 
     build() {
       if (this.host) return;
-      this.host = document.createElement("kokoro-reader");
+      this.host = document.createElement("neural-voices-player");
       const root = this.host.attachShadow({ mode: "closed" });
       root.innerHTML = `<style>${CSS_TEXT}</style>
         <div class="bar" role="toolbar" aria-label="Read aloud">
@@ -880,7 +879,7 @@
         player.error ||
         (s === "loading" && dl ? `Downloading ${dl.label}… ${dl.pct}% (first time only)` : "") ||
         (s === "loading" && player.stats?.first === null ? "Starting the voice…" : "") ||
-        (s === "loading" ? (player.stats?.waits && !player.voice().startsWith("piper:") ? "Rendering… (a light voice won't pause)" : "Rendering…") : s === "idle" && clickMode ? "Click a paragraph to start" : s === "idle" ? "" : `${player.i + 1} / ${player.segs.length}`);
+        (s === "loading" ? "Rendering…" : s === "idle" && clickMode ? "Click a paragraph to start" : s === "idle" ? "" : `${player.i + 1} / ${player.segs.length}`);
     },
   };
 

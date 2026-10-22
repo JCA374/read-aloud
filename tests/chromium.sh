@@ -8,8 +8,6 @@
 #   QUOTA=50%  limit the browser's CPU (simulates a slow computer)
 #   EXTRA=...  one extra browser flag, e.g. '--host-resolver-rules=MAP huggingface.co ~NOTFOUND'
 #   TIMEOUT=s  how long the test may run (default 200)
-# If the optional Kokoro server's systemd socket is active, it's paused so the test proves the add-on
-# works without it.
 here=$(cd "$(dirname "$0")" && pwd)
 test=$(realpath "$1"); ext=$(realpath "${2:-$here/../extension}")
 profile=$HOME/snap/chromium/common/nv-test-profile   # the Chromium snap can't see /tmp
@@ -18,8 +16,6 @@ mine() { for p in $(pgrep -f "nv-test-profile"); do [ "$(ps -o comm= -p "$p")" !
 stop_browser() { for p in $(mine); do kill "$p" 2>/dev/null; done; sleep 2; }
 
 curl -s -o /dev/null http://127.0.0.1:8799/ || (cd "$here/site" && python3 -m http.server 8799 >/dev/null 2>&1 &)
-server=$(systemctl --user is-active read-aloud-tts.socket 2>/dev/null)
-[ "$server" = active ] && systemctl --user stop read-aloud-tts.socket read-aloud-tts.service
 
 stop_browser; [ -z "$KEEP" ] && rm -rf "$profile"
 (chromium --headless=new --remote-debugging-port=9333 --user-data-dir="$profile" --no-first-run \
@@ -34,5 +30,4 @@ fi
 timeout "${TIMEOUT:-200}" node "$test"
 status=$?
 stop_browser
-[ "$server" = active ] && systemctl --user start read-aloud-tts.socket
 exit $status

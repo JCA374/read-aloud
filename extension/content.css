@@ -8,4 +8,4 @@
 ::highlight(nv-green-word) { background-color: rgba(26, 127, 55, 0.85); color: #fff; }
 ::highlight(nv-underline-sentence) { text-decoration: underline 1px rgba(232, 89, 12, 0.5); text-underline-offset: 3px; }
 ::highlight(nv-underline-word) { text-decoration: underline 3px rgb(232, 89, 12); text-underline-offset: 3px; }
-.kokoro-hover { outline: 2px dashed rgba(232, 89, 12, 0.85) !important; outline-offset: 3px !important; cursor: pointer !important; border-radius: 3px; }
+.nv-hover { outline: 2px dashed rgba(232, 89, 12, 0.85) !important; outline-offset: 3px !important; cursor: pointer !important; border-radius: 3px; }

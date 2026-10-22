@@ -1,9 +1,6 @@
 // Neural Voices background: renders speech and routes menu/shortcut commands to the tab.
-//
-// Two engines, same answer shape ({audio: base64 WAV, words, duration} or {error}):
-//   Piper   runs in the add-on itself (WebAssembly worker, engine/). The default; needs nothing else.
-//   Kokoro  optional: only when the local Python server (server/tts_server.py) is running.
-const SERVER = "http://127.0.0.1:5123";
+// Speech comes from Piper running in the add-on itself (WebAssembly worker, engine/), as
+// {audio: base64 WAV, words, duration} or {error, fatal}.
 
 // Firefox loads these before this file (manifest); Chromium's service worker imports them here.
 if (typeof NV === "undefined") importScripts("catalog.js", "common.js");
@@ -43,30 +40,6 @@ function piperTts(msg, tabId) {
     const n = waitingTabs.get(tabId) - 1;
     n > 0 ? waitingTabs.set(tabId, n) : waitingTabs.delete(tabId);
   });
-}
-
-async function serverTts(req) {
-  try {
-    const r = await fetch(`${SERVER}/tts`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: req.text, voice: req.voice, speed: req.speed }),
-    });
-    return r.ok ? await r.json() : { error: (await r.json().catch(() => ({}))).error || `HTTP ${r.status}` };
-  } catch {
-    return { error: "offline" };
-  }
-}
-
-// Kokoro voices are listed only while the local server answers. Only asked when Kokoro is turned on in
-// settings, because asking starts the server (systemd socket activation).
-async function serverVoices() {
-  try {
-    const r = await fetch(`${SERVER}/health`, { signal: AbortSignal.timeout(1500) });
-    return (await r.json()).voices.filter((v) => v.engine === "kokoro").map((v) => ({ ...v, langName: "English" }));
-  } catch {
-    return [];
-  }
 }
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -126,14 +99,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return;
   }
   if (msg.type === "tts") {
-    (msg.voice.startsWith("piper:") ? piperTts(msg, sender.tab?.id) : serverTts(msg))
+    piperTts(msg, sender.tab?.id)
       .catch((e) => ({ error: String(e?.message || e) }))
       .then(sendResponse);
     return true;
   }
   if (msg.type === "voices") {
-    (msg.kokoro ? serverVoices() : Promise.resolve([])).then((kokoro) => sendResponse([...PIPER_VOICES, ...kokoro]));
-    return true;
+    sendResponse(PIPER_VOICES);
+    return;
   }
   if (["download", "unload", "warm"].includes(msg.type) && !msg.target) {
     engine(msg.type, msg).catch((e) => ({ error: String(e?.message || e) })).then(sendResponse);
