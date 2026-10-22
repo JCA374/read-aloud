@@ -6,12 +6,13 @@ and you pick one by choosing a voice:
 
 | Engine | Voices | RAM | Speed on a 4-core laptop CPU |
 |---|---|---|---|
-| **Piper** (default) | 9 voices: lessac, amy, ryan, cori, … | ~200 MB | ~10× faster than real time, even when the CPU is busy |
-| **Kokoro** | 12 voices: heart, emma, george, … (most natural) | ~1.2 GB | ~1.7× faster than real time when the CPU is idle, slow when it's busy |
+| **Piper** (default) | UK: Cori, Alba, Northern English. Swedish: Alma, Lisa, NST | ~200 MB | ~10× faster than real time, even when the CPU is busy |
+| **Kokoro** | Heart (US), Emma, Isabella, George, Fable, Lewis (UK). Most natural | ~1.2 GB | ~1.7× faster than real time when the CPU is idle, slow when it's busy |
 
 An engine loads the first time one of its voices is used, so Kokoro's RAM is only taken if you
 pick a Kokoro voice. Piper voices download on first use (~60 MB each, to
 `~/.local/share/read-aloud/piper/`). Word highlighting is exact with Kokoro and estimated with Piper.
+Swedish text is detected automatically and read with your chosen Swedish voice (Kokoro has no Swedish).
 
 ```
 extension/   the browser extension (Firefox + Chromium, Manifest V3)

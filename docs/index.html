@@ -143,12 +143,12 @@
     <span class="eyebrow">Project status</span>
     <h1>Read Aloud</h1>
     <p class="demo"><span class="s">A browser add-on that reads web pages to you with voices that run on <span class="w">your</span> own computer.</span></p>
-    <p class="meta">Updated 21 October 2026, after adding the light Piper voices.</p>
+    <p class="meta">Updated 22 October 2026, after adding Swedish voices and trimming the voice list.</p>
   </header>
 
   <section aria-label="At a glance">
     <div class="glance">
-      <div class="tile ok"><span class="n">9</span><span class="l">Working and tested</span><span class="d">Reading, highlighting, both voice engines, auto-start</span></div>
+      <div class="tile ok"><span class="n">10</span><span class="l">Working and tested</span><span class="d">Reading, highlighting, Swedish, both voice engines, auto-start</span></div>
       <div class="tile warn"><span class="n">4</span><span class="l">Built, not tested yet</span><span class="d">Mostly Firefox itself, which only you can click through</span></div>
       <div class="tile todo"><span class="n">2</span><span class="l">Left to do</span><span class="d">Try it in Firefox, then get it signed so it stays</span></div>
     </div>
@@ -175,7 +175,8 @@
       <li><span class="chip ok">Tested</span><span class="item"><b>Click-to-read.</b> Click any sentence and it reads from that exact sentence.<span class="how">Clicked the word "four", and it started at "She counted…"</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Highlighting.</b> The sentence is shaded yellow and the spoken word is orange.<span class="how">Watched the word highlight move with the audio.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Pause, resume, skip, stop.</b><span class="how">While paused, the audio and the highlight both stay put.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Light voices (Piper).</b> 0.4 seconds to make 3 seconds of speech, even with the CPU busy.<span class="how">Tested against the server directly.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Light voices (Piper).</b> 0.4 seconds to make 3 seconds of speech, even with the CPU busy. UK: Cori, Alba, Northern English.<span class="how">Tested against the server directly.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Swedish.</b> Swedish text is recognised and read with your Swedish voice: Alma, Lisa (women) or NST (man). English pages keep your English voice.<span class="how">Read a Swedish page that was wrongly marked as English. It picked Alma, and "t.ex." didn't split the sentence.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Natural voices (Kokoro)</b> still work from the new Python environment.<span class="how">Tested against the server directly.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>The voice server starts by itself</b> when the add-on needs it, and stops after 30 idle minutes to free memory.<span class="how">Stopped it, then made a request. It started and answered.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Desktop icon script.</b> Wakes the server and shows a "voices ready" notification.<span class="how">Ran the script. Didn't click the icon itself.</span></span></li>
@@ -186,7 +187,7 @@
     <h2 id="untested-h">Built, not tested yet</h2>
     <ul class="status">
       <li><span class="chip warn">Not tested</span><span class="item"><b>Everything in Firefox.</b> All browser tests ran in Chromium. Firefox should behave the same, but nobody has clicked through it yet.</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>The voice list grouped by engine</b> ("Natural · Kokoro" and "Light &amp; fast · Piper") in the player and the popup.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>The voice lists</b> in the player and the popup: grouped by language and engine, with separate English and Swedish choices.</span></li>
       <li><span class="chip warn">Not tested</span><span class="item"><b>Word highlighting with Piper voices.</b> Piper doesn't say when each word starts, so the add-on estimates it. It may run a little ahead or behind.</span></li>
       <li><span class="chip warn">Not tested</span><span class="item"><b>Clicking the desktop icon.</b> If GNOME shows a warning, right-click the icon and choose <b>Allow Launching</b>.</span></li>
     </ul>
@@ -220,8 +221,8 @@
       <table>
         <thead><tr><th>Engine</th><th>Memory</th><th>Time for 3 s of speech*</th><th>First start</th><th>Sound</th></tr></thead>
         <tbody>
-          <tr class="best"><td>Piper (default)</td><td class="num">~230 MB</td><td class="num">0.4 s</td><td class="num">~1 s</td><td>Clear, a bit flat. 9 voices.</td></tr>
-          <tr><td>Kokoro</td><td class="num">~1.2 GB</td><td class="num">~15 s</td><td class="num">~40 s</td><td>Most natural. 12 voices. Exact word timing.</td></tr>
+          <tr class="best"><td>Piper (default)</td><td class="num">~230 MB</td><td class="num">0.4 s</td><td class="num">~1 s</td><td>Clear, a bit flat. 3 UK and 3 Swedish voices.</td></tr>
+          <tr><td>Kokoro</td><td class="num">~1.2 GB</td><td class="num">~15 s</td><td class="num">~40 s</td><td>Most natural. Heart (US) and 5 UK voices. English only. Exact word timing.</td></tr>
         </tbody>
       </table>
     </div>
@@ -241,6 +242,7 @@
       <div class="slip"><span class="what">The selection speaker first appeared in the middle of the line.</span><span class="cost">Seen in a screenshot. It now appears where you let go of the mouse.</span></div>
       <div class="slip"><span class="what">It nearly set the server to offline mode.</span><span class="cost">That would have blocked downloading new voices. Spotted and removed before it caused a problem.</span></div>
       <div class="slip"><span class="what">A false "installer stopped" alarm.</span><span class="cost">The progress check looked for the wrong process name. It confirmed the install was still running and fixed the check.</span></div>
+      <div class="slip"><span class="what">A test said nothing was read.</span><span class="cost">The test started before the browser was ready. A rerun showed the add-on worked. It cost one extra test run.</span></div>
       <div class="slip"><span class="what">Too much text in the terminal.</span><span class="cost">You said the replies were hard to read. That's why this page exists, and future updates will come here.</span></div>
     </div>
     <div class="verdict">

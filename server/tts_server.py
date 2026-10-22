@@ -39,17 +39,11 @@ MAX_TEXT = 2000
 CACHE_SIZE = 300
 DATA_DIR = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "read-aloud"
 STATE_FILE = DATA_DIR / "last_voice"
-PIPER_URL = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/{region}/{name}/{quality}/{id}.onnx"
+PIPER_URL = "https://huggingface.co/rhasspy/piper-voices/resolve/main/{family}/{region}/{name}/{quality}/{id}.onnx"
 
 # Kokoro: the first letter of the id sets the accent (a = US, b = UK).
 KOKORO_VOICES = OrderedDict([
     ("af_heart", "Heart (US, female)"),
-    ("af_bella", "Bella (US, female)"),
-    ("af_nicole", "Nicole (US, female, soft)"),
-    ("af_sarah", "Sarah (US, female)"),
-    ("am_michael", "Michael (US, male)"),
-    ("am_fenrir", "Fenrir (US, male)"),
-    ("am_puck", "Puck (US, male)"),
     ("bf_emma", "Emma (UK, female)"),
     ("bf_isabella", "Isabella (UK, female)"),
     ("bm_george", "George (UK, male)"),
@@ -57,20 +51,18 @@ KOKORO_VOICES = OrderedDict([
     ("bm_lewis", "Lewis (UK, male)"),
 ])
 PIPER_VOICES = OrderedDict([
-    ("piper:en_US-lessac-medium", "Lessac (US, female)"),
-    ("piper:en_US-amy-medium", "Amy (US, female)"),
-    ("piper:en_US-hfc_female-medium", "HFC (US, female)"),
-    ("piper:en_US-ryan-medium", "Ryan (US, male)"),
-    ("piper:en_US-joe-medium", "Joe (US, male)"),
-    ("piper:en_US-hfc_male-medium", "HFC (US, male)"),
     ("piper:en_GB-cori-medium", "Cori (UK, female)"),
     ("piper:en_GB-alba-medium", "Alba (Scottish, female)"),
     ("piper:en_GB-northern_english_male-medium", "Northern English (UK, male)"),
+    ("piper:sv_SE-alma-medium", "Alma (svenska, kvinna)"),
+    ("piper:sv_SE-lisa-medium", "Lisa (svenska, kvinna)"),
+    ("piper:sv_SE-nst-medium", "NST (svenska, man)"),
 ])
-VOICES = [{"id": k, "label": v, "engine": "kokoro"} for k, v in KOKORO_VOICES.items()] + [
-    {"id": k, "label": v, "engine": "piper"} for k, v in PIPER_VOICES.items()
+VOICES = [{"id": k, "label": v, "engine": "kokoro", "lang": "en"} for k, v in KOKORO_VOICES.items()] + [
+    {"id": k, "label": v, "engine": "piper", "lang": k[6:8]} for k, v in PIPER_VOICES.items()
 ]
 VOICE_IDS = {v["id"] for v in VOICES}
+DEFAULT_VOICE = {"en": "piper:en_GB-cori-medium", "sv": "piper:sv_SE-alma-medium"}
 
 _lock = threading.Lock()  # one synthesis (or model load) at a time: they share the CPU
 _loading = threading.Event()  # set while an engine or voice is loading
@@ -120,7 +112,7 @@ def piper_model(voice_id):
     path = DATA_DIR / "piper" / f"{name}.onnx"
     if not path.exists():
         region, speaker, quality = name.split("-")
-        url = PIPER_URL.format(region=region, name=speaker, quality=quality, id=name)
+        url = PIPER_URL.format(family=region.split("_")[0], region=region, name=speaker, quality=quality, id=name)
         path.parent.mkdir(parents=True, exist_ok=True)
         for src, dst in [(url + ".json", Path(str(path) + ".json")), (url, path)]:
             print(f"Downloading {src}", flush=True)
@@ -247,8 +239,8 @@ class Handler(BaseHTTPRequestHandler):
             speed = min(max(float(req.get("speed", 1.0)), 0.5), 2.0)
         except (ValueError, TypeError):
             return self._send(400, {"error": "bad request"})
-        if voice not in VOICE_IDS:
-            return self._send(400, {"error": f"unknown voice {voice}"})
+        if voice not in VOICE_IDS:  # e.g. a voice that was removed: use the default for that language
+            voice = DEFAULT_VOICE["sv" if voice.startswith("piper:sv") else "en"]
         if not text:
             return self._send(400, {"error": "empty text"})
         _last_request = time.time()

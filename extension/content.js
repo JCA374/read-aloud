@@ -3,18 +3,25 @@
   if (window.__kokoroReader) return;
   window.__kokoroReader = true;
 
-  const DEFAULTS = { voice: "piper:en_US-lessac-medium", speed: 1.0 };
+  const DEFAULTS = { voice: "piper:en_GB-cori-medium", voiceSv: "piper:sv_SE-alma-medium", speed: 1.0 };
   const SPEEDS = [0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
   const AHEAD = 3; // sentences rendered ahead of the one playing
   let settings = { ...DEFAULTS };
-  let voices = [{ id: "af_heart", label: "Heart (US, female)" }];
+  let voices = [{ id: "piper:en_GB-cori-medium", label: "Cori (UK, female)", engine: "piper", lang: "en" }];
 
-  const VOICE_GROUPS = { kokoro: "Natural · Kokoro (~1 GB RAM)", piper: "Light & fast · Piper (~100 MB RAM)" };
+  const VOICE_GROUPS = {
+    "kokoro|en": "English · natural (Kokoro, ~1 GB RAM)",
+    "piper|en": "English · light & fast (Piper)",
+    "piper|sv": "Svenska · light & fast (Piper)",
+  };
   function voiceOptions(voices) {
     const groups = {};
-    for (const v of voices) (groups[v.engine || "kokoro"] ??= []).push(`<option value="${v.id}">${v.label}</option>`);
+    for (const v of voices) (groups[`${v.engine || "kokoro"}|${v.lang || "en"}`] ??= []).push(`<option value="${v.id}">${v.label}</option>`);
     return Object.entries(groups).map(([g, opts]) => `<optgroup label="${VOICE_GROUPS[g] || g}">${opts.join("")}</optgroup>`).join("");
   }
+  const voiceLang = (id) => voices.find((v) => v.id === id)?.lang || (id.startsWith("piper:sv") ? "sv" : "en");
+  // Which voice setting a language uses. Each language remembers its own voice.
+  const VOICE_KEY = { en: "voice", sv: "voiceSv" };
 
   chrome.storage.local.get(DEFAULTS).then((s) => {
     settings = s;
@@ -120,7 +127,7 @@
     segmenter = new Intl.Segmenter("en", { granularity: "sentence" });
   }
   // A "sentence" ending in one of these is merged with the next one ("Dr. Smith", "J. R. R. Tolkien").
-  const ABBREV = /(?:\b(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|St|Mt|vs|e\.g|i\.e|cf|Fig|No|Vol|Inc|Ltd|Co|approx)|(?:^|\s)[A-Z])\.\s*$/;
+  const ABBREV = /(?:\b(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|St|Mt|vs|e\.g|i\.e|cf|Fig|No|Vol|Inc|Ltd|Co|approx|t\.ex|bl\.a|s\.k|d\.v\.s|dvs|f\.d|resp|ca|kl|nr|jfr|fr\.o\.m|t\.o\.m)|(?:^|\s)[A-Z])\.\s*$/;
 
   function splitLong(text, s, e, max) {
     const out = [];
@@ -252,8 +259,14 @@
     cache: new Map(), // `${i}|${voice}|${speed}` -> Promise<{buffer, words} | {error}>
     inflight: false,
 
+    lang: "en",
+
+    voice() {
+      return settings[VOICE_KEY[this.lang]] || settings.voice;
+    },
+
     key(i) {
-      return `${i}|${settings.voice}|${settings.speed}`;
+      return `${i}|${this.voice()}|${settings.speed}`;
     },
 
     fetch(i) {
@@ -261,7 +274,7 @@
       if (!this.cache.has(key)) {
         const seg = this.segs[i];
         const p = chrome.runtime
-          .sendMessage({ type: "tts", text: seg.text, voice: settings.voice, speed: settings.speed })
+          .sendMessage({ type: "tts", text: seg.text, voice: this.voice(), speed: settings.speed })
           .then(async (res) => {
             if (!res || res.error) return { error: res?.error || "offline" };
             const buffer = await this.ctx.decodeAudioData(b64ToBytes(res.audio));
@@ -287,10 +300,11 @@
       }
     },
 
-    async start(segs, i = 0) {
+    async start(segs, i = 0, lang = "en") {
       this.stop();
       if (!segs.length) return ui.flash("No readable text found");
       this.segs = segs;
+      this.lang = lang;
       this.ctx ??= new AudioContext();
       this.ctx.resume().catch(() => {});
       ui.show();
@@ -426,8 +440,34 @@
 
   // ---------------------------------------------------------------- commands
 
+  // ---------------------------------------------------------------- language
+
+  const SV_WORDS = new Set("och att det är som på för med inte av till den har jag de om ett men var så vi kan när från också eller vid hon han sig efter mycket där här ska skulle vara blir finns".split(" "));
+  const EN_WORDS = new Set("the and to of is that it in for with on was as are this be by not you he she they have from or but at an his her which were would there".split(" "));
+
+  function pageLang(el = document.documentElement) {
+    const attr = (el.closest?.("[lang]")?.lang || document.documentElement.lang || "").toLowerCase();
+    return attr.startsWith("sv") ? "sv" : "en";
+  }
+
+  // The words decide; the page's lang attribute only breaks ties (many sites leave lang="en" in their template).
+  function detectLang(text, el) {
+    const words = text.toLowerCase().match(/\p{L}+/gu) || [];
+    let sv = 0;
+    let en = 0;
+    for (const w of words.slice(0, 500)) {
+      if (SV_WORDS.has(w)) sv++;
+      if (EN_WORDS.has(w)) en++;
+    }
+    sv += (text.slice(0, 3000).match(/[åäö]/gi) || []).length / 4;
+    if (words.length >= 3 && sv !== en) return sv > en ? "sv" : "en";
+    return pageLang(el);
+  }
+
   function readRange(range, root, skipBoilerplate, startAt) {
     const segs = toSentences(collectChunks(range, root, skipBoilerplate));
+    const container = range.commonAncestorContainer;
+    const lang = detectLang(segs.slice(0, 40).map((s) => s.text).join(" "), container.nodeType === 1 ? container : container.parentElement);
     let i = 0;
     if (startAt) {
       for (const [k, s] of segs.entries()) {
@@ -438,7 +478,7 @@
         }
       }
     }
-    player.start(segs, i);
+    player.start(segs, i, lang);
   }
 
   function readSelection() {
@@ -620,7 +660,10 @@
         this.bar.classList.remove("open");
       };
       this.els.speed.onchange = () => chrome.storage.local.set({ speed: parseFloat(this.els.speed.value) });
-      this.els.voice.onchange = () => chrome.storage.local.set({ voice: this.els.voice.value });
+      this.els.voice.onchange = () => {
+        const id = this.els.voice.value;
+        chrome.storage.local.set({ [VOICE_KEY[voiceLang(id)] || "voice"]: id });
+      };
       const bubble = this.els.bubble;
       bubble.onmousedown = (e) => e.preventDefault(); // keep the selection
       bubble.onclick = () => {
@@ -684,7 +727,9 @@
       if (voice.options.length !== voices.length) {
         voice.innerHTML = voiceOptions(voices);
       }
-      voice.value = settings.voice;
+      const key = VOICE_KEY[player.state === "idle" ? pageLang() : player.lang];
+      voice.value = settings[key] || settings.voice;
+      if (!voice.value && voices.length > 1) voice.value = DEFAULTS[key]; // saved voice was removed
       status.classList.toggle("err", !!player.error);
       status.textContent =
         player.error ||
