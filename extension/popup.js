@@ -1,6 +1,6 @@
 const $ = (id) => document.getElementById(id);
 const DEFAULTS = { voice: "piper:en_GB-cori-medium", voiceSv: "piper:sv_SE-alma-medium", speed: 1.0 };
-const VOICE_GROUPS = { kokoro: "Natural · Kokoro (~1 GB RAM)", piper: "Light & fast · Piper" };
+const VOICE_GROUPS = { piper: "Piper · runs in your browser", kokoro: "Kokoro · needs the local server" };
 function voiceOptions(voices) {
   const groups = {};
   for (const v of voices) (groups[v.engine || "kokoro"] ??= []).push(`<option value="${v.id}">${v.label}</option>`);
@@ -35,8 +35,6 @@ async function init() {
   $("speedOut").textContent = `${settings.speed}×`;
 
   const health = await chrome.runtime.sendMessage({ type: "health" });
-  $("server").className = `dot ${health?.ok ? "ok" : "bad"}`;
-  $("offline").hidden = !!health?.ok;
   const voices = health?.voices || [
     { id: settings.voice, label: settings.voice, lang: "en" },
     { id: settings.voiceSv, label: settings.voiceSv, lang: "sv" },

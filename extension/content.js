@@ -1,4 +1,4 @@
-// Read Aloud (Kokoro): page text -> sentences -> local TTS -> playback with sentence + word highlighting.
+// Neural Voices: page text -> sentences -> TTS (in-browser Piper, or optional Kokoro server) -> playback with sentence + word highlighting.
 (() => {
   if (window.__kokoroReader) return;
   window.__kokoroReader = true;
@@ -7,14 +7,14 @@
   const SPEEDS = [0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
   const AHEAD_SECONDS = 60; // keep this much audio rendered ahead of what's playing
   const AHEAD_MAX = 30; // ...but never more than this many pieces
-  const STAGES = [45, 100, 200]; // max characters of the first pieces: short first, so sound starts fast
+  const STAGES = [45, 80, 140, 220]; // max characters of the first pieces: short first, so sound starts fast
   let settings = { ...DEFAULTS };
   let voices = [{ id: "piper:en_GB-cori-medium", label: "Cori (UK, female)", engine: "piper", lang: "en" }];
 
   const VOICE_GROUPS = {
-    "kokoro|en": "English · natural (Kokoro, ~1 GB RAM)",
-    "piper|en": "English · light & fast (Piper)",
-    "piper|sv": "Svenska · light & fast (Piper)",
+    "kokoro|en": "English · Kokoro (needs the local server)",
+    "piper|en": "English · Piper",
+    "piper|sv": "Svenska · Piper",
   };
   function voiceOptions(voices) {
     const groups = {};
@@ -192,7 +192,7 @@
     ];
   }
 
-  // Cut the text where reading starts into growing pieces (about 45, 100, 200 characters), so the first
+  // Cut the text where reading starts into growing pieces (about 45, 80, 140, 220 characters), so the first
   // sound comes quickly and each next piece is rendered while the one before it plays.
   function stageStart(segs, i) {
     segs = segs.slice();
@@ -374,15 +374,15 @@
       if (st.first !== null && waited > 150 && this.state !== "paused") {
         st.waits++;
         st.waitTime += waited;
-        console.debug(`[Read Aloud] waited ${(waited / 1000).toFixed(1)} s for piece ${i} (${seg.text.length} chars)`);
+        console.debug(`[Neural Voices] waited ${(waited / 1000).toFixed(1)} s for piece ${i} (${seg.text.length} chars)`);
       }
       if (res.error) {
         this.cache.delete(this.key(i));
         if (res.error === "offline") {
-          this.error = "TTS server offline — run start-server.sh";
+          this.error = "Kokoro voices need the local voice server. Pick a Piper voice.";
           return this.stop(true);
         }
-        console.warn("[Read Aloud] skipping sentence:", res.error, seg.text);
+        console.warn("[Neural Voices] skipping sentence:", res.error, seg.text);
         return this.playIndex(i + 1, 0);
       }
       this.words = wordRanges(seg, res.words);
@@ -470,7 +470,7 @@
       this.halt();
       const st = this.stats;
       if (st?.first != null) {
-        console.info(`[Read Aloud] first sound after ${(st.first / 1000).toFixed(2)} s; waited ${st.waits} times (${(st.waitTime / 1000).toFixed(1)} s) after that`);
+        console.info(`[Neural Voices] first sound after ${(st.first / 1000).toFixed(2)} s; waited ${st.waits} times (${(st.waitTime / 1000).toFixed(1)} s) after that`);
       }
       this.stats = null;
       this.cache.clear();

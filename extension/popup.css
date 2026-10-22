@@ -11,9 +11,6 @@ body { width: 300px; margin: 0; padding: 14px; background: var(--bg); color: var
 header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 header img { width: 22px; height: 22px; }
 h1 { font-size: 15px; margin: 0; flex: 1; }
-.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
-.dot.ok { background: var(--ok); }
-.dot.bad { background: var(--bad); }
 .notice { background: var(--field); border-left: 3px solid var(--bad); padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; }
 .notice code { display: block; margin-top: 4px; font-size: 12px; user-select: all; }
 .actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 14px; }

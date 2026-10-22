@@ -1,0 +1,62 @@
+// Runs the Piper worker and keeps recent results. Loaded by Firefox's background page,
+// and by offscreen.html in Chromium (a service worker can't start workers).
+// The worker is stopped after a few idle minutes to free its memory, and restarted on the next request.
+
+const piperHost = (() => {
+  const IDLE_MS = 5 * 60 * 1000;
+  const CACHE_SIZE = 100; // recent sentences, so jumping back or replaying is instant
+  const cache = new Map(); // key -> Promise<result>
+  const pending = new Map(); // request id -> resolve
+  let worker = null;
+  let idleTimer = null;
+  let nextId = 0;
+
+  function start() {
+    worker = new Worker(chrome.runtime.getURL("engine/piper-worker.js"));
+    worker.onmessage = ({ data }) => {
+      pending.get(data.id)?.(data);
+      pending.delete(data.id);
+    };
+    worker.onerror = (e) => {
+      for (const resolve of pending.values()) resolve({ error: e.message || "Voice engine crashed" });
+      pending.clear();
+      stop();
+    };
+  }
+
+  function stop() {
+    worker?.terminate();
+    worker = null;
+  }
+
+  function render(req) {
+    if (!worker) start();
+    clearTimeout(idleTimer);
+    const id = nextId++;
+    return new Promise((resolve) => {
+      pending.set(id, resolve);
+      worker.postMessage({ id, voice: req.voice, text: req.text, speed: req.speed });
+    }).finally(() => {
+      if (!pending.size) idleTimer = setTimeout(stop, IDLE_MS);
+    });
+  }
+
+  function tts(req) {
+    const key = `${req.voice}|${Math.round(req.speed * 100)}|${req.text}`;
+    if (cache.has(key)) {
+      const p = cache.get(key);
+      cache.delete(key); // move to the newest end
+      cache.set(key, p);
+      return p;
+    }
+    const p = render(req).then((res) => {
+      if (res.error) cache.delete(key); // don't keep failures
+      return res;
+    });
+    cache.set(key, p);
+    while (cache.size > CACHE_SIZE) cache.delete(cache.keys().next().value);
+    return p;
+  }
+
+  return { tts };
+})();
