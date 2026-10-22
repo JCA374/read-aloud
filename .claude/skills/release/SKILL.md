@@ -6,7 +6,7 @@ description: Package and sign the Neural Voices add-on (step 4 of the brief): ve
 # Release the add-on
 
 The owner decides when to release; don't push towards a public listing. Signing and listing on
-addons.mozilla.org (AMO) are free. Work on the `neural-voices` branch (`~/code/neural-voices`).
+addons.mozilla.org (AMO) are free. Work on the `neural-voices` branch (its worktree is the folder next to the main checkout).
 
 1. **Ready?** The tests for everything changed since the last release are logged as passing in
    `tests/RESULTS.md` (the `addon-tests` skill). No open "Built, not tested" item that would embarrass a user.
