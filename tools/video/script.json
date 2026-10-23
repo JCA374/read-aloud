@@ -1,0 +1,13 @@
+[
+  { "slide": 1, "voice": "piper:en_GB-cori-medium", "text": "This is Neural Voices. It reads web pages aloud, with a natural voice that runs inside your browser." },
+  { "slide": 2, "voice": "piper:en_GB-cori-medium", "text": "Long articles are tiring to read on a screen. Good reading voices usually cost money, or send your text to someone else's computer. This one does neither." },
+  { "slide": 3, "voice": "piper:en_GB-cori-medium", "text": "Select some text and click the speaker, or press play to read the whole article. The sentence is shaded, and the word being spoken is marked, so you can follow along." },
+  { "slide": 4, "voice": "piper:en_GB-cori-medium", "text": "It knows the language. English and Swedish are recognised paragraph by paragraph, so a mixed page switches voice by itself." },
+  { "slide": 4, "voice": "piper:sv_SE-alma-medium", "text": "Och när texten är på svenska, läser Alma den." },
+  { "slide": 5, "voice": "piper:en_GB-cori-medium", "text": "You keep a short list of the voices you like, and pick a default voice for each language. There are a hundred and seventy voices in forty nine languages to choose from." },
+  { "slide": 6, "voice": "piper:en_GB-cori-medium", "text": "Speed is changed inside the voice, so it sounds natural from slow to twice as fast. When you stop, it uses no processor time, and it frees its memory after a few quiet minutes." },
+  { "slide": 7, "voice": "piper:en_GB-cori-medium", "text": "Everything happens on your computer. The only thing it downloads is a voice, once, the first time you use it." },
+  { "slide": 8, "voice": "piper:en_GB-cori-medium", "text": "Every voice has its own licence, and the settings page shows it. I am Cori, made from public domain recordings. The Swedish voice, Alma, is shared under Creative Commons Attribution." },
+  { "slide": 9, "voice": "piper:en_GB-cori-medium", "text": "Neural Voices is built on Piper, ONNX Runtime and espeak N G, and this video is narrated by the add-on itself." },
+  { "slide": 10, "voice": "piper:en_GB-cori-medium", "text": "The code is free on GitHub. Load it in Firefox or Chromium, and let it read to you." }
+]

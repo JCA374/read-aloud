@@ -18,6 +18,7 @@ extension/          the add-on (Firefox + Chromium, Manifest V3)
 extension/engine/   Piper in a Web Worker: ONNX Runtime Web + espeak-ng (piper_phonemize), see engine/vendor/README.md
 tests/              browser tests and their results log (tests/README.md, tests/RESULTS.md)
 tools/              make-catalog.mjs: builds extension/catalog.js from the Piper voice collection
+tools/video/        the intro video on the project page: slides, narration by the add-on's own voices, make-video.sh
 ```
 
 ## Load the add-on

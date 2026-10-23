@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Neural Voices video slides</title>
+<!-- Slides for the intro video, 1280x720. slides.html?n=3 shows slide 3 (make-video.sh screenshots each). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;800&family=Atkinson+Hyperlegible+Mono:wght@400&display=swap">
+<style>
+  :root { --bg: #f6f7f8; --surface: #fff; --ink: #1b1e23; --muted: #5d6570; --line: #dfe3e8; --accent: #d9480f; --accent-soft: #fff0e6; --ok: #1f7a3a; --hl: rgba(255,196,0,.35); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1280px; height: 720px; overflow: hidden; background: var(--bg); color: var(--ink); font-family: "Atkinson Hyperlegible Next", system-ui, sans-serif; }
+  .slide { display: none; width: 1280px; height: 720px; padding: 64px 80px; position: relative; }
+  .slide.on { display: grid; align-content: center; gap: 28px; }
+  .eyebrow { font-size: 22px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-size: 76px; line-height: 1.05; margin: 0; font-weight: 800; letter-spacing: -.01em; }
+  h2 { font-size: 54px; line-height: 1.1; margin: 0; font-weight: 800; }
+  p, li { font-size: 30px; line-height: 1.4; margin: 0; color: var(--muted); }
+  b { color: var(--ink); }
+  .brand { display: flex; align-items: center; gap: 18px; font-size: 34px; font-weight: 800; }
+  .logo { width: 64px; height: 64px; border-radius: 16px; background: var(--accent); display: grid; place-items: center; }
+  .logo svg { width: 38px; height: 38px; fill: #fff; }
+  .tags { display: flex; gap: 12px; }
+  .tag { font-size: 24px; padding: 6px 16px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 26px; display: grid; gap: 10px; align-content: start; }
+  .card h3 { margin: 0; font-size: 30px; }
+  .card p { font-size: 24px; }
+  .answer { background: var(--accent-soft); border-left: 6px solid var(--accent); border-radius: 10px; padding: 18px 24px; font-size: 30px; color: var(--ink); }
+  .shot { border-radius: 14px; border: 1px solid var(--line); box-shadow: 0 18px 40px rgba(0,0,0,.12); background: #fff; overflow: hidden; }
+  .shot img { display: block; width: 100%; }
+  .split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 44px; align-items: center; }
+  .stack { display: grid; gap: 18px; }
+  ul.ticks { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; }
+  ul.ticks li { padding-left: 40px; position: relative; }
+  ul.ticks li::before { content: "✓"; position: absolute; left: 0; color: var(--accent); font-weight: 800; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 28px; display: grid; gap: 8px; }
+  .stat .n { font-size: 58px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .stat .l { font-size: 26px; font-weight: 600; color: var(--ink); }
+  .stat .d { font-size: 21px; }
+  .flow { display: grid; grid-template-columns: 1fr auto 1.3fr auto 1fr; gap: 18px; align-items: center; }
+  .box { background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 24px; text-align: center; font-size: 28px; font-weight: 600; }
+  .box.main { border-color: var(--accent); background: var(--accent-soft); }
+  .box small { display: block; font-size: 20px; font-weight: 400; color: var(--muted); margin-top: 6px; }
+  .arrow { font-size: 44px; color: var(--muted); }
+  table { border-collapse: collapse; width: 100%; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--line); }
+  td, th { text-align: left; padding: 16px 22px; font-size: 25px; border-top: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 18px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-top: 0; }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  td small { display: block; font-size: 19px; color: var(--muted); }
+  .note { font-size: 22px; }
+  .credits { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 40px; }
+  .credits div { font-size: 24px; color: var(--muted); }
+  .credits b { font-size: 26px; display: block; }
+  .url { font-family: "Atkinson Hyperlegible Mono", monospace; font-size: 40px; color: var(--accent); }
+  .hl { background: var(--hl); border-radius: 6px; padding: 0 4px; }
+  .hlw { background: #e8590c; color: #fff; border-radius: 6px; padding: 0 4px; }
+  .foot { position: absolute; left: 80px; right: 80px; bottom: 34px; display: flex; justify-content: space-between; font-size: 18px; color: var(--muted); }
+</style>
+</head>
+<body>
+<!-- 1 -->
+<section class="slide">
+  <div class="brand"><span class="logo"><svg viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15 8.5a5 5 0 0 1 0 7M17.5 6a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg></span>Neural Voices</div>
+  <h1>Hear any web page, read by a <span class="hl">natural <span class="hlw">voice</span></span> inside your browser</h1>
+  <div class="tags"><span class="tag">Free</span><span class="tag">Private</span><span class="tag">Firefox and Chromium</span></div>
+</section>
+<!-- 2 -->
+<section class="slide">
+  <div class="eyebrow">Why</div>
+  <h2>Listening beats squinting</h2>
+  <div class="cards">
+    <div class="card"><h3>Long pages are tiring</h3><p>Articles, reports and manuals take a lot of screen reading.</p></div>
+    <div class="card"><h3>Good voices cost money</h3><p>The natural-sounding readers are often paid subscriptions.</p></div>
+    <div class="card"><h3>…or send your text away</h3><p>Cloud voices get every word you listen to.</p></div>
+  </div>
+  <div class="answer"><b>Neural Voices:</b> natural voices, free, and the text never leaves your computer.</div>
+</section>
+<!-- 3 -->
+<section class="slide">
+  <div class="split">
+    <div class="shot"><img src="shots/reading.png" alt=""></div>
+    <div class="stack">
+      <div class="eyebrow">How it works</div>
+      <h2>Select, click, listen</h2>
+      <ul class="ticks"><li>Read a selection, the whole article, or from any sentence you click</li><li>The sentence is shaded, the word is marked</li><li>Skips menus, footers and footnote marks</li></ul>
+    </div>
+  </div>
+</section>
+<!-- 4 -->
+<section class="slide">
+  <div class="split">
+    <div class="shot"><img src="shots/mixed.png" alt=""></div>
+    <div class="stack">
+      <div class="eyebrow">Auto-detect</div>
+      <h2>It knows the language</h2>
+      <ul class="ticks"><li>English and Swedish, paragraph by paragraph</li><li>A mixed page switches voice by itself</li><li>Other languages follow the page's language</li></ul>
+    </div>
+  </div>
+</section>
+<!-- 5 -->
+<section class="slide">
+  <div class="split">
+    <div class="shot"><img src="shots/settings.png" alt=""></div>
+    <div class="stack">
+      <div class="eyebrow">Your voices</div>
+      <h2>A few voices you choose</h2>
+      <ul class="ticks"><li>Keep a short list in the player</li><li>A default voice for each language</li><li><b>170 voices in 49 languages</b> to add, each downloaded once</li></ul>
+    </div>
+  </div>
+</section>
+<!-- 6 -->
+<section class="slide">
+  <div class="eyebrow">Natural and light</div>
+  <h2>Sounds right, stays out of the way</h2>
+  <div class="stats">
+    <div class="stat"><span class="n">0.75–2×</span><span class="l">Same pitch at any speed</span><span class="d">Speed is set inside the voice. Measured: 176–181 Hz from slow to fast.</span></div>
+    <div class="stat"><span class="n">0.75 s</span><span class="l">To the first word</span><span class="d">When the voice is ready. Opening the popup gets it ready.</span></div>
+    <div class="stat"><span class="n">0%</span><span class="l">CPU after Stop</span><span class="d">Memory is freed after a few quiet minutes.</span></div>
+  </div>
+</section>
+<!-- 7 -->
+<section class="slide">
+  <div class="eyebrow">Privacy</div>
+  <h2>Everything happens on your computer</h2>
+  <div class="flow">
+    <div class="box">Web page text</div><span class="arrow">→</span>
+    <div class="box main">Neural Voices<small>Piper voice running inside the browser</small></div><span class="arrow">→</span>
+    <div class="box">Your speakers</div>
+  </div>
+  <p>The only network use: downloading a voice <b>once</b>, from Piper's official voice collection. No accounts, no analytics.</p>
+</section>
+<!-- 8 -->
+<section class="slide">
+  <div class="eyebrow">Voices and licences</div>
+  <h2>Every voice has its own licence</h2>
+  <table>
+    <tr><th>Voice in this video</th><th>Licence</th></tr>
+    <tr><td>Cori (English)</td><td>Public domain recordings from LibriVox<small>Voice by Bryce Beattie, from the Piper voice collection</small></td></tr>
+    <tr><td>Alma (Swedish)</td><td>CC BY 4.0, used unchanged<small>By yeagersthlm, trained on the NST dataset (Språkbanken) · huggingface.co/yeagersthlm/piper-voice-sv-alma</small></td></tr>
+  </table>
+  <p class="note">Settings shows each voice's licence. Some voices are non-commercial or share-alike: check before you reuse their audio.</p>
+</section>
+<!-- 9 -->
+<section class="slide">
+  <div class="eyebrow">Credits</div>
+  <h2>Built on open source</h2>
+  <div class="credits">
+    <div><b>Piper</b>Voices and voice format · Michael Hansen and contributors · MIT</div>
+    <div><b>ONNX Runtime Web</b>Runs the voice in the browser · Microsoft · MIT</div>
+    <div><b>espeak-ng</b>Turns text into speech sounds · GPL-3.0</div>
+    <div><b>piper-wasm</b>espeak-ng built for the browser · Diffusion Studio · MIT</div>
+    <div><b>Atkinson Hyperlegible</b>Font · Braille Institute · SIL Open Font License</div>
+    <div><b>This video</b>Narrated by the add-on itself, with Cori and Alma. Built with Claude Code.</div>
+  </div>
+</section>
+<!-- 10 -->
+<section class="slide">
+  <div class="brand"><span class="logo"><svg viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15 8.5a5 5 0 0 1 0 7M17.5 6a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg></span>Neural Voices</div>
+  <h2>Let it read to you</h2>
+  <p>Free and open source. Load it in Firefox or Chromium.</p>
+  <div class="url">github.com/JCA374/read-aloud</div>
+</section>
+<script>
+  const n = +(new URLSearchParams(location.search).get("n") || 1);
+  document.querySelectorAll(".slide")[n - 1]?.classList.add("on");
+</script>
+</body>
+</html>

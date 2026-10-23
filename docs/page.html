@@ -181,6 +181,8 @@
   .note { font-size: 15px; color: var(--muted); }
   kbd { white-space: nowrap; }
   .devhead { display: grid; gap: 6px; }
+  .video { display: grid; gap: 10px; }
+  .video video { width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; border: 1px solid var(--line); background: #000; }
   .devhead p { color: var(--muted); }
 </style>
 
@@ -209,6 +211,16 @@
       <a class="btn primary" href="#install">Install</a>
       <a class="btn" href="https://github.com/JCA374/read-aloud">Code on GitHub</a>
     </div>
+  </section>
+
+  <section class="video" id="video" aria-labelledby="video-h">
+    <h2 id="video-h">See it in under two minutes</h2>
+    <video controls preload="none" poster="media/intro.jpg">
+      <source src="media/intro.mp4" type="video/mp4">
+      <track kind="captions" src="media/intro.vtt" srclang="en" label="English" default>
+      Your browser can't play this video. <a href="media/intro.mp4">Download it (2 MB)</a>.
+    </video>
+    <p class="note">Narrated by Neural Voices itself, so these are synthetic voices: Cori (trained on public-domain recordings from LibriVox) and <a href="https://huggingface.co/yeagersthlm/piper-voice-sv-alma">Alma</a> by yeagersthlm (CC BY 4.0, used unchanged). Captions are included.</p>
   </section>
 
   <section aria-labelledby="feat-h">
@@ -290,11 +302,11 @@
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 22 October 2026, after removing the old voice server: Neural Voices is now the only version, and step 4 is planned below.</p>
+    <p class="meta">Updated 23 October 2026, after adding a narrated intro video to the About tab.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
-      <div class="tile ok"><span class="n">17</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan: reading with no server, settings and voice list, 170 voices, downloads, mixed languages, natural speeds, steady memory, nothing left running</span></div>
+      <div class="tile ok"><span class="n">18</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan: reading with no server, settings and voice list, 170 voices, downloads, mixed languages, natural speeds, steady memory, nothing left running</span></div>
       <div class="tile warn"><span class="n">5</span><span class="l">Built, not tested yet</span><span class="d">A really slow computer, clicking through Firefox by hand, listening by ear, word timing, keyboard shortcuts</span></div>
       <div class="tile todo"><span class="n">6</span><span class="l">Left to do</span><span class="d">Step 4: licence, privacy note, permissions, clean build, signing, optional public listing</span></div>
     </div>
@@ -345,6 +357,7 @@
       <li><span class="chip ok">Tested</span><span class="item"><b>Steady memory.</b> About 300–550 MB more while reading, flat over time.<span class="how">6 minutes at 2× on a 400-paragraph page in Chromium, 3 minutes in Firefox, sampled every 30 s.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Nothing left running.</b> After Stop the audio pauses; after 5 quiet minutes the engine shuts down and frees its memory.<span class="how">Firefox: CPU 0 within a minute and memory back to the start within 2 minutes (it used to keep about 8% of a core busy; fixed). Chromium: CPU 0, 210 MB freed, hidden engine page closed.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Old server removed.</b> No server code, no Kokoro, no permission to talk to <code>127.0.0.1</code>. On this computer: the auto-start service, menu icon, Python environment (1.6 GB) and server voices (242 MB) are deleted.<span class="how">Tests re-run afterwards in both browsers: passing. The project and its pages no longer mention the server except as history.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Intro video on the homepage.</b> 10 slides (purpose, how it looks, auto-detect, your voices, speed, privacy, voice licences, credits, how to try it), narrated by the add-on's own voices, with captions. Rebuild with <code>tools/video/make-video.sh</code>.<span class="how">103 s, 2.2 MB, H.264 + AAC. Frames at 5, 32, 52 and 95 s show the right slides; no silent gaps over 2 s; captions timed from the voice's word timings. Licences checked: Cori's recordings are public domain, Alma is CC BY 4.0 and credited, no share-alike or non-commercial voices used. Nobody has listened to it yet.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Tests are saved and logged.</b> 10 browser tests and 3 engine measurements in <code>tests/</code>, with the latest result of each and when to re-run it in <code>tests/RESULTS.md</code>.<span class="how">Both runners checked by re-running a test in each browser.</span></span></li>
     </ul>
   </section>

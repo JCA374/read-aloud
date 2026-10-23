@@ -1,0 +1,90 @@
+WEBVTT
+
+1
+00:00:00.580 --> 00:00:01.998
+This is Neural Voices.
+
+2
+00:00:02.194 --> 00:00:06.896
+It reads web pages aloud, with a natural voice that runs inside your browser.
+
+3
+00:00:08.772 --> 00:00:11.212
+Long articles are tiring to read on a screen.
+
+4
+00:00:11.367 --> 00:00:15.944
+Good reading voices usually cost money, or send your text to someone else's computer.
+
+5
+00:00:16.100 --> 00:00:17.369
+This one does neither.
+
+6
+00:00:19.204 --> 00:00:23.666
+Select some text and click the speaker, or press play to read the whole article.
+
+7
+00:00:23.832 --> 00:00:28.662
+The sentence is shaded, and the word being spoken is marked, so you can follow along.
+
+8
+00:00:30.508 --> 00:00:31.867
+It knows the language.
+
+9
+00:00:32.047 --> 00:00:37.804
+English and Swedish are recognised paragraph by paragraph, so a mixed page switches voice by itself.
+
+10
+00:00:38.613 --> 00:00:40.780
+Och när texten är på svenska, läser Alma den.
+
+11
+00:00:42.567 --> 00:00:46.756
+You keep a short list of the voices you like, and pick a default voice for each language.
+
+12
+00:00:46.872 --> 00:00:50.483
+There are a hundred and seventy voices in forty nine languages to choose from.
+
+13
+00:00:52.280 --> 00:00:57.169
+Speed is changed inside the voice, so it sounds natural from slow to twice as fast.
+
+14
+00:00:57.354 --> 00:01:02.857
+When you stop, it uses no processor time, and it frees its memory after a few quiet minutes.
+
+15
+00:01:04.721 --> 00:01:06.964
+Everything happens on your computer.
+
+16
+00:01:07.163 --> 00:01:11.731
+The only thing it downloads is a voice, once, the first time you use it.
+
+17
+00:01:13.610 --> 00:01:17.799
+Every voice has its own licence, and the settings page shows it.
+
+18
+00:01:18.016 --> 00:01:21.104
+I am Cori, made from public domain recordings.
+
+19
+00:01:21.321 --> 00:01:26.000
+The Swedish voice, Alma, is shared under Creative Commons Attribution.
+
+20
+00:01:27.897 --> 00:01:34.785
+Neural Voices is built on Piper, ONNX Runtime and espeak N G, and this video is narrated by the add-on itself.
+
+21
+00:01:36.669 --> 00:01:38.216
+The code is free on GitHub.
+
+22
+00:01:38.377 --> 00:01:41.476
+Load it in Firefox or Chromium, and let it read to you.
+
