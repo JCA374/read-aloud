@@ -11,6 +11,8 @@ Re-run when: `extension/content.js`, `background.js`, `engine/`, `offscreen.*`, 
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-25 | cc41b32 | firefox/read-en-sv | Pass. First word 4.4 s EN, 5.1 s SV. No errors |
+| 2026-10-25 | cc41b32 | chromium/read-en-sv (KEEP) | Pass. First word 5.0 s EN, 6.9 s SV, 0.3 s cached. No errors |
 | 2026-10-22 | 17b2a5c | chromium/read-en-sv (fresh) | Pass. First word 8.2 s EN (includes downloading Cori), 6.6 s SV (download), 0.3 s cached. No errors |
 | 2026-10-22 | 17b2a5c | firefox/read-en-sv | Pass. Popup lists 6 voices; first sound 3.8 s EN, 3.0 s SV. No errors |
 | 2026-10-22 | 1ca18cf | chromium/read-en-sv (KEEP) | Pass. First word 3.6 s (EN, engine start), 7.4 s (SV, second voice loads), 0.3 s (text already rendered). No errors |
@@ -23,6 +25,7 @@ Re-run when: `extension/options.*`, `popup.*`, `common.js`, `catalog.js`, `engin
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-25 | cc41b32 | chromium/settings-voice-switch (KEEP, ×2) | Lists filtered to the 6 ticked voices; switch restarts the sentence (logged), no errors. The test's 4 s word-highlight check gave "null" both times, and also on the code before this commit, so it is test timing, not this change |
 | 2026-10-22 | 17b2a5c | chromium/settings-voice-switch (KEEP) | Pass. Lists filtered; switch restarts the sentence (6.3 s here because Northern English had to download first). No errors |
 | 2026-10-22 | cc0f896 | chromium/voice-management (fresh) | Pass. Add Thorsten (de), download with progress (8 states to "✓ Downloaded"), delete. Player: "Downloading Cori… 0→82%". `lang="de"` page read with Thorsten. Highlight classic/blue/off switch live |
 | 2026-10-22 | cc0f896 | chromium/download-failure | Pass. Stops after 6.6 s (3 tries) with "Couldn't download the voice Cori… Check your internet connection" |
@@ -34,6 +37,8 @@ Re-run when: `extension/content.js`
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-25 | cc41b32 | one-off screenshot of the player | Player built without HTML strings looks as before: 7 icons, pause shown while playing, voice list in 2 language groups |
+| 2026-10-25 | cc41b32 | chromium/mixed-and-controls (KEEP) | Pass. Pause holds the word highlight; next/prev ±1; speed 1.5; Escape and Stop clear. No errors |
 | 2026-10-22 | 1ca18cf | chromium/mixed-and-controls (KEEP) | Pass. Mixed page: EN paragraphs Cori, SV paragraphs Alma, switching per paragraph. Pause holds audio and highlight; next/prev ±1; speed 1.5 live; Escape and Stop stop and clear highlights |
 | 2026-10-22 | 1ca18cf | chromium/long-page-cpu, QUOTA 100% / 50% / 30% | 100%: page blocked 0.13–0.17 s, first sound 5.8 s, 1 wait 0.5 s. 50%: blocked 0.9 s, first sound 35–39 s (model set-up 29 s), speech renders slower than real time. 30%: blocked 3 s, no sound within 60 s. The quota limits the whole browser, so it's harsher than a real slow laptop |
 

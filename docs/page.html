@@ -302,11 +302,11 @@
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 25 October 2026, after adding a Copy button for the Firefox install address on the About tab.</p>
+    <p class="meta">Updated 25 October 2026, after running Mozilla's add-on checker and fixing what it flagged.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
-      <div class="tile ok"><span class="n">18</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan: reading with no server, settings and voice list, 170 voices, downloads, mixed languages, natural speeds, steady memory, nothing left running</span></div>
+      <div class="tile ok"><span class="n">19</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan: reading with no server, settings and voice list, 170 voices, downloads, mixed languages, natural speeds, steady memory, nothing left running, and no errors in Mozilla's checker</span></div>
       <div class="tile warn"><span class="n">5</span><span class="l">Built, not tested yet</span><span class="d">A really slow computer, clicking through Firefox by hand, listening by ear, word timing, keyboard shortcuts</span></div>
       <div class="tile todo"><span class="n">6</span><span class="l">Left to do</span><span class="d">Step 4: licence, privacy note, permissions, clean build, signing, optional public listing</span></div>
     </div>
@@ -332,7 +332,7 @@
       <li><span class="chip todo">To do</span><span class="item"><b>Licence check.</b> espeak-ng, which the add-on includes, is GPL-3.0, so the add-on itself becomes GPL-3.0 with its source public (it already is). Add a <code>LICENSE</code> file and a <code>THIRD-PARTY-NOTICES</code> file crediting every included part and the voices. Flag anything unclear for you to check.</span></li>
       <li><span class="chip todo">To do</span><span class="item"><b>Privacy note.</b> Text never leaves the computer; the only network use is the one-time voice download.</span></li>
       <li><span class="chip todo">To do</span><span class="item"><b>Fewest permissions.</b> Now that the server is gone, the add-on asks for no website access of its own, only to run on the pages you read. Write a one-line reason for each permission.</span></li>
-      <li><span class="chip todo">To do</span><span class="item"><b>Clean build and Mozilla's check.</b> <code>./build.sh</code> makes the upload file; run Mozilla's automatic checker and explain its warnings (WebAssembly, voice downloads).</span></li>
+      <li><span class="chip todo">To do</span><span class="item"><b>Clean build and Mozilla's check.</b> <code>./build.sh</code> makes the upload file. The checker already passes (see What works); what's left is to explain its 6 remaining warnings in the submission notes.</span></li>
       <li><span class="chip todo">To do</span><span class="item"><b>Signing (unlisted).</b> Upload to addons.mozilla.org as "On your own". It comes back signed (can take up to a day), stays installed in normal Firefox, and can be sent to friends, also on Android.</span></li>
       <li><span class="chip todo">Optional</span><span class="item"><b>Public listing.</b> A store description, screenshots and an icon, if you decide to publish it later. Chrome's store would be an optional extra with a small one-off fee.</span></li>
     </ul>
@@ -358,6 +358,7 @@
       <li><span class="chip ok">Tested</span><span class="item"><b>Nothing left running.</b> After Stop the audio pauses; after 5 quiet minutes the engine shuts down and frees its memory.<span class="how">Firefox: CPU 0 within a minute and memory back to the start within 2 minutes (it used to keep about 8% of a core busy; fixed). Chromium: CPU 0, 210 MB freed, hidden engine page closed.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Old server removed.</b> No server code, no Kokoro, no permission to talk to <code>127.0.0.1</code>. On this computer: the auto-start service, menu icon, Python environment (1.6 GB) and server voices (242 MB) are deleted.<span class="how">Tests re-run afterwards in both browsers: passing. The project and its pages no longer mention the server except as history.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Intro video on the homepage.</b> 10 slides (purpose, how it looks, auto-detect, your voices, speed, privacy, voice licences, credits, how to try it), narrated by the add-on's own voices, with captions. Rebuild with <code>tools/video/make-video.sh</code>.<span class="how">103 s, 2.2 MB, H.264 + AAC. Frames at 5, 32, 52 and 95 s show the right slides; no silent gaps over 2 s; captions timed from the voice's word timings. Licences checked: Cori's recordings are public domain, Alma is CC BY 4.0 and credited, no share-alike or non-commercial voices used. Nobody has listened to it yet.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Passes Mozilla's add-on checker.</b> No errors. The add-on no longer builds its player or voice lists from HTML text, which Mozilla's reviewers flag, and it says which Firefox for Android it needs.<span class="how"><code>web-ext lint</code>: 12 warnings before, 6 after. The 6 left can't be fixed here: 5 are parts only Chromium uses (Firefox skips them) and 1 is inside ONNX Runtime, the voice engine's own code. Re-tested afterwards in Chromium and Firefox (reading, settings, voice lists, player controls, a screenshot of the player): all pass, no errors.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Tests are saved and logged.</b> 10 browser tests and 3 engine measurements in <code>tests/</code>, with the latest result of each and when to re-run it in <code>tests/RESULTS.md</code>.<span class="how">Both runners checked by re-running a test in each browser.</span></span></li>
     </ul>
   </section>
@@ -412,6 +413,7 @@
       <div class="slip"><span class="what">It assumed a test port was free.</span><span class="cost">Another program already used it. It moved to a different port and left that program alone.</span></div>
       <div class="slip"><span class="what">The selection speaker first appeared in the middle of the line.</span><span class="cost">Seen in a screenshot. It now appears where you let go of the mouse.</span></div>
       <div class="slip"><span class="what">Several test runs measured the wrong thing.</span><span class="cost">Tabs looked up by address, a stale cached file list, a quoting mistake, a renamed settings page, a CPU limit that didn't apply, a crashed memory script, half of Firefox's processes missed, and a reused profile running old code. Each cost a rerun; together about 35 minutes, mostly waiting for long runs. The tests are now saved with these fixes.</span></div>
+      <div class="slip"><span class="what">A test runner hung after a passing test (25 October).</span><span class="cost">The small web server it starts kept the runner's output open, so the run never reported back. It cost about 15 minutes of waiting. Fixed in both runners.</span></div>
       <div class="slip"><span class="what">Too much text in the terminal.</span><span class="cost">You said the replies were hard to read. That's why this page exists.</span></div>
     </div>
     <div class="verdict">
@@ -425,6 +427,7 @@
       <table>
         <tbody>
           <tr><td>Build the upload file for Mozilla</td><td><code>./build.sh</code></td></tr>
+          <tr><td>Run Mozilla's add-on checker</td><td><code>npx web-ext lint --source-dir extension</code></td></tr>
           <tr><td>Run a browser test</td><td><code>tests/chromium.sh tests/chromium/read-en-sv.mjs</code></td></tr>
           <tr><td>Latest result of every test, and when to re-run it</td><td><code>tests/RESULTS.md</code></td></tr>
           <tr><td>Update the voice catalogue</td><td><code>node tools/make-catalog.mjs</code></td></tr>
