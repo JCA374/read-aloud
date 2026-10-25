@@ -1,5 +1,7 @@
 # Neural Voices
 
+**Project page: https://jca374.github.io/read-aloud/** (about the add-on, install steps and development status)
+
 A browser add-on that reads web pages aloud with natural-sounding Piper voices. The voices run
 **inside the browser** (WebAssembly), so there's nothing else to install, it's free, and the text you
 read never leaves your computer. It starts with English and Swedish voices (Swedish text is detected
