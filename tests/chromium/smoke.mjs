@@ -68,6 +68,13 @@ await b.sw.ev(`chrome.storage.local.set({speed: 1})`);
 await p.click("stop");
 check("Stop", (await waitFor(async () => (await b.state()) === "idle", 3000)) !== null);
 check("Stop clears the highlight", (await waitFor(async () => !(await hl(page, "sentence")), 2000)) !== null);
+// reading the same page again: the text is already rendered, so it should start at once
+t0 = Date.now();
+await b.readPage();
+const again = await waitFor(() => hl(page, "word"), 2000, 50);
+check("English page again: starts within 2 s", !!again, again ? `${((Date.now() - t0) / 1000).toFixed(1)} s` : "nothing within 2 s");
+await b.stopAll();
+await waitFor(async () => (await b.state()) === "idle", 3000);
 
 // 6. Swedish page (marked lang="en" on purpose): detected as Swedish, read with Alma
 const sv = await b.open("sv.html");

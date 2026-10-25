@@ -2,7 +2,8 @@
 # Pick and run the add-on's tests.   tests/run.sh [quick|all|timing|<test>...]
 #
 #   quick (default)  instant checks, then the Chromium and Firefox smoke tests side by side, plus any
-#                    longer test whose files changed since it last passed. About 2-3 minutes.
+#                    longer test whose files changed since it last passed. Tests whose files (and own
+#                    script) haven't changed since they passed are skipped. About 1.5 min, 5 s if nothing changed.
 #   all              instant checks and every functional test (both browsers side by side)
 #   timing           start-up, CPU and memory measurements, one at a time (15-25 min: run in the background)
 #   <test>           one or more tests by name, e.g. chromium/voice-management
@@ -19,10 +20,8 @@ chromium/smoke|KEEP=1|extension|150
 firefox/smoke||extension|150
 chromium/voice-management|PROFILE=nv-fresh-profile|extension/options.* extension/catalog.js extension/common.js extension/engine/piper-worker.js|240
 chromium/download-failure|PROFILE=nv-fresh-profile;EXTRA=--host-resolver-rules=MAP huggingface.co ~NOTFOUND|extension/engine extension/background.js extension/offscreen.*|150
-chromium/read-en-sv|KEEP=1|extension|200
 chromium/settings-voice-switch|KEEP=1|extension|150
 chromium/mixed-and-controls|KEEP=1|extension|200
-firefox/read-en-sv||extension|200
 chromium/warm-up|KEEP=1|extension/engine extension/offscreen.* extension/background.js|150
 chromium/long-page-cpu|KEEP=1|extension/engine extension/offscreen.* extension/background.js extension/content.js|200
 chromium/memory|KEEP=1;TIMEOUT=1000|extension/engine extension/offscreen.* extension/background.js|1060
@@ -30,13 +29,14 @@ firefox/memory|TIMEOUT=700|extension/engine extension/offscreen.* extension/back
 "
 QUICK="chromium/smoke firefox/smoke"
 AFFECTED="chromium/voice-management chromium/download-failure"   # added to quick when their files changed
-ALL="chromium/smoke firefox/smoke $AFFECTED chromium/read-en-sv chromium/settings-voice-switch chromium/mixed-and-controls firefox/read-en-sv"
+ALL="chromium/smoke firefox/smoke $AFFECTED chromium/settings-voice-switch chromium/mixed-and-controls"
 TIMING="chromium/warm-up chromium/long-page-cpu chromium/memory firefox/memory"
 
 field() { echo "$TESTS" | awk -F'|' -v n="$1" -v f="$2" '$1 == n { print $f }'; }
-fingerprint() { # content of the covered files, committed or not
+fingerprint() { # content of the covered files plus the test itself, its helpers and runner, committed or not
+  local b=${1%%/*}
   # shellcheck disable=SC2046
-  git ls-files -co --exclude-standard -- $(field "$1" 3) | sort | xargs cat 2>/dev/null | sha1sum | cut -c1-12
+  git ls-files -co --exclude-standard -- $(field "$1" 3) "tests/$1.mjs" "tests/$b/lib.mjs" "tests/$b.sh" | sort | xargs cat 2>/dev/null | sha1sum | cut -c1-12
 }
 changed() { [ "$(cat "$out/.passed/${1//\//-}" 2>/dev/null)" != "$(fingerprint "$1")" ]; }
 
@@ -80,7 +80,9 @@ print(len(d["errors"]), len(new), "; ".join(m["code"] + " " + m.get("file", "") 
 # Which tests to run
 mode=${1:-quick}
 case $mode in
-  quick) list="$QUICK"; for t in $AFFECTED; do changed "$t" && list="$list $t"; done ;;
+  quick) list=""; for t in $QUICK $AFFECTED; do
+           if changed "$t"; then list="$list $t"; else echo "skip $t: nothing it covers changed since it passed"; fi
+         done ;;
   all) list="$ALL" ;;
   timing) list="$TIMING" ;;
   *) list="$*" ;;

@@ -302,7 +302,7 @@
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 25 October 2026, after making the tests faster: a normal check now takes about 1.5 minutes instead of 20+.</p>
+    <p class="meta">Updated 25 October 2026, after removing duplicate tests: a check takes 4 s when the add-on didn't change, about 1.5 minutes when it did.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
@@ -359,7 +359,7 @@
       <li><span class="chip ok">Tested</span><span class="item"><b>Old server removed.</b> No server code, no Kokoro, no permission to talk to <code>127.0.0.1</code>. On this computer: the auto-start service, menu icon, Python environment (1.6 GB) and server voices (242 MB) are deleted.<span class="how">Tests re-run afterwards in both browsers: passing. The project and its pages no longer mention the server except as history.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Intro video on the homepage.</b> 10 slides (purpose, how it looks, auto-detect, your voices, speed, privacy, voice licences, credits, how to try it), narrated by the add-on's own voices, with captions. Rebuild with <code>tools/video/make-video.sh</code>.<span class="how">103 s, 2.2 MB, H.264 + AAC. Frames at 5, 32, 52 and 95 s show the right slides; no silent gaps over 2 s; captions timed from the voice's word timings. Licences checked: Cori's recordings are public domain, Alma is CC BY 4.0 and credited, no share-alike or non-commercial voices used. Nobody has listened to it yet.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Passes Mozilla's add-on checker.</b> No errors. The add-on no longer builds its player or voice lists from HTML text, which Mozilla's reviewers flag, and it says which Firefox for Android it needs.<span class="how"><code>web-ext lint</code>: 12 warnings before, 6 after. The 6 left can't be fixed here: 5 are parts only Chromium uses (Firefox skips them) and 1 is inside ONNX Runtime, the voice engine's own code. Re-tested afterwards in Chromium and Firefox (reading, settings, voice lists, player controls, a screenshot of the player): all pass, no errors.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Fast, automatic tests.</b> One command, <code>tests/run.sh</code>, runs quick checks and a short "smoke" test in Chromium and Firefox at the same time, and adds a longer test only when the files it covers changed. Every test now prints a clear pass or fail line and waits for things to happen instead of waiting fixed times. A stuck test is stopped after its time limit. Results are logged in <code>tests/RESULTS.md</code>.<span class="how">Normal check: 92 s (it used to take over 20 minutes, choosing and running tests by hand). All 9 tests: 170 s, 91 checks, all passing; the same tests took 514 s one after another. With the player broken on purpose, both smoke tests failed with a clear line. A test that never ends was stopped at its limit and the run carried on.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Fast, automatic tests.</b> One command, <code>tests/run.sh</code>, runs quick checks and a short "smoke" test in Chromium and Firefox at the same time, and skips any test whose files haven't changed since it last passed. Every test now prints a clear pass or fail line and waits for things to happen instead of waiting fixed times. A stuck test is stopped after its time limit. Results are logged in <code>tests/RESULTS.md</code>.<span class="how">Normal check: 92 s (it used to take over 20 minutes, choosing and running tests by hand). With nothing changed: 4 s. All tests: 135 s, all passing; they took 514 s one after another before. Two tests that only repeated the smoke tests were removed. With the player broken on purpose, both smoke tests failed with a clear line. A test that never ends was stopped at its limit and the run carried on.</span></span></li>
     </ul>
   </section>
 
@@ -430,8 +430,8 @@
         <tbody>
           <tr><td>Build the upload file for Mozilla</td><td><code>./build.sh</code></td></tr>
           <tr><td>Run Mozilla's add-on checker</td><td><code>npx web-ext lint --source-dir extension</code></td></tr>
-          <tr><td>Check a change (about 1.5 min)</td><td><code>tests/run.sh</code></td></tr>
-          <tr><td>Run every test, before a release (about 3 min)</td><td><code>tests/run.sh all</code></td></tr>
+          <tr><td>Check a change (about 1.5 min; 4 s if the add-on didn't change)</td><td><code>tests/run.sh</code></td></tr>
+          <tr><td>Run every test, before a release (about 2.5 min)</td><td><code>tests/run.sh all</code></td></tr>
           <tr><td>Speed and memory measurements (15–25 min, nothing else at the same time)</td><td><code>tests/run.sh timing</code></td></tr>
           <tr><td>Run one test</td><td><code>tests/run.sh chromium/voice-management</code></td></tr>
           <tr><td>Latest result of every test, and when to re-run it</td><td><code>tests/RESULTS.md</code></td></tr>

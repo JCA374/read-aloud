@@ -12,6 +12,8 @@ covers (`tests/out/.passed/`), so `quick` adds a longer test by itself when its 
 
 | Date | Commit | Run | Result |
 |---|---|---|---|
+| 2026-10-25 | 0dec750 + changes | `run.sh all` after removing 2 duplicate tests | Pass, 7 tests, 70 checks, 135 s (was 170 s). `chromium/read-en-sv` and `firefox/read-en-sv` removed: the smoke tests check the same; the one unique check (reading again starts within 2 s: 0.2 s) moved into the Chromium smoke test |
+| 2026-10-25 | 0dec750 + changes | `run.sh` with nothing changed | All 4 tests skipped (they passed and nothing they cover changed), only the instant checks ran: 4 s |
 | 2026-10-25 | 03ce74e + test changes | `run.sh all` (both browsers side by side) | Pass, all 9 tests, 91 checks, 170 s. The same tests one after another took 514 s before |
 | 2026-10-25 | 03ce74e + test changes | `run.sh` (quick) | Pass: instant checks 6 s, Firefox smoke 12 checks, Chromium smoke 23 checks, voice-management 12 checks; 92 s in all |
 | 2026-10-25 | 03ce74e + test changes | runner self-checks | Player broken on purpose (`build()` throws): both smoke tests failed with "first word highlighted: nothing within 30 s". A test that never ends: stopped at its 20 s limit, the run carried on. `background.js` changed: fresh Chromium profile; unchanged: profile reused. No browser left running |
