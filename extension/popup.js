@@ -34,7 +34,7 @@ function renderVoices(settings, voices) {
       const label = document.createElement("label");
       label.textContent = title;
       const select = document.createElement("select");
-      select.innerHTML = NV.voiceOptions(list);
+      NV.fillVoiceSelect(select, list);
       select.value = NV.voiceFor(lang || "en", settings, voices);
       select.onchange = async () => {
         const now = await chrome.storage.local.get(NV.DEFAULTS); // langVoices may have changed meanwhile

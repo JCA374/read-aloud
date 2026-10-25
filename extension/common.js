@@ -77,14 +77,18 @@ var NV = (() => {
     return list?.length ? list : STARTER_VOICES;
   }
 
-  function voiceOptions(voices) {
+  function fillVoiceSelect(select, voices) {
     const groups = {};
     for (const v of voices) (groups[v.langName || v.lang] ??= []).push(v);
-    const esc = (t) => String(t).replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
-    return Object.entries(groups)
-      .map(([g, vs]) => `<optgroup label="${esc(g)}">${vs.map((v) => `<option value="${esc(v.id)}">${esc(v.label)}</option>`).join("")}</optgroup>`)
-      .join("");
+    select.replaceChildren(
+      ...Object.entries(groups).map(([g, vs]) => {
+        const group = document.createElement("optgroup");
+        group.label = g;
+        group.append(...vs.map((v) => new Option(v.label, v.id)));
+        return group;
+      }),
+    );
   }
 
-  return { STARTER_VOICES, DEFAULTS, HIGHLIGHTS, shownVoices, listLangs, langDefault, voiceFor, pick, allVoices, voiceOptions };
+  return { STARTER_VOICES, DEFAULTS, HIGHLIGHTS, shownVoices, listLangs, langDefault, voiceFor, pick, allVoices, fillVoiceSelect };
 })();

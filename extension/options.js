@@ -120,7 +120,7 @@ function renderDefaults() {
   const shown = NV.shownVoices(voices, settings);
   const picker = (title, list, value) => {
     const select = el("select");
-    select.innerHTML = NV.voiceOptions(list);
+    NV.fillVoiceSelect(select, list);
     select.value = value;
     select.onchange = () => save(NV.pick(select.value, settings, voices));
     return el("label", { className: "row" }, title, select);

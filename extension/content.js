@@ -711,17 +711,38 @@
 
   // ---------------------------------------------------------------- UI (floating player + selection bubble)
 
+  // Each icon is a list of [tag, attributes] for the SVG's child elements.
   const ICONS = {
-    play: '<path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z"/>',
-    pause: '<rect x="6.5" y="5" width="4" height="14" rx="1"/><rect x="13.5" y="5" width="4" height="14" rx="1"/>',
-    prev: '<path d="M6 5h2v14H6zM19 6.2v11.6a.8.8 0 0 1-1.2.7L9.6 12.7a.8.8 0 0 1 0-1.4l8.2-5.8a.8.8 0 0 1 1.2.7z"/>',
-    next: '<path d="M16 5h2v14h-2zM5 6.2v11.6a.8.8 0 0 0 1.2.7l8.2-5.8a.8.8 0 0 0 0-1.4L6.2 5.5A.8.8 0 0 0 5 6.2z"/>',
-    stop: '<rect x="6" y="6" width="12" height="12" rx="2"/>',
-    click: '<path d="M9 3.5v11.2l2.7-2.6 2 4.6 2.2-1-2-4.5h3.8z"/>',
-    close: '<path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4z"/>',
-    speaker: '<path d="M4 9.5v5h3.5L12 19V5L7.5 9.5zM15 8.5a5 5 0 0 1 0 7M17.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/>',
+    play: [["path", { d: "M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z" }]],
+    pause: [["rect", { x: 6.5, y: 5, width: 4, height: 14, rx: 1 }], ["rect", { x: 13.5, y: 5, width: 4, height: 14, rx: 1 }]],
+    prev: [["path", { d: "M6 5h2v14H6zM19 6.2v11.6a.8.8 0 0 1-1.2.7L9.6 12.7a.8.8 0 0 1 0-1.4l8.2-5.8a.8.8 0 0 1 1.2.7z" }]],
+    next: [["path", { d: "M16 5h2v14h-2zM5 6.2v11.6a.8.8 0 0 0 1.2.7l8.2-5.8a.8.8 0 0 0 0-1.4L6.2 5.5A.8.8 0 0 0 5 6.2z" }]],
+    stop: [["rect", { x: 6, y: 6, width: 12, height: 12, rx: 2 }]],
+    click: [["path", { d: "M9 3.5v11.2l2.7-2.6 2 4.6 2.2-1-2-4.5h3.8z" }]],
+    close: [["path", { d: "M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4z" }]],
+    speaker: [
+      ["path", { d: "M4 9.5v5h3.5L12 19V5L7.5 9.5zM15 8.5a5 5 0 0 1 0 7M17.5 6a8.5 8.5 0 0 1 0 12", stroke: "currentColor", "stroke-width": 1.8, fill: "none", "stroke-linecap": "round" }],
+      ["path", { d: "M4 9.5v5h3.5L12 19V5L7.5 9.5z" }],
+    ],
   };
-  const icon = (name) => `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${ICONS[name]}</svg>`;
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const svgEl = (tag, attrs) => {
+    const e = document.createElementNS(SVG_NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    return e;
+  };
+  const icon = (name) => {
+    const svg = svgEl("svg", { viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true" });
+    svg.append(...ICONS[name].map(([tag, attrs]) => svgEl(tag, attrs)));
+    return svg;
+  };
+  // A small element builder for the player, so no HTML strings are parsed.
+  const h = (tag, attrs, ...children) => {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    e.append(...children);
+    return e;
+  };
 
   const CSS_TEXT = `
     :host { all: initial; }
@@ -780,21 +801,26 @@
       if (this.host) return;
       this.host = document.createElement("neural-voices-player");
       const root = this.host.attachShadow({ mode: "closed" });
-      root.innerHTML = `<style>${CSS_TEXT}</style>
-        <div class="bar" role="toolbar" aria-label="Read aloud">
-          <div class="grip" title="Drag to move"></div>
-          <button class="prev" title="Previous sentence">${icon("prev")}</button>
-          <button class="play" title="Play / pause (Alt+Shift+R)">${icon("play")}</button>
-          <button class="next" title="Next sentence">${icon("next")}</button>
-          <button class="stop" title="Stop (Alt+Shift+X)">${icon("stop")}</button>
-          <span class="sep"></span>
-          <select class="speed" title="Speed">${SPEEDS.map((s) => `<option value="${s}">${s}×</option>`).join("")}</select>
-          <select class="voice" title="Voice"></select>
-          <button class="click" title="Click-to-read: click any paragraph to start reading there (Esc to leave)">${icon("click")}</button>
-          <span class="status"></span>
-          <button class="close small" title="Close">${icon("close")}</button>
-        </div>
-        <button class="bubble" title="Read selection aloud">${icon("speaker")}</button>`;
+      const style = document.createElement("style");
+      style.textContent = CSS_TEXT;
+      const button = (cls, title, name) => h("button", { class: cls, title }, icon(name));
+      root.append(
+        style,
+        h("div", { class: "bar", role: "toolbar", "aria-label": "Read aloud" },
+          h("div", { class: "grip", title: "Drag to move" }),
+          button("prev", "Previous sentence", "prev"),
+          button("play", "Play / pause (Alt+Shift+R)", "play"),
+          button("next", "Next sentence", "next"),
+          button("stop", "Stop (Alt+Shift+X)", "stop"),
+          h("span", { class: "sep" }),
+          h("select", { class: "speed", title: "Speed" }, ...SPEEDS.map((s) => new Option(`${s}×`, String(s)))),
+          h("select", { class: "voice", title: "Voice" }),
+          button("click", "Click-to-read: click any paragraph to start reading there (Esc to leave)", "click"),
+          h("span", { class: "status" }),
+          button("close small", "Close", "close"),
+        ),
+        button("bubble", "Read selection aloud", "speaker"),
+      );
       const $ = (s) => root.querySelector(s);
       this.bar = $(".bar");
       this.els = { play: $(".play"), speed: $(".speed"), voice: $(".voice"), click: $(".click"), status: $(".status"), bubble: $(".bubble") };
@@ -860,7 +886,8 @@
       if (!this.host) return;
       const { play, speed, voice, click, status } = this.els;
       const s = player.state;
-      play.innerHTML = icon(s === "playing" || s === "loading" ? "pause" : "play");
+      const playIcon = s === "playing" || s === "loading" ? "pause" : "play";
+      if (this.playIcon !== playIcon) play.replaceChildren(icon((this.playIcon = playIcon)));
       play.classList.toggle("loading", s === "loading");
       click.classList.toggle("on", clickMode);
       if (![...speed.options].some((o) => o.value === String(settings.speed))) {
@@ -870,8 +897,11 @@
       const current = player.state === "idle" ? NV.voiceFor(pageLang(), settings, voices) : player.voice();
       const list = NV.shownVoices(voices, settings);
       if (!list.some((v) => v.id === current)) list.push(voices.find((v) => v.id === current) || { id: current, label: current, lang: "" });
-      const html = NV.voiceOptions(list);
-      if (this.voiceHtml !== html) voice.innerHTML = this.voiceHtml = html;
+      const key = list.map((v) => `${v.langName || v.lang}|${v.id}|${v.label}`).join("\n");
+      if (this.voiceKey !== key) {
+        NV.fillVoiceSelect(voice, list);
+        this.voiceKey = key;
+      }
       voice.value = current;
       status.classList.toggle("err", !!player.error);
       const dl = player.download;
