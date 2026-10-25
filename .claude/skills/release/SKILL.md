@@ -17,7 +17,7 @@ addons.mozilla.org (AMO) are free.
 3. **Version.** Raise `version` in `extension/manifest.json` (every upload needs a higher one). Never change
    `browser_specific_settings.gecko.id` (`neural-voices@jca374.github.io`): signing and updates depend on it.
 4. **Build and lint.** `./build.sh` → `dist/neural-voices.zip` (no tests, docs or dev files).
-   `npx web-ext lint --source-dir extension` and fix errors; explain warnings in the submission notes
+   `npx web-ext lint --source-dir extension` and fix errors (flags and output format: the `web-ext` skill); explain warnings in the submission notes
    (WebAssembly needs `'wasm-unsafe-eval'`; voice models download from huggingface.co).
 5. **Sign unlisted.** Either the owner uploads the zip at addons.mozilla.org/developers → *Submit a New
    Add-on* → *On your own*, or with their API keys: `npx web-ext sign --channel=unlisted --source-dir extension`.

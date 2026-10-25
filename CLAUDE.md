@@ -42,5 +42,6 @@ The user finds long terminal replies hard to read. Report progress on the projec
 - `addon-tests`: which browser tests to run, how, and logging them in `tests/RESULTS.md`.
   Check that log first: don't re-run a test when nothing it covers has changed.
 - `release`: packaging, licences and signing (step 4 of the brief).
+- `web-ext`: reference for Mozilla's `web-ext` tool (lint, run, build, sign flags). Adapted from testland/qa (MIT).
 
 Machine-specific notes (setup, testing quirks) are in `CLAUDE.local.md`, which is not committed.
