@@ -3,3 +3,4 @@ node_modules/
 __pycache__/
 CLAUDE.local.md
 tools/video/out/
+tests/out/

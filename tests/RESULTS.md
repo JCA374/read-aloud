@@ -5,12 +5,24 @@ The newest run of each test, so tests aren't repeated when nothing they cover ha
 (`git diff --stat <commit> -- <files>`). Add a line for every new run, newest first in each section.
 Machine: 8-core Linux desktop, Chromium 155 snap, Firefox 158 snap. Timings are from that machine.
 
+## Test runner (`tests/run.sh`)
+
+Re-run when: `tests/` changes. `run.sh` also remembers each passed test with a fingerprint of the files it
+covers (`tests/out/.passed/`), so `quick` adds a longer test by itself when its files changed.
+
+| Date | Commit | Run | Result |
+|---|---|---|---|
+| 2026-10-25 | 03ce74e + test changes | `run.sh all` (both browsers side by side) | Pass, all 9 tests, 91 checks, 170 s. The same tests one after another took 514 s before |
+| 2026-10-25 | 03ce74e + test changes | `run.sh` (quick) | Pass: instant checks 6 s, Firefox smoke 12 checks, Chromium smoke 23 checks, voice-management 12 checks; 92 s in all |
+| 2026-10-25 | 03ce74e + test changes | runner self-checks | Player broken on purpose (`build()` throws): both smoke tests failed with "first word highlighted: nothing within 30 s". A test that never ends: stopped at its 20 s limit, the run carried on. `background.js` changed: fresh Chromium profile; unchanged: profile reused. No browser left running |
+
 ## Reading (English, Swedish, start-up)
 
 Re-run when: `extension/content.js`, `background.js`, `engine/`, `offscreen.*`, `manifest.json`
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-25 | 03ce74e | chromium/read-en-sv, firefox/read-en-sv (new checks) | Pass. Chromium first word 5.9 s EN, 3.7 s SV, 0.1 s already rendered. Firefox 12.5 s EN when run beside Chromium, about 4–7 s alone. No errors |
 | 2026-10-25 | cc41b32 | firefox/read-en-sv | Pass. First word 4.4 s EN, 5.1 s SV. No errors |
 | 2026-10-25 | cc41b32 | chromium/read-en-sv (KEEP) | Pass. First word 5.0 s EN, 6.9 s SV, 0.3 s cached. No errors |
 | 2026-10-22 | 17b2a5c | chromium/read-en-sv (fresh) | Pass. First word 8.2 s EN (includes downloading Cori), 6.6 s SV (download), 0.3 s cached. No errors |
@@ -25,6 +37,8 @@ Re-run when: `extension/options.*`, `popup.*`, `common.js`, `catalog.js`, `engin
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-25 | 03ce74e | chromium/settings-voice-switch (new checks) | Pass, 7 checks. No-Swedish note, detection off gives one picker, popup voice change restarts the sentence (logged at once). The earlier "null" was the old test's fixed wait, not the add-on |
+| 2026-10-25 | 03ce74e | chromium/voice-management | Pass, 12 checks (add Thorsten with licence, download, delete, player progress, German page, highlight styles) |
 | 2026-10-25 | cc41b32 | chromium/settings-voice-switch (KEEP, ×2) | Lists filtered to the 6 ticked voices; switch restarts the sentence (logged), no errors. The test's 4 s word-highlight check gave "null" both times, and also on the code before this commit, so it is test timing, not this change |
 | 2026-10-22 | 17b2a5c | chromium/settings-voice-switch (KEEP) | Pass. Lists filtered; switch restarts the sentence (6.3 s here because Northern English had to download first). No errors |
 | 2026-10-22 | cc0f896 | chromium/voice-management (fresh) | Pass. Add Thorsten (de), download with progress (8 states to "✓ Downloaded"), delete. Player: "Downloading Cori… 0→82%". `lang="de"` page read with Thorsten. Highlight classic/blue/off switch live |
@@ -37,6 +51,7 @@ Re-run when: `extension/content.js`
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-25 | 03ce74e | chromium/mixed-and-controls (new checks) | Pass, 12 checks. Mixed page: all 9 sentences with the right voice. Pause holds the word, next/prev ±1, speed 1.5, Escape stops and clears, Stop |
 | 2026-10-25 | cc41b32 | one-off screenshot of the player | Player built without HTML strings looks as before: 7 icons, pause shown while playing, voice list in 2 language groups |
 | 2026-10-25 | cc41b32 | chromium/mixed-and-controls (KEEP) | Pass. Pause holds the word highlight; next/prev ±1; speed 1.5; Escape and Stop clear. No errors |
 | 2026-10-22 | 1ca18cf | chromium/mixed-and-controls (KEEP) | Pass. Mixed page: EN paragraphs Cori, SV paragraphs Alma, switching per paragraph. Pause holds audio and highlight; next/prev ±1; speed 1.5 live; Escape and Stop stop and clear highlights |
