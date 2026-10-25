@@ -248,7 +248,7 @@
 
   <section aria-labelledby="voice-h">
     <h2 id="voice-h">Voices</h2>
-    <p>Neural Voices uses <a href="https://github.com/rhasspy/piper">Piper</a> voices. It starts with six, and Settings has <b>170 voices in 49 languages</b> to add. A voice downloads once, the first time you use it (most are about 63 MB), and then works offline. Settings shows each voice's size and licence, and lets you delete downloads.</p>
+    <p>Neural Voices uses <a href="https://github.com/rhasspy/piper">Piper</a> voices. It starts with five, and Settings has <b>170 voices in 49 languages</b> to add. A voice downloads once, the first time you use it (most are about 63 MB), and then works offline. Settings shows each voice's size and licence, tags voices that are for non-commercial use or have no stated licence, and lets you delete downloads. The five starter voices are free to use.</p>
     <div class="voicecols">
       <div class="vgroup">
         <h3>English <span class="tag">· starter voices</span></h3>
@@ -262,7 +262,6 @@
         <h3>Swedish <span class="tag">· starter voices</span></h3>
         <ul class="vlist">
           <li><span>Alma</span><span class="who">Swedish, woman</span></li>
-          <li><span>Lisa</span><span class="who">Swedish, woman</span></li>
           <li><span>NST</span><span class="who">Swedish, man</span></li>
         </ul>
       </div>
@@ -302,7 +301,7 @@
 
   <section aria-labelledby="cred-h">
     <h2 id="cred-h">Credits</h2>
-    <p>Built on <a href="https://github.com/rhasspy/piper">Piper</a> (voices), <a href="https://github.com/microsoft/onnxruntime">ONNX Runtime Web</a> (runs the voice, MIT licence) and <a href="https://github.com/espeak-ng/espeak-ng">espeak-ng</a> (turns text into speech sounds, GPL-3.0), compiled for the browser by <a href="https://github.com/diffusion-studio/piper-wasm">piper-wasm</a>. Each voice has its own licence, shown in Settings.</p>
+    <p>Built on <a href="https://github.com/rhasspy/piper">Piper</a> (voices), <a href="https://github.com/microsoft/onnxruntime">ONNX Runtime Web</a> (runs the voice, MIT licence) and <a href="https://github.com/rhasspy/espeak-ng">espeak-ng</a> (turns text into speech sounds, GPL-3.0) with <a href="https://github.com/rhasspy/piper-phonemize">piper-phonemize</a> (MIT), compiled for the browser by <a href="https://github.com/diffusion-studio/piper-wasm">piper-wasm</a>. Because espeak-ng is GPL-3.0, Neural Voices is free software under the GPL-3.0 too; the add-on carries the full licence texts and a list of every included part. Each voice has its own licence, shown in Settings.</p>
   </section>
   </div>
 
@@ -310,26 +309,26 @@
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 25 October 2026, after removing duplicate tests: a check takes 4 s when the add-on didn't change, about 1.5 minutes when it did.</p>
+    <p class="meta">Updated 25 October 2026, after the clean-up: licences checked and included, a repeatable build, leaner engine memory, all tests and measurements re-run.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
-      <div class="tile ok"><span class="n">19</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan: reading with no server, settings and voice list, 170 voices, downloads, mixed languages, natural speeds, steady memory, nothing left running, and no errors in Mozilla's checker</span></div>
+      <div class="tile ok"><span class="n">23</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan, plus licences, a repeatable build, voices kept when the catalogue updates, and at most two voices in memory</span></div>
       <div class="tile warn"><span class="n">5</span><span class="l">Built, not tested yet</span><span class="d">A really slow computer, clicking through Firefox by hand, listening by ear, word timing, keyboard shortcuts</span></div>
-      <div class="tile todo"><span class="n">6</span><span class="l">Left to do</span><span class="d">Step 4: licence, privacy note, permissions, clean build, signing, optional public listing</span></div>
+      <div class="tile todo"><span class="n">4</span><span class="l">Left to do</span><span class="d">Step 4: privacy note, permissions, signing, optional public listing</span></div>
     </div>
   </section>
 
   <section class="next" aria-labelledby="next-h">
-    <h2 id="next-h">Do this next: reload it from its new place</h2>
-    <p>The separate Neural Voices folder is gone: the add-on now lives in the main project folder, and the old server setup has been removed from your computer.</p>
+    <h2 id="next-h">Do this next: reload the add-on</h2>
+    <p>The add-on's code changed (licences, Settings, the engine). Firefox keeps your downloaded voices.</p>
     <ol class="steps">
       <li><span>Open
         <span class="copy"><code id="u1">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u1" type="button">Copy</button></span>
-        and <b>Remove</b> the Neural Voices add-on that's loaded now (it points at the old folder).</span></li>
-      <li><span>Click <b>Load Temporary Add-on…</b> and pick <code>extension/manifest.json</code> in the project folder. Then reload the pages you read. Your downloaded voices are kept by Firefox, so they don't download again.</span></li>
+        and click <b>Reload</b> under Neural Voices (if it isn't there: <b>Load Temporary Add-on…</b> and pick <code>extension/manifest.json</code>). Then reload the pages you read.</span></li>
+      <li><span>Open Settings. <b>Lisa</b> now shows a yellow <b>Licence unclear</b> tag: her model card names no licence. She stays in your list; remove her if you only want clearly licensed voices. New installs start with five voices.</span></li>
       <li><span>Listen to <code>dist/speed-samples/</code> in the project folder: "in-voice" is how the add-on changes speed, "played-faster" is the cheap way, for comparison. Tell me if 2× sounds too rushed.</span></li>
-      <li><span>Use it for a while. When you want it to stay installed, or to share it, say <b>go for step 4</b>.</span></li>
+      <li><span>When you want it to stay installed, or to share it, say <b>go for step 4</b> (signing).</span></li>
     </ol>
   </section>
 
@@ -337,10 +336,10 @@
     <h2 id="step4-h">Step 4: packaging and signing (planned, when you decide)</h2>
     <p>The plan says to use it yourself first and only release it when it feels clean and fast. Signing and listing on Mozilla's add-ons site are free.</p>
     <ul class="status">
-      <li><span class="chip todo">To do</span><span class="item"><b>Licence check.</b> espeak-ng, which the add-on includes, is GPL-3.0, so the add-on itself becomes GPL-3.0 with its source public (it already is). Add a <code>LICENSE</code> file and a <code>THIRD-PARTY-NOTICES</code> file crediting every included part and the voices. Flag anything unclear for you to check.</span></li>
+      <li><span class="chip ok">Done</span><span class="item"><b>Licence check.</b> See "Licences checked" under What works.</span></li>
       <li><span class="chip todo">To do</span><span class="item"><b>Privacy note.</b> Text never leaves the computer; the only network use is the one-time voice download.</span></li>
       <li><span class="chip todo">To do</span><span class="item"><b>Fewest permissions.</b> Now that the server is gone, the add-on asks for no website access of its own, only to run on the pages you read. Write a one-line reason for each permission.</span></li>
-      <li><span class="chip todo">To do</span><span class="item"><b>Clean build and Mozilla's check.</b> <code>./build.sh</code> makes the upload file. The checker already passes (see What works); what's left is to explain its 6 remaining warnings in the submission notes.</span></li>
+      <li><span class="chip ok">Done</span><span class="item"><b>Clean build and Mozilla's check.</b> <code>./build.sh</code> makes the upload file and checks it. Left for signing day: explain the 6 known warnings in the submission notes.</span></li>
       <li><span class="chip todo">To do</span><span class="item"><b>Signing (unlisted).</b> Upload to addons.mozilla.org as "On your own". It comes back signed (can take up to a day), stays installed in normal Firefox, and can be sent to friends, also on Android.</span></li>
       <li><span class="chip todo">Optional</span><span class="item"><b>Public listing.</b> A store description, screenshots and an icon, if you decide to publish it later. Chrome's store would be an optional extra with a small one-off fee.</span></li>
     </ul>
@@ -368,6 +367,10 @@
       <li><span class="chip ok">Tested</span><span class="item"><b>Intro video on the homepage.</b> 10 slides (purpose, how it looks, auto-detect, your voices, speed, privacy, voice licences, credits, how to try it), narrated by the add-on's own voices, with captions. Rebuild with <code>tools/video/make-video.sh</code>.<span class="how">103 s, 2.2 MB, H.264 + AAC. Frames at 5, 32, 52 and 95 s show the right slides; no silent gaps over 2 s; captions timed from the voice's word timings. Licences checked: Cori's recordings are public domain, Alma is CC BY 4.0 and credited, no share-alike or non-commercial voices used. Nobody has listened to it yet.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Passes Mozilla's add-on checker.</b> No errors. The add-on no longer builds its player or voice lists from HTML text, which Mozilla's reviewers flag, and it says which Firefox for Android it needs.<span class="how"><code>web-ext lint</code>: 12 warnings before, 6 after. The 6 left can't be fixed here: 5 are parts only Chromium uses (Firefox skips them) and 1 is inside ONNX Runtime, the voice engine's own code. Re-tested afterwards in Chromium and Firefox (reading, settings, voice lists, player controls, a screenshot of the player): all pass, no errors.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Fast, automatic tests.</b> One command, <code>tests/run.sh</code>, runs quick checks and a short "smoke" test in Chromium and Firefox at the same time, and skips any test whose files haven't changed since it last passed. Every test now prints a clear pass or fail line and waits for things to happen instead of waiting fixed times. A stuck test is stopped after its time limit. Results are logged in <code>tests/RESULTS.md</code>.<span class="how">Normal check: 92 s (it used to take over 20 minutes, choosing and running tests by hand). With nothing changed: 4 s. All tests: 135 s, all passing; they took 514 s one after another before. Two tests that only repeated the smoke tests were removed. With the player broken on purpose, both smoke tests failed with a clear line. A test that never ends was stopped at its limit and the run carried on.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Licences checked.</b> The add-on is free software under the GPL-3.0, which espeak-ng (included) requires. <code>LICENSE</code>, <code>THIRD-PARTY-NOTICES</code> and <code>licenses/</code> list every included part with its exact version, source and licence text, and go into the upload file. Settings tags voices that are non-commercial, share-alike or have no stated licence. Lisa (no licence named) is no longer a starter voice; the five starters are free to use.<span class="how">All six engine files compared byte for byte with the official npm packages: identical. Licence texts taken from the exact versions used. All 170 model cards read: 113 free to use, 13 share-alike, 23 non-commercial, 32 no licence stated. Settings showed the tags correctly (German list: 3 "Licence unclear", 1 "Non-commercial", none on Thorsten). The quick test now fails if a starter voice isn't free to use (tried with Lisa: flagged).</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>A clean, repeatable build.</b> <code>./build.sh</code> makes <code>dist/neural-voices-0.3.0.zip</code> (13 MB, 33 files) with the licence files, without tests or notes, then runs Mozilla's checker on it. The same zip works in Chromium.<span class="how">Built twice: identical files (same checksum). Mozilla's checker: 0 errors, the 6 known warnings.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Voices survive catalogue updates.</b> When the voice list moves to a newer version of Piper's collection, voices you already downloaded are kept instead of downloading again.<span class="how">New automatic test: Cori's files moved to an older version's address, download site blocked. Settings still showed Cori as downloaded, reading started, and the files moved to the new address.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>At most two voices in memory.</b> Each loaded voice holds about 60–100 MB; the engine now keeps only the two used last (enough for a page mixing two languages), and never unloads the one that's speaking.<span class="how">The Chromium smoke test uses three voices in a row: passes with no errors. Memory re-measured: Chromium +390–575 MB while reading, 240 MB freed after 5 idle minutes; Firefox +300–320 MB, back to the start 30 s after Stop. Start-up unchanged: first sound 3.4 s cold, page blocked 0.13 s on a 400-paragraph page.</span></span></li>
     </ul>
   </section>
 
@@ -424,6 +427,7 @@
       <div class="slip"><span class="what">A test runner hung after a passing test (25 October).</span><span class="cost">The small web server it starts kept the runner's output open, so the run never reported back. It cost about 15 minutes of waiting. Fixed in both runners.</span></div>
       <div class="slip"><span class="what">The test speed-up session stopped halfway (25 October).</span><span class="cost">The terminal closed during the first run of the new test command. Nothing was lost; the work was picked up from the saved plan and the files on disk.</span></div>
       <div class="slip"><span class="what">Five mistakes in the new tests themselves.</span><span class="cost">The settings check looked for a part of the page by an old name. One check waited for a message the add-on only writes when reading stops. One looked at only the first 3 German voices. One Firefox test never opened an add-on page to send its commands from. And a Firefox "read" command could go to a tab that was just closing. Each one failed a run and cost 1–3 minutes to fix and re-run. None was a fault in the add-on.</span></div>
+      <div class="slip"><span class="what">Clean-up session (25 October), Claude Opus 5.5, planned first, then built.</span><span class="cost">Small slips, each caught before it reached a commit: a style rule for dark mode written in the wrong order (would have lost to the light one), a warning in the catalogue tool that would always have flagged Lisa, a screenshot script that expected an argument the test runner doesn't pass (1 minute), and a planned fix for a flaky check that an earlier session had already removed. No test failed because of the add-on.</span></div>
       <div class="slip"><span class="what">Too much text in the terminal.</span><span class="cost">You said the replies were hard to read. That's why this page exists.</span></div>
     </div>
     <div class="verdict">
@@ -436,7 +440,7 @@
     <div class="tbl">
       <table>
         <tbody>
-          <tr><td>Build the upload file for Mozilla</td><td><code>./build.sh</code></td></tr>
+          <tr><td>Build the upload file for Mozilla (and check it)</td><td><code>./build.sh</code></td></tr>
           <tr><td>Run Mozilla's add-on checker</td><td><code>npx web-ext lint --source-dir extension</code></td></tr>
           <tr><td>Check a change (about 1.5 min; 4 s if the add-on didn't change)</td><td><code>tests/run.sh</code></td></tr>
           <tr><td>Run every test, before a release (about 2.5 min)</td><td><code>tests/run.sh all</code></td></tr>

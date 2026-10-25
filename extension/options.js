@@ -1,6 +1,6 @@
 const $ = (id) => document.getElementById(id);
 const CACHE = "piper-voices";
-const OLD_BASE = "https://huggingface.co/rhasspy/piper-voices/resolve/main"; // downloads from before voices were pinned
+const REPO = "https://huggingface.co/rhasspy/piper-voices/resolve/"; // files from an older revision count too (the engine reuses them)
 const DETAILS = Object.fromEntries(NV_CATALOG.voices.map((v) => [v.id, v]));
 
 let settings;
@@ -29,8 +29,8 @@ async function save(changes) {
 
 async function refreshDownloaded() {
   const keys = await (await caches.open(CACHE)).keys();
-  const urls = new Set(keys.map((r) => r.url));
-  downloaded = new Set(NV_CATALOG.voices.filter((v) => urls.has(fileUrl(v.onnx.path)) || urls.has(`${OLD_BASE}/${v.onnx.path}`)).map((v) => v.id));
+  const paths = new Set(keys.filter((r) => r.url.startsWith(REPO)).map((r) => r.url.replace(/^.*?\/resolve\/[^/]+\//, "")));
+  downloaded = new Set(NV_CATALOG.voices.filter((v) => paths.has(v.onnx.path)).map((v) => v.id));
 }
 
 async function download(id) {
@@ -47,11 +47,20 @@ async function download(id) {
 async function removeDownload(id) {
   const v = DETAILS[id];
   const cache = await caches.open(CACHE);
-  await Promise.all([v.onnx.path, v.config.path].flatMap((p) => [cache.delete(fileUrl(p)), cache.delete(`${OLD_BASE}/${p}`)]));
+  const files = [v.onnx.path, v.config.path].map((p) => `/${p}`);
+  const old = (await cache.keys()).filter((r) => r.url.startsWith(REPO) && files.some((f) => r.url.endsWith(f)));
+  await Promise.all(old.map((r) => cache.delete(r)));
   await chrome.runtime.sendMessage({ type: "unload", voice: id }).catch(() => {});
   await refreshDownloaded();
   render();
 }
+
+// Licences that limit what you may do with the voice's audio get a tag: [text, explanation].
+const LICENCE_TAGS = {
+  "non-commercial": ["Non-commercial", "Fine for personal use; not for anything you sell or earn from."],
+  "share-alike": ["Share-alike", "Free to use; things you make from it and share must use the same licence."],
+  unclear: ["Licence unclear", "The model card doesn't state a licence. Personal use only, to be safe."],
+};
 
 // One voice: name, details, licence, and its buttons.
 function voiceRow(v, buttons) {
@@ -60,7 +69,8 @@ function voiceRow(v, buttons) {
   let state = null;
   if (d && progress[v.id] != null) state = el("span", { className: "state" }, el("progress", { max: 100, value: progress[v.id] }), ` ${progress[v.id]}%`);
   else if (d && downloaded.has(v.id)) state = el("span", { className: "state ok", textContent: "✓ Downloaded" });
-  const licence = d && el("div", { className: "licence" }, `Licence: ${d.licence}`, d.card ? " · " : "", d.card ? el("a", { href: fileUrl(d.card), target: "_blank", rel: "noopener", textContent: "model card" }) : null);
+  const tag = d && LICENCE_TAGS[d.kind];
+  const licence = d && el("div", { className: "licence" }, tag ? el("span", { className: `tag ${d.kind}`, title: tag[1], textContent: tag[0] }) : null, `Licence: ${d.licence}`, d.card ? " · " : "", d.card ? el("a", { href: fileUrl(d.card), target: "_blank", rel: "noopener", textContent: "model card" }) : null);
   return el(
     "div",
     { className: "voice" },

@@ -9,7 +9,7 @@ automatically), and 170 voices in 49 languages can be added.
 
 | Voices | Size | Speed |
 |---|---|---|
-| Starts with UK: Cori, Alba, Northern English and Swedish: Alma, Lisa, NST. 170 voices in 49 languages can be added in Settings | ~20–110 MB each (most ~63 MB), downloaded once on first use | ~3× faster than real time on one CPU core |
+| Starts with UK: Cori, Alba, Northern English and Swedish: Alma, NST. 170 voices in 49 languages can be added in Settings | ~20–110 MB each (most ~63 MB), downloaded once on first use | ~3× faster than real time on one CPU core |
 
 Word highlighting is estimated (Piper doesn't report word times). A voice downloads from
 huggingface.co/rhasspy/piper-voices the first time it's used and is kept in the browser's cache.
@@ -27,11 +27,17 @@ tools/video/        the intro video on the project page: slides, narration by th
 
 **Firefox:** `about:debugging#/runtime/this-firefox` → *Load Temporary Add-on…* → pick
 `extension/manifest.json`. Firefox removes temporary add-ons when it restarts; to keep it, sign it
-for free as an unlisted add-on on addons.mozilla.org (`./build.sh` makes `dist/neural-voices.zip`).
+for free as an unlisted add-on on addons.mozilla.org (see *Build* below).
 
 **Chromium:** `chrome://extensions` → *Developer mode* → *Load unpacked* → the `extension` folder.
 
 Pages that were already open need a reload before the add-on works on them.
+
+## Build
+
+`./build.sh` makes `dist/neural-voices-<version>.zip`: the `extension/` folder plus `LICENSE`,
+`THIRD-PARTY-NOTICES` and `licenses/`, with fixed file order and dates (the same source gives the same zip),
+and runs Mozilla's checker (`web-ext lint`) on it. The same zip loads in Firefox and Chromium.
 
 ## Using it
 
@@ -49,7 +55,8 @@ that voice.
 
 **Settings** (popup → *Settings*, or the add-on's options):
 - *Your voices*: the voices in the player and popup. Download a voice ahead of time, delete a
-  download to free disk space, or remove it from the list. Each shows its size and licence.
+  download to free disk space, or remove it from the list. Each shows its size and licence; voices that
+  are non-commercial, share-alike or have no stated licence are tagged.
 - *Add voices*: browse the catalogue by language and add voices to your list.
 - *Language*: detection on or off, and the default voice for each language in your list (or, with
   detection off, the one voice to always use). English and Swedish are recognised from the words,
@@ -70,8 +77,8 @@ background page; Chromium: from an offscreen page, since service workers can't s
 espeak-ng turns the text into phonemes, ONNX Runtime runs the voice, and the result comes back as
 a WAV with estimated word times. Speed is set in the model (Piper's length scale), so the pitch
 stays natural; the model shortens pauses less than sounds, so the length scale follows a measured
-curve (`lengthFor` in `engine/piper-worker.js`) to make 2× really about 2×. The last 100 sentences are kept, so jumping back is instant. The engine is
-stopped after 5 idle minutes to free its memory. Opening the popup loads your voice early (only if
+curve (`lengthFor` in `engine/piper-worker.js`) to make 2× really about 2×. The last 30 rendered sentences are kept, so jumping back is instant. At most two voices stay
+loaded (enough for a page mixing two languages), and the engine is stopped after 5 idle minutes to free its memory. Opening the popup loads your voice early (only if
 it's already downloaded), because starting a voice takes a few seconds: most of it is ONNX Runtime
 setting up the model.
 
@@ -86,8 +93,18 @@ No mirror is used: it would cost hosting and add a party to trust, for no gain a
 To update the voice list: `node tools/make-catalog.mjs` (uses the newest revision). Voices that the
 bundled espeak-ng can't handle (Chinese, Japanese, Thai, Hebrew, Lithuanian, one Ukrainian) are left out.
 
-Voices are data with their own licences (CC0, CC BY, CC BY-SA, some non-commercial). They aren't
-bundled; each one's licence is shown in Settings with a link to its model card.
+Voices are data with their own licences. They aren't bundled; each one's licence is shown in Settings
+with a link to its model card. `tools/make-catalog.mjs` reduces the model cards' many spellings to a short
+name and a kind: of the 170 voices, 113 are free to use (CC0, public domain, CC BY, MIT, Apache), 13 are
+share-alike (CC BY-SA, GPL, AGPL), 23 non-commercial (CC BY-NC, research-only data) and 32 have no stated
+licence. The starter voices are all free to use (checked by `tests/run.sh`). A voice already downloaded
+at an older revision is kept (if its size matches) when the catalogue moves to a new one.
+
+## Licence
+
+Neural Voices is GPL-3.0 (`LICENSE`), because the bundled espeak-ng is GPL-3.0 or later. Every bundled
+part, its exact version and source, and its licence are listed in `THIRD-PARTY-NOTICES`; full texts are
+in `licenses/`.
 
 ## History
 

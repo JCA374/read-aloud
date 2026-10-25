@@ -1,0 +1,51 @@
+Neural Voices: third-party notices
+==================================
+
+Neural Voices is free software under the GNU General Public License, version 3 (see LICENSE).
+It includes the parts below, unchanged, in engine/vendor/. Their full licence texts are in licenses/.
+Source code of Neural Voices: https://github.com/JCA374/read-aloud
+
+
+1. ONNX Runtime Web 1.30.0 (runs the voice models)
+   Files:   engine/vendor/ort.wasm.min.js, ort-wasm-simd-threaded.mjs, ort-wasm-simd-threaded.wasm
+   From:    npm package onnxruntime-web@1.30.0, https://github.com/microsoft/onnxruntime (tag v1.30.0)
+   Licence: MIT, Copyright (c) Microsoft Corporation (licenses/onnxruntime-LICENSE.txt).
+            The .wasm file includes code from other projects, listed with their licences in
+            licenses/onnxruntime-ThirdPartyNotices.txt (taken from the same tag).
+
+2. piper-wasm 1.0.0 (turns text into speech sounds)
+   Files:   engine/vendor/piper_phonemize.js, piper_phonemize.wasm, piper_phonemize.data
+   From:    npm package @diffusionstudio/piper-wasm@1.0.0, https://github.com/diffusion-studio/piper-wasm
+            (package licence: MIT). It is a WebAssembly build, made with Emscripten 3.1.47, of:
+
+   a) espeak-ng, https://github.com/rhasspy/espeak-ng (Rhasspy's fork of
+      https://github.com/espeak-ng/espeak-ng). The program code is from commit
+      0f65aa301e0d6bae5e172cc74197d32a6182200f (pinned by piper-phonemize); the language data in
+      piper_phonemize.data is from the fork's master branch (last commit
+      8593723f10cfd9befd50de447f14bf0a9d2a14a4).
+      Licence: GPL-3.0 or later (LICENSE). It includes NV Speech Player, Copyright 2014 NV Access
+      Limited, GPL-3.0 or later, and Unicode character data under the Unicode licence
+      (licenses/espeak-ng-COPYING.UCD.txt).
+      Because espeak-ng is GPL-3.0, Neural Voices as a whole is distributed under GPL-3.0.
+      The corresponding source is at the addresses above; the build steps are in piper-wasm's README.
+
+   b) piper-phonemize, https://github.com/rhasspy/piper-phonemize (built from the fork
+      https://github.com/wide-video/piper-phonemize). Licence: MIT, Copyright (c) 2023 Michael Hansen
+      (licenses/piper-phonemize-LICENSE.txt).
+
+   c) The Emscripten runtime (glue code in the .js and .mjs files above). Licence: MIT or
+      University of Illinois/NCSA, Copyright (c) 2010-2014 Emscripten authors
+      (licenses/emscripten-LICENSE.txt).
+
+3. Icons (icons/*.png): made for Neural Voices; GPL-3.0 like the rest of the add-on.
+
+
+Voices
+------
+No voice is included in the add-on. Each voice is downloaded, when you first use it, from
+https://huggingface.co/rhasspy/piper-voices (the Piper voice collection), pinned to one revision.
+Each voice has its own licence, shown in the add-on's Settings next to the voice with a link to its
+model card. Some voices are free to use for anything (CC0, public domain, CC BY, MIT, Apache 2.0),
+some require sharing under the same licence (CC BY-SA, GPL, AGPL), some are for non-commercial use
+only (CC BY-NC, CC BY-NC-SA, research-only data), and for some the model card states no licence.
+Many voices were fine-tuned from the Lessac voice, whose training data is licensed for research use.

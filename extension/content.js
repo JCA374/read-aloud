@@ -269,6 +269,7 @@
   // ---------------------------------------------------------------- player
 
   function b64ToBytes(b64) {
+    if (Uint8Array.fromBase64) return Uint8Array.fromBase64(b64).buffer; // newer browsers; the loop below otherwise
     const bin = atob(b64);
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -290,6 +291,7 @@
     durations: new Map(), // same keys -> seconds of audio, once rendered
     inflight: false,
     stats: null, // {t0, first, waits, waitTime}: how fast sound started, and any waits after that
+    download: null, // {label, pct} while a voice downloads
 
     lang: "en",
 
@@ -362,7 +364,7 @@
       const tok = ++this.token;
       this.halt();
       if (i < 0) i = 0;
-      if (i >= this.segs.length) return this.finish();
+      if (i >= this.segs.length) return this.stop(); // the end
       this.i = i;
       this.playingVoice = this.voice(i);
       const seg = this.segs[i];
@@ -489,10 +491,6 @@
       this.setState("idle");
     },
 
-    finish() {
-      this.stop();
-    },
-
     // Settings changed (here, in the popup or on the settings page). A new voice restarts the
     // current sentence in that voice; a new speed keeps it and re-renders the ones after it.
     settingsChanged() {
@@ -551,8 +549,6 @@
       ui.sync();
     },
   };
-
-  // ---------------------------------------------------------------- commands
 
   // ---------------------------------------------------------------- language
 

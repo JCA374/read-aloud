@@ -6,7 +6,6 @@ var NV = (() => {
     ["piper:en_GB-alba-medium", "Alba (Scottish, female)"],
     ["piper:en_GB-northern_english_male-medium", "Northern English (UK, male)"],
     ["piper:sv_SE-alma-medium", "Alma (svenska, kvinna)"],
-    ["piper:sv_SE-lisa-medium", "Lisa (svenska, kvinna)"],
     ["piper:sv_SE-nst-medium", "NST (svenska, man)"],
   ].map(([id, label]) => ({ id, label, engine: "piper", lang: id.slice(6, 8), langName: id[6] === "s" ? "Swedish" : "English" }));
 

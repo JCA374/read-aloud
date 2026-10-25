@@ -9,12 +9,14 @@ const thorsten = (sel) => `[...document.querySelectorAll('#mine .voice')].find(r
 // 1. Settings page: add Thorsten (German), download it, delete the download
 const opt = await b.open(b.extUrl("options.html"), "options");
 const mine = await waitFor(() => opt.ev(`[...document.querySelectorAll('#mine .voice b')].map(b => b.textContent).join(', ')`), 5000);
-check("settings: your voices listed", (mine || "").split(", ").length >= 6, mine);
+check("settings: your voices listed", (mine || "").split(", ").length >= 5, mine);
 const langs = await opt.ev(`document.querySelector('#addLang').options.length`);
 check("settings: languages to add from", langs > 40, `${langs}`);
 await opt.ev(`(() => { const s = document.querySelector('#addLang'); s.value = 'de'; s.dispatchEvent(new Event('change')); })()`);
 const german = await waitFor(() => opt.ev(`[...document.querySelectorAll('#add .voice')].map(r => r.querySelector('b').textContent + ' [' + r.querySelector('.licence')?.textContent + ']').join(' | ')`), 3000);
 check("settings: German voices with licences", /Thorsten[^|]*Licence: /.test(german || ""), german);
+const tags = await opt.ev(`[...document.querySelectorAll('#add .voice')].map(r => r.querySelector('b').textContent + ': ' + (r.querySelector('.tag')?.textContent || '-')).join(' | ')`);
+check("settings: unclear licences tagged, Thorsten (CC0) not", /Karlsson[^|]*: Licence unclear/.test(tags) && /Thorsten \(Germany\): -/.test(tags), tags);
 await opt.ev(`[...document.querySelectorAll('#add .voice')].find(r => r.querySelector('b').textContent.startsWith('Thorsten (Germany)')).querySelector('button').click()`);
 const shown = await waitFor(async () => { const s = (await b.sw.ev(`chrome.storage.local.get('shown')`)).shown; return s?.includes(T) && s; }, 3000);
 check("settings: Thorsten added to your list", !!shown);

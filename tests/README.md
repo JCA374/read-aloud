@@ -17,7 +17,8 @@ checks) and keeps the full output in `tests/out/`. Tests that passed are remembe
 the files they cover (and their own script), so `quick` skips any test, smoke tests included, whose files haven't changed since it passed. After a run, add the result
 to [RESULTS.md](RESULTS.md).
 
-- **Instant checks** (6 s): syntax of every script, the manifest, and Mozilla's checker (`web-ext lint`),
+- **Instant checks** (4 s): syntax of every script, the manifest, the licence files, a licence kind for every
+  voice (and only free-to-use starter voices), and Mozilla's checker (`web-ext lint`),
   which must show no errors and no warnings beyond the 6 known ones.
 - **Smoke tests** (`chromium/smoke.mjs`, `firefox/smoke.mjs`): one browser session each, waiting for events
   (first word, a logged restart) instead of fixed times. Each check prints `ok` or `FAIL`.
@@ -40,6 +41,7 @@ A kept Chromium profile is started fresh automatically when `background.js` or `
 | `firefox/smoke.mjs` | Settings and popup lists; English and Swedish reading with the right voice; Stop | 30 s |
 | `chromium/settings-voice-switch.mjs` | One picker per language; with no Swedish voice the page says so; detection off gives one picker; changing voice in the popup while reading restarts the sentence | 10 s |
 | `chromium/voice-management.mjs` | Add a voice, download with progress, delete; download progress in the player; a `lang="de"` page; highlight styles | 30–60 s (fresh profile) |
+| `chromium/older-revision.mjs` | Run with Cori downloaded (`KEEP=1`) and huggingface.co blocked: a voice cached under an older revision of the voice collection counts as downloaded in Settings, reads without downloading, and is moved to the current address | 10 s |
 | `chromium/download-failure.mjs` | Run with `EXTRA='--host-resolver-rules=MAP huggingface.co ~NOTFOUND'`: reading stops with a clear message | 15 s |
 | `chromium/long-page-cpu.mjs` | 400-paragraph page: time the page is blocked, first sound, waits. With `QUOTA=50%` for a slow computer. `SECS`, `SPEED`, `PAGE` | 1–2 min |
 | `chromium/mixed-and-controls.mjs` | Mixed page read to the end, every sentence with the voice for its language; pause, resume, next, prev, speed, Escape, Stop on a 400-paragraph page | 45 s |

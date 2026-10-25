@@ -17,13 +17,15 @@ let firstTiming = { scriptsMs: Math.round(SCRIPTS_MS) }; // startup costs, repor
 
 const VENDOR = new URL("vendor/", self.location).href;
 const CACHE = "piper-voices";
-const OLD_BASE = "https://huggingface.co/rhasspy/piper-voices/resolve/main"; // before voices were pinned
+const REPO = "https://huggingface.co/rhasspy/piper-voices/resolve/";
 const CATALOG = Object.fromEntries(NV_CATALOG.voices.map((v) => [v.id, v]));
 
 ort.env.wasm.wasmPaths = VENDOR;
 ort.env.wasm.numThreads = 1; // threads need cross-origin isolation
 
-const voices = {}; // voice id -> Promise<{session, config}>
+const voices = new Map(); // voice id -> Promise<{session, config}>, most recently used last
+let speaking = null; // the voice rendering a sentence right now: never unloaded mid-sentence
+const KEEP_VOICES = 2; // enough for a page that mixes two languages; each loaded voice holds ~60-100 MB
 const downloads = {}; // voice id -> Promise (download in progress)
 
 class VoiceError extends Error {}
@@ -39,12 +41,7 @@ async function download(id, file, onBytes) {
   const url = `${NV_CATALOG.base}/${file.path}`;
   const cache = await caches.open(CACHE);
   if (await cache.match(url)) return;
-  const old = await cache.match(`${OLD_BASE}/${file.path}`); // downloaded before pinning: keep it
-  if (old) {
-    await cache.put(url, old);
-    await cache.delete(`${OLD_BASE}/${file.path}`);
-    return;
-  }
+  if (await reuseOlder(cache, file)) return;
   let lastError;
   for (let attempt = 0; attempt < 3; attempt++) {
     if (attempt) await new Promise((r) => setTimeout(r, 2000 * attempt));
@@ -73,6 +70,19 @@ async function download(id, file, onBytes) {
   throw new VoiceError(`Couldn't download the voice ${entry(id).label} (${lastError.message}). Check your internet connection and try again.`);
 }
 
+// The same file downloaded at an older revision of the voice collection (or before voices were pinned):
+// keep it under the new address if its size still matches, instead of downloading it again.
+async function reuseOlder(cache, file) {
+  const old = (await cache.keys()).find((r) => r.url.startsWith(REPO) && r.url.endsWith(`/${file.path}`));
+  if (!old) return false;
+  const res = await cache.match(old);
+  await cache.delete(old);
+  const blob = await res.blob();
+  if (blob.size !== file.size) return false;
+  await cache.put(`${NV_CATALOG.base}/${file.path}`, new Response(blob, { headers: { "Content-Type": "application/octet-stream" } }));
+  return true;
+}
+
 function ensureDownloaded(id) {
   downloads[id] ??= (async () => {
     const v = entry(id);
@@ -97,7 +107,13 @@ async function readCached(file) {
 }
 
 function loadVoice(id) {
-  voices[id] ??= (async () => {
+  if (voices.has(id)) {
+    const p = voices.get(id);
+    voices.delete(id); // move to the most recent end
+    voices.set(id, p);
+    return p;
+  }
+  const p = (async () => {
     let t = performance.now();
     await ensureDownloaded(id);
     const v = entry(id);
@@ -116,8 +132,16 @@ function loadVoice(id) {
       throw new VoiceError(`The voice ${v.label} couldn't be loaded, so it will be downloaded again next time.`);
     }
   })();
-  voices[id].catch(() => delete voices[id]);
-  return voices[id];
+  voices.set(id, p);
+  p.catch(() => voices.get(id) === p && voices.delete(id));
+  for (const old of [...voices.keys()].slice(0, -KEEP_VOICES)) if (old !== speaking) unloadVoice(old);
+  return p;
+}
+
+async function unloadVoice(id) {
+  const p = voices.get(id);
+  voices.delete(id);
+  (await p?.catch(() => null))?.session.release?.();
 }
 
 // One espeak-ng module is reused for every sentence; a fresh one is made if it fails.
@@ -190,7 +214,8 @@ function wavBase64(samples, sampleRate) {
   str(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
   v.setUint32(24, sampleRate, true); v.setUint32(28, sampleRate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
   str(36, "data"); v.setUint32(40, samples.length * 2, true);
-  for (let i = 0; i < samples.length; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, samples[i])) * 32767, true);
+  const pcm = new Int16Array(buf, 44); // WAV is little-endian, like every machine browsers run on
+  for (let i = 0; i < samples.length; i++) pcm[i] = Math.max(-1, Math.min(1, samples[i])) * 32767;
   const bytes = new Uint8Array(buf);
   let bin = "";
   for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
@@ -198,6 +223,15 @@ function wavBase64(samples, sampleRate) {
 }
 
 async function speak(voice, text, speed = 1) {
+  speaking = voice;
+  try {
+    return await render(voice, text, speed);
+  } finally {
+    speaking = null;
+  }
+}
+
+async function render(voice, text, speed) {
   const t0 = performance.now();
   const { session, config } = await loadVoice(voice);
   const t1 = performance.now();
@@ -236,7 +270,7 @@ self.onmessage = ({ data }) => {
     return reply(data.id, async () => {
       const v = entry(data.voice);
       const cache = await caches.open(CACHE);
-      const have = (await cache.match(`${NV_CATALOG.base}/${v.onnx.path}`)) || (await cache.match(`${OLD_BASE}/${v.onnx.path}`));
+      const have = (await cache.match(`${NV_CATALOG.base}/${v.onnx.path}`)) || (await reuseOlder(cache, v.onnx));
       if (!have) return { ok: false };
       phonemizer ??= newPhonemizer();
       await loadVoice(data.voice);
@@ -245,9 +279,7 @@ self.onmessage = ({ data }) => {
   }
   if (data.type === "unload") {
     return reply(data.id, async () => {
-      const v = await voices[data.voice]?.catch(() => null);
-      delete voices[data.voice];
-      v?.session.release?.();
+      await unloadVoice(data.voice);
       return { ok: true };
     });
   }

@@ -9,9 +9,9 @@ await b.sw.ev(`chrome.storage.local.clear()`);
 // 1. Settings page and popup list the starter voices
 const opt = await b.open(b.extUrl("options.html"), "options");
 const listed = await waitFor(() => opt.ev(`document.querySelectorAll('#mine .voice').length`), 5000);
-check("settings page lists the voices", listed >= 6, `${listed} voices`);
+check("settings page lists the voices", listed >= 5, `${listed} voices`);
 const defaults = await waitFor(() => opt.ev(`document.querySelectorAll('#defaults select option').length`), 5000);
-check("settings page voice pickers are filled", defaults >= 6, `${defaults} options`);
+check("settings page voice pickers are filled", defaults >= 5, `${defaults} options`);
 const pop = await b.open(b.extUrl("popup.html"), "popup");
 const popOpts = await waitFor(() => pop.ev(`document.querySelectorAll('#voices select option').length`), 5000);
 check("popup voice pickers are filled", popOpts >= 3, `${popOpts} options`);
@@ -30,7 +30,7 @@ check("English page: highlight moves word by word", words.size >= 9, `${words.si
 const p = await player(page);
 check("player has its 7 icons", p.count("svg") === 7, `${p.count("svg")} icons`);
 const opts = await p.voiceOptions();
-check("player voice list is filled", opts.length >= 6, opts.join(" / "));
+check("player voice list is filled", opts.length >= 5, opts.join(" / "));
 check("player shows Cori for English", (await p.voice()) === CORI, await p.voice());
 await p.click("play");
 check("pause", (await waitFor(async () => (await b.state()) === "paused", 3000)) !== null);

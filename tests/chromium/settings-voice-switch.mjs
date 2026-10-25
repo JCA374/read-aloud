@@ -6,7 +6,7 @@ import { browser, waitFor, check, finish, player, CORI, NORTHERN } from "./lib.m
 const b = await browser();
 await b.sw.ev(`chrome.storage.local.clear()`);
 const opt = await b.open(b.extUrl("options.html"), "options");
-await waitFor(() => opt.ev(`document.querySelectorAll('#mine .voice').length >= 6`), 5000);
+await waitFor(() => opt.ev(`document.querySelectorAll('#mine .voice').length >= 5`), 5000);
 const pickers = () => opt.ev(`[...document.querySelectorAll('#defaults label')].map(l => l.firstChild.textContent).join(' | ')`);
 check("one picker per language", /English text \| Swedish text/.test(await pickers()), await pickers());
 
@@ -19,7 +19,7 @@ check("no Swedish voice: the page says Swedish uses the English voice", /Swedish
 check("no Swedish voice: player and popup list only the rest", (await b.sw.ev(`chrome.storage.local.get('shown')`)).shown?.every((v) => !/sv_SE/.test(v)));
 await b.sw.ev(`chrome.storage.local.remove('shown')`);
 await opt.send("Page.reload");
-await waitFor(() => opt.ev(`document.readyState === 'complete' && document.querySelectorAll('#mine .voice').length >= 6`), 5000);
+await waitFor(() => opt.ev(`document.readyState === 'complete' && document.querySelectorAll('#mine .voice').length >= 5`), 5000);
 
 await opt.ev(`document.querySelector('#autoDetect').click()`);
 const one = await waitFor(async () => { const p = await pickers(); return /^Always read with$/.test(p) && p; }, 3000);

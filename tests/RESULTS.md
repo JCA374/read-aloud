@@ -12,6 +12,7 @@ covers (`tests/out/.passed/`), so `quick` adds a longer test by itself when its 
 
 | Date | Commit | Run | Result |
 |---|---|---|---|
+| 2026-10-25 | clean-up (after f8298dc) | `run.sh all` after the clean-up (licences, engine, 5 starter voices) | Pass, 7 tests, 70 checks, about 2 min. New instant checks: licence files exist, all 170 voices have a licence kind, starter voices free to use (a test with Lisa added flagged her). Build script checked: two builds give the same zip (same SHA-1) |
 | 2026-10-25 | 0dec750 + changes | `run.sh all` after removing 2 duplicate tests | Pass, 7 tests, 70 checks, 135 s (was 170 s). `chromium/read-en-sv` and `firefox/read-en-sv` removed: the smoke tests check the same; the one unique check (reading again starts within 2 s: 0.2 s) moved into the Chromium smoke test |
 | 2026-10-25 | 0dec750 + changes | `run.sh` with nothing changed | All 4 tests skipped (they passed and nothing they cover changed), only the instant checks ran: 4 s |
 | 2026-10-25 | 03ce74e + test changes | `run.sh all` (both browsers side by side) | Pass, all 9 tests, 91 checks, 170 s. The same tests one after another took 514 s before |
@@ -24,6 +25,8 @@ Re-run when: `extension/content.js`, `background.js`, `engine/`, `offscreen.*`, 
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-25 | clean-up (after f8298dc) | chromium/smoke, firefox/smoke | Pass, 24 and 12 checks. Chromium loads 3 voices (Cori, Alma, then a switch), so the new 2-voice limit unloaded one mid-test: no errors |
+| 2026-10-25 | clean-up (after f8298dc) | chromium/warm-up (KEEP, cold only) | First sound 3.37 s cold (before: 3.4–3.8 s) |
 | 2026-10-25 | 03ce74e | chromium/read-en-sv, firefox/read-en-sv (new checks) | Pass. Chromium first word 5.9 s EN, 3.7 s SV, 0.1 s already rendered. Firefox 12.5 s EN when run beside Chromium, about 4–7 s alone. No errors |
 | 2026-10-25 | cc41b32 | firefox/read-en-sv | Pass. First word 4.4 s EN, 5.1 s SV. No errors |
 | 2026-10-25 | cc41b32 | chromium/read-en-sv (KEEP) | Pass. First word 5.0 s EN, 6.9 s SV, 0.3 s cached. No errors |
@@ -39,6 +42,9 @@ Re-run when: `extension/options.*`, `popup.*`, `common.js`, `catalog.js`, `engin
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-25 | clean-up (after f8298dc) | chromium/older-revision (new, KEEP, huggingface.co blocked) | Pass, 5 checks. Cori's files moved to a made-up older revision: Settings shows "✓ Downloaded", reading starts with downloads blocked, files end up under the current revision and the old copies are gone |
+| 2026-10-25 | clean-up (after f8298dc) | chromium/voice-management (fresh) | Pass, 13 checks. New: German list shows "Licence unclear" on Eva K, Karlsson, Ramona, "Non-commercial" on Pavoque, no tag on Thorsten (CC0). Screenshot looked right |
+| 2026-10-25 | clean-up (after f8298dc) | chromium/settings-voice-switch, download-failure (KEEP / fresh) | Pass, 7 and 3 checks |
 | 2026-10-25 | 03ce74e | chromium/settings-voice-switch (new checks) | Pass, 7 checks. No-Swedish note, detection off gives one picker, popup voice change restarts the sentence (logged at once). The earlier "null" was the old test's fixed wait, not the add-on |
 | 2026-10-25 | 03ce74e | chromium/voice-management | Pass, 12 checks (add Thorsten with licence, download, delete, player progress, German page, highlight styles) |
 | 2026-10-25 | cc41b32 | chromium/settings-voice-switch (KEEP, ×2) | Lists filtered to the 6 ticked voices; switch restarts the sentence (logged), no errors. The test's 4 s word-highlight check gave "null" both times, and also on the code before this commit, so it is test timing, not this change |
@@ -53,6 +59,8 @@ Re-run when: `extension/content.js`
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-25 | clean-up (after f8298dc) | chromium/mixed-and-controls (KEEP) | Pass, 12 checks |
+| 2026-10-25 | clean-up (after f8298dc) | chromium/long-page-cpu (KEEP, full CPU) | Page blocked 132 ms, first sound 3.2 s, no waits |
 | 2026-10-25 | 03ce74e | chromium/mixed-and-controls (new checks) | Pass, 12 checks. Mixed page: all 9 sentences with the right voice. Pause holds the word, next/prev ±1, speed 1.5, Escape stops and clears, Stop |
 | 2026-10-25 | cc41b32 | one-off screenshot of the player | Player built without HTML strings looks as before: 7 icons, pause shown while playing, voice list in 2 language groups |
 | 2026-10-25 | cc41b32 | chromium/mixed-and-controls (KEEP) | Pass. Pause holds the word highlight; next/prev ±1; speed 1.5; Escape and Stop clear. No errors |
@@ -65,6 +73,8 @@ Re-run when: `extension/engine/`, `offscreen.*`, `background.js`, the audio part
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-25 | clean-up (after f8298dc) | chromium/memory, READN 12 | +390–575 MB while reading at 2×, flat; CPU 0 after Stop; engine page closed at 5 min idle, 240 MB freed |
+| 2026-10-25 | clean-up (after f8298dc) | firefox/memory, READ 180 AFTER 390 | +300–320 MB while reading; back near the start 30 s after Stop; CPU 0–3 s per 30 s after |
 | 2026-10-22 | 1ca18cf (fresh profile) | engine page close | Pass. Background log "engine idle: closing the engine page" and the offscreen page closes |
 | 2026-10-22 | 1ca18cf | firefox/memory, READ 60 AFTER 150 | Pass. +280 MB while reading; back to start within 30 s of Stop; CPU 0 within 60 s |
 | 2026-10-22 | before 1ca18cf | firefox/memory, READ 180 AFTER 390 | Found a leftover: ~8% of a core after Stop for 6+ min (audio context kept running). Fixed in 1ca18cf. Memory: +330 MB reading, flat, back to start after 2 min |

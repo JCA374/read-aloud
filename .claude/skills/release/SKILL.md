@@ -10,14 +10,15 @@ addons.mozilla.org (AMO) are free.
 
 1. **Ready?** The tests for everything changed since the last release are logged as passing in
    `tests/RESULTS.md` (the `addon-tests` skill). No open "Built, not tested" item that would embarrass a user.
-2. **Licences.** `LICENSE` (GPL-3.0, because espeak-ng is GPL-3.0) and `THIRD-PARTY-NOTICES` exist in the repo
-   and are copied into `extension/`. They list every shipped file in `extension/engine/vendor/`
-   (see its README) and say that voices are downloaded, each with its own licence (shown in Settings
-   from `catalog.js`). If a dependency or the voice catalogue changed, update both.
+2. **Licences.** `LICENSE` (GPL-3.0, because espeak-ng is GPL-3.0), `THIRD-PARTY-NOTICES` and `licenses/`
+   are at the top of the repo; `build.sh` puts them in the zip, and `tests/run.sh` checks they exist and that
+   every voice has a licence kind and every starter voice is free to use. If a vendored file changes, update
+   the versions, commits and texts in `THIRD-PARTY-NOTICES`, `licenses/` and `extension/engine/vendor/README.md`.
+   If the voice catalogue changes (`node tools/make-catalog.mjs`), check the licence counts it prints, then `tests/run.sh` (starter voices must stay free to use).
 3. **Version.** Raise `version` in `extension/manifest.json` (every upload needs a higher one). Never change
    `browser_specific_settings.gecko.id` (`neural-voices@jca374.github.io`): signing and updates depend on it.
-4. **Build and lint.** `./build.sh` → `dist/neural-voices.zip` (no tests, docs or dev files).
-   `npx web-ext lint --source-dir extension` and fix errors (flags and output format: the `web-ext` skill); explain warnings in the submission notes
+4. **Build and lint.** `./build.sh` → `dist/neural-voices-<version>.zip` (no tests, docs or dev files; it runs
+   `web-ext lint` on the result). Fix errors (flags and output format: the `web-ext` skill); explain warnings in the submission notes
    (WebAssembly needs `'wasm-unsafe-eval'`; voice models download from huggingface.co).
 5. **Sign unlisted.** Either the owner uploads the zip at addons.mozilla.org/developers → *Submit a New
    Add-on* → *On your own*, or with their API keys: `npx web-ext sign --channel=unlisted --source-dir extension`.

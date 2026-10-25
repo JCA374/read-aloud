@@ -21,6 +21,7 @@ firefox/smoke||extension|150
 chromium/voice-management|PROFILE=nv-fresh-profile|extension/options.* extension/catalog.js extension/common.js extension/engine/piper-worker.js|240
 chromium/download-failure|PROFILE=nv-fresh-profile;EXTRA=--host-resolver-rules=MAP huggingface.co ~NOTFOUND|extension/engine extension/background.js extension/offscreen.*|150
 chromium/settings-voice-switch|KEEP=1|extension|150
+chromium/older-revision|KEEP=1;EXTRA=--host-resolver-rules=MAP huggingface.co ~NOTFOUND|extension/engine/piper-worker.js extension/options.js|150
 chromium/mixed-and-controls|KEEP=1|extension|200
 chromium/warm-up|KEEP=1|extension/engine extension/offscreen.* extension/background.js|150
 chromium/long-page-cpu|KEEP=1|extension/engine extension/offscreen.* extension/background.js extension/content.js|200
@@ -28,7 +29,7 @@ chromium/memory|KEEP=1;TIMEOUT=1000|extension/engine extension/offscreen.* exten
 firefox/memory|TIMEOUT=700|extension/engine extension/offscreen.* extension/background.js|760
 "
 QUICK="chromium/smoke firefox/smoke"
-AFFECTED="chromium/voice-management chromium/download-failure"   # added to quick when their files changed
+AFFECTED="chromium/voice-management chromium/download-failure chromium/older-revision"   # added to quick when their files changed
 ALL="chromium/smoke firefox/smoke $AFFECTED chromium/settings-voice-switch chromium/mixed-and-controls"
 TIMING="chromium/warm-up chromium/long-page-cpu chromium/memory firefox/memory"
 
@@ -61,8 +62,19 @@ run_queue() { local failed=0; for t in "$@"; do run_one "$t" || failed=1; done; 
 
 instant_checks() {
   local bad=0 s=$SECONDS
-  for f in extension/*.js extension/engine/*.js tests/*/*.mjs; do node --check "$f" 2>/dev/null || { echo "FAIL syntax error in $f"; bad=1; }; done
+  for f in extension/*.js extension/engine/*.js tests/*/*.mjs tools/*.mjs; do node --check "$f" 2>/dev/null || { echo "FAIL syntax error in $f"; bad=1; }; done
+  bash -n build.sh tests/*.sh || { echo "FAIL syntax error in a shell script"; bad=1; }
   python3 -m json.tool extension/manifest.json >/dev/null || { echo "FAIL extension/manifest.json is not valid JSON"; bad=1; }
+  # Licences: the files the build adds exist, and every voice has a known licence kind
+  for f in LICENSE THIRD-PARTY-NOTICES licenses/onnxruntime-LICENSE.txt licenses/piper-phonemize-LICENSE.txt; do
+    [ -s "$f" ] || { echo "FAIL licence file missing: $f"; bad=1; }
+  done
+  node -e 'eval(require("fs").readFileSync("extension/catalog.js", "utf8").replace(/^var /m, "globalThis."));
+    const bad = NV_CATALOG.voices.filter((v) => !["free", "share-alike", "non-commercial", "unclear"].includes(v.kind) || !v.licence);
+    eval(require("fs").readFileSync("extension/common.js", "utf8").replace(/^var /m, "globalThis."));
+    const notFree = NV_CATALOG.voices.filter((v) => NV.DEFAULTS.shown.includes(v.id) && !["free", "share-alike"].includes(v.kind));
+    if (bad.length || notFree.length) { console.log(bad.concat(notFree).map((v) => v.id).join(" ")); process.exit(1); }' ||
+    { echo "FAIL voices without a known licence kind, or a starter voice that is not free to use"; bad=1; }
   # Mozilla's checker: no errors, and no warnings beyond the 6 known ones (Chromium-only parts, ONNX Runtime)
   local lint; lint=$(npx -y web-ext lint --source-dir extension --output json 2>/dev/null)
   local summary; summary=$(echo "$lint" | python3 -c '
@@ -72,7 +84,7 @@ known = {"MANIFEST_PERMISSIONS", "BACKGROUND_SERVICE_WORKER_IGNORED", "UNSUPPORT
 new = [w for w in d["warnings"] if w["code"] not in known and not w.get("file", "").startswith("engine/vendor/")]
 print(len(d["errors"]), len(new), "; ".join(m["code"] + " " + m.get("file", "") for m in d["errors"] + new)[:200])' 2>&1)
   read -r errs news rest <<<"$summary"
-  if [ "$errs" = 0 ] && [ "$news" = 0 ]; then echo "ok   instant checks ($((SECONDS - s)) s): syntax, manifest, Mozilla's checker"
+  if [ "$errs" = 0 ] && [ "$news" = 0 ]; then echo "ok   instant checks ($((SECONDS - s)) s): syntax, manifest, licences, Mozilla's checker"
   else echo "FAIL Mozilla's checker: $summary"; bad=1; fi
   return $bad
 }

@@ -33,11 +33,34 @@ const LABELS = {
 
 const title = (s) => s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
-function licence(card) {
-  const line = card.match(/^\*\s*Licen[cs]e:\s*(.+)$/im)?.[1];
+// The licence text from a model card: a "* License:" line, a "## License" section or YAML front matter.
+function licenceText(card) {
+  const line = card.match(/^\s*\*\s*Licen[cs]e:\s*(.+)$/im)?.[1];
   const section = card.match(/^##\s*Licen[cs]e\s*\n+([^\n#]+)/im)?.[1];
-  const text = (line || section || "").trim().replace(/\s+/g, " ").slice(0, 160);
-  return /^(see |unknown|$)/i.test(text) ? "See the model card" : text;
+  const yaml = card.match(/^---\n[\s\S]*?^license:\s*(.+)$/m)?.[1];
+  return (line || section || yaml || "").trim().replace(/\s+/g, " ");
+}
+
+// The cards spell licences in 37 ways: reduce them to a short name and a kind the settings page can tag.
+//   free: CC0, public domain, CC BY, MIT, Apache   share-alike: CC BY-SA, GPL, AGPL
+//   non-commercial: CC BY-NC(-SA), research-only data   unclear: the card doesn't say
+function licence(card) {
+  const t = licenceText(card);
+  const ver = t.match(/\b([1-4]\.0)\b/)?.[1] || ""; // some cards give no version
+  if (/lessac_blizzard/i.test(t)) return { licence: "Lessac data, research only", kind: "non-commercial" };
+  if (/iitm\.ac\.in/i.test(t)) return { licence: "IndicTTS, non-commercial", kind: "non-commercial" };
+  if (/by-nc-sa/i.test(t) || /nc-sa/i.test(t)) return { licence: `CC BY-NC-SA ${ver}`.trim(), kind: "non-commercial" };
+  if (/by-nc|non-?commercial/i.test(t)) return { licence: `CC BY-NC ${ver}`.trim(), kind: "non-commercial" };
+  if (/agpl/i.test(t)) return { licence: "AGPL-3.0", kind: "share-alike" };
+  if (/\bgpl\b/i.test(t)) return { licence: `GPL-${t.match(/\d\.\d/)?.[0] || "3.0"}`, kind: "share-alike" };
+  if (/by-sa|sharealike|share-alike/i.test(t)) return { licence: `CC BY-SA ${ver}${/\bES\b/.test(t) ? " ES" : ""}`.replace(/ +/g, " ").trim(), kind: "share-alike" };
+  if (/cc0/i.test(t)) return { licence: "CC0", kind: "free" };
+  if (/public domain/i.test(t)) return { licence: "Public domain", kind: "free" };
+  if (/unlicense/i.test(t)) return { licence: "Unlicense", kind: "free" };
+  if (/apache/i.test(t)) return { licence: "Apache-2.0", kind: "free" };
+  if (/^mit$/i.test(t)) return { licence: "MIT", kind: "free" };
+  if (/cc[- ]by|by\/[34]\.0|attribution/i.test(t)) return { licence: `CC BY ${ver}`.trim(), kind: "free" };
+  return { licence: "Not stated", kind: "unclear" };
 }
 
 async function text(url) {
@@ -80,7 +103,7 @@ for (let i = 0; i < entries.length; i += 12) {
         onnx: { path: onnxPath, size: onnx.size_bytes, md5: onnx.md5_digest },
         config: { path: jsonPath, size: json.size_bytes },
         card: cardPath || "",
-        licence: licence(card),
+        ...licence(card),
       });
     }),
   );
@@ -94,3 +117,5 @@ writeFileSync(
     `var NV_CATALOG = ${JSON.stringify({ base, revision: REVISION, voices: out })};\n`,
 );
 console.log(`\n${out.length} voices written to extension/catalog.js; skipped ${skipped.length}: ${skipped.join(", ")}`);
+const kinds = Object.groupBy(out, (v) => v.kind);
+console.log(`Licences: ${Object.entries(kinds).map(([k, vs]) => `${vs.length} ${k}`).join(", ")}`);
