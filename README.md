@@ -35,9 +35,12 @@ Pages that were already open need a reload before the add-on works on them.
 
 ## Build
 
-`./build.sh` makes `dist/neural-voices-<version>.zip`: the `extension/` folder plus `LICENSE`,
-`THIRD-PARTY-NOTICES` and `licenses/`, with fixed file order and dates (the same source gives the same zip),
-and runs Mozilla's checker (`web-ext lint`) on it. The same zip loads in Firefox and Chromium.
+`./build.sh` makes `dist/neural-voices-<version>-firefox.zip` (for addons.mozilla.org) and
+`-chromium.zip`: the `extension/` folder plus `LICENSE`, `THIRD-PARTY-NOTICES` and `licenses/`, with fixed
+file order and dates (the same source gives the same zips). The Firefox build leaves out the parts only
+Chromium uses (the offscreen page, its permission and the service worker entry), so Firefox shows no
+manifest warnings; it is also unpacked in `dist/firefox/`. Mozilla's checker (`web-ext lint`) runs on it.
+Loading `extension/` directly in Firefox works too, with a harmless warning about the `offscreen` permission.
 
 ## Using it
 

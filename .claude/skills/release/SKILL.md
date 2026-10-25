@@ -17,11 +17,11 @@ addons.mozilla.org (AMO) are free.
    If the voice catalogue changes (`node tools/make-catalog.mjs`), check the licence counts it prints, then `tests/run.sh` (starter voices must stay free to use).
 3. **Version.** Raise `version` in `extension/manifest.json` (every upload needs a higher one). Never change
    `browser_specific_settings.gecko.id` (`neural-voices@jca374.github.io`): signing and updates depend on it.
-4. **Build and lint.** `./build.sh` → `dist/neural-voices-<version>.zip` (no tests, docs or dev files; it runs
-   `web-ext lint` on the result). Fix errors (flags and output format: the `web-ext` skill); explain warnings in the submission notes
+4. **Build and lint.** `./build.sh` → `dist/neural-voices-<version>-firefox.zip` (upload this one), `-chromium.zip`
+   and `dist/firefox/` (no tests, docs or dev files; it runs `web-ext lint` on the Firefox build). Fix errors (flags and output format: the `web-ext` skill); explain warnings in the submission notes
    (WebAssembly needs `'wasm-unsafe-eval'`; voice models download from huggingface.co).
 5. **Sign unlisted.** Either the owner uploads the zip at addons.mozilla.org/developers → *Submit a New
-   Add-on* → *On your own*, or with their API keys: `npx web-ext sign --channel=unlisted --source-dir extension`.
+   Add-on* → *On your own*, or with their API keys: `npx web-ext sign --channel=unlisted --source-dir dist/firefox`.
    AMO may ask for source code: point to the public repo. Signing can take up to a day.
 6. **Share.** Put the signed `.xpi` in `dist/`. Friends open it in Firefox and confirm. On Android: save the
    file and install it from Firefox's add-on settings.

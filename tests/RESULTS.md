@@ -12,6 +12,7 @@ covers (`tests/out/.passed/`), so `quick` adds a longer test by itself when its 
 
 | Date | Commit | Run | Result |
 |---|---|---|---|
+| 2026-10-25 | 36a4dbd + build split | `./build.sh` (Firefox and Chromium builds), then firefox/smoke on `dist/firefox`, chromium/smoke on the unpacked Chromium zip | Both pass (12 and 24 checks), no errors. Firefox build: no `offscreen` permission or service worker entry, lint 0 errors and 4 warnings (were 6; the 2 manifest warnings are gone). Two builds give identical zips |
 | 2026-10-25 | clean-up (after f8298dc) | `run.sh all` after the clean-up (licences, engine, 5 starter voices) | Pass, 7 tests, 70 checks, about 2 min. New instant checks: licence files exist, all 170 voices have a licence kind, starter voices free to use (a test with Lisa added flagged her). Build script checked: two builds give the same zip (same SHA-1) |
 | 2026-10-25 | 0dec750 + changes | `run.sh all` after removing 2 duplicate tests | Pass, 7 tests, 70 checks, 135 s (was 170 s). `chromium/read-en-sv` and `firefox/read-en-sv` removed: the smoke tests check the same; the one unique check (reading again starts within 2 s: 0.2 s) moved into the Chromium smoke test |
 | 2026-10-25 | 0dec750 + changes | `run.sh` with nothing changed | All 4 tests skipped (they passed and nothing they cover changed), only the instant checks ran: 4 s |
