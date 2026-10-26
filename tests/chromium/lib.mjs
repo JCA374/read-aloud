@@ -91,7 +91,7 @@ export async function player(page) {
   const call = async (o, f) => (await page.send("Runtime.callFunctionOn", { objectId: o, functionDeclaration: f, returnByValue: true })).result.result.value;
   const status = await obj((n) => cls(n, "status")), voice = await obj((n) => n.nodeName === "SELECT" && cls(n, "voice"));
   const btn = {};
-  for (const b of ["prev", "play", "next", "stop"]) btn[b] = await obj((n) => n.nodeName === "BUTTON" && cls(n, b));
+  for (const b of ["prev", "play", "next", "stop", "settings"]) btn[b] = await obj((n) => n.nodeName === "BUTTON" && cls(n, b));
   return {
     count: (name) => all.filter((n) => n.nodeName === name).length,
     status: () => call(status, "function(){return this.textContent}"),

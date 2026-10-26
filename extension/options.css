@@ -22,6 +22,13 @@ label.check small { color: var(--muted); }
 input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; flex: none; transform: translateY(2px); }
 label.row { display: block; margin: 10px 0 4px; }
 select { display: block; width: 100%; margin-top: 4px; padding: 7px; border-radius: 6px; border: 1px solid var(--line); background: var(--field); color: var(--fg); font: inherit; }
+input[type=search] { display: block; width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--field); color: var(--fg); font: inherit; }
+.filters { display: grid; grid-template-columns: 2fr 1fr; gap: 0 10px; }
+.buttons { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0; }
+#showAll { margin-top: 8px; }
+.keys { margin: 0; padding-left: 18px; font-size: 13.5px; }
+kbd { font: 12px ui-monospace, monospace; padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; background: var(--field); }
+button.move { padding: 5px 7px; }
 input[type=range] { display: block; width: 100%; accent-color: var(--accent); }
 output { float: right; }
 .note { color: var(--muted); font-size: 13px; margin: 8px 0 0; }

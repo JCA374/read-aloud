@@ -28,7 +28,7 @@ check("English page: highlight moves word by word", words.size >= 9, `${words.si
 
 // 3. The player: icons, voice list, controls
 const p = await player(page);
-check("player has its 7 icons", p.count("svg") === 7, `${p.count("svg")} icons`);
+check("player has its 8 icons", p.count("svg") === 8, `${p.count("svg")} icons`);
 const opts = await p.voiceOptions();
 check("player voice list is filled", opts.length >= 5, opts.join(" / "));
 check("player shows Cori for English", (await p.voice()) === CORI, await p.voice());

@@ -104,6 +104,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       .then(sendResponse);
     return true;
   }
+  if (msg.type === "openOptions") {
+    chrome.runtime.openOptionsPage();
+    return;
+  }
   if (msg.type === "voices") {
     sendResponse(PIPER_VOICES);
     return;

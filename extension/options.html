@@ -19,14 +19,24 @@
 
     <section>
       <h2>Your voices</h2>
-      <p class="hint">These show in the player and popup. A voice downloads once, the first time it's used, or now with <b>Download</b>. It's then kept in the browser and works offline.</p>
+      <p class="hint">These show in the player and popup, in this order. A voice downloads once, the first time it's used, or now with <b>Download</b>. It's then kept in the browser and works offline. <b>▶ Try</b> plays a short sample.</p>
       <div id="mine" class="rows"></div>
     </section>
 
     <section>
       <h2>Add voices</h2>
-      <label class="row">Language <select id="addLang"></select></label>
+      <input id="search" type="search" placeholder="Search all voices: name, language or country" aria-label="Search voices">
+      <div class="filters">
+        <label class="row">Language <select id="addLang"></select></label>
+        <label class="row">Quality <select id="quality">
+          <option value="">Any</option><option value="x_low">Extra low</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option>
+        </select></label>
+      </div>
+      <label class="check"><input type="checkbox" id="freeOnly"> Hide voices with a non-commercial or unclear licence</label>
+      <label class="check"><input type="checkbox" id="downloadedOnly"> Only voices already downloaded</label>
+      <p id="addCount" class="note"></p>
       <div id="add" class="rows"></div>
+      <button id="showAll" type="button" hidden>Show all</button>
     </section>
 
     <section>
@@ -37,7 +47,7 @@
     </section>
 
     <section>
-      <h2>Playback</h2>
+      <h2>Reading</h2>
       <label class="row">Speed <output id="speedOut"></output>
         <input id="speed" type="range" min="0.75" max="2" step="0.05">
       </label>
@@ -47,11 +57,31 @@
       </label>
       <label class="row">Highlight <select id="highlight"></select></label>
       <p class="hint">How the sentence and the word being read are marked on the page.</p>
+      <label class="row">Pause after each sentence <select id="pause">
+        <option value="0">None</option><option value="0.2">Short (0.2 s)</option><option value="0.5">Long (0.5 s)</option>
+      </select></label>
+      <label class="check"><input type="checkbox" id="autoScroll"> Scroll the page to follow the reading</label>
+      <label class="check"><input type="checkbox" id="skipCode"> Skip code blocks</label>
+      <h3>Keyboard shortcuts</h3>
+      <div id="shortcuts"></div>
+    </section>
+
+    <section>
+      <h2>Storage and settings</h2>
+      <p id="storage" class="hint"></p>
+      <div class="buttons">
+        <button id="deleteAll" type="button">Delete all downloads</button>
+        <button id="reset" type="button">Reset settings</button>
+        <button id="export" type="button">Export settings</button>
+        <button id="import" type="button">Import settings…</button>
+        <input id="importFile" type="file" accept=".json,application/json" hidden>
+      </div>
+      <p class="hint">Reset and import change only settings: downloaded voices stay. Export saves a small file you can import in another browser.</p>
     </section>
 
     <section>
       <h2>Credits</h2>
-      <p class="hint">Neural Voices runs these inside your browser. Your text never leaves your computer; the only network use is downloading voices.</p>
+      <p class="hint">Neural Voices runs these inside your browser. Your text never leaves your computer. The only network use is downloading voices, and the samples <b>▶ Try</b> plays (from rhasspy.github.io).</p>
       <ul class="credits">
         <li><b>Piper</b> voice models and format, by Michael Hansen and the Piper contributors (<a href="https://github.com/rhasspy/piper" target="_blank" rel="noopener">source</a>). Each voice's own licence is shown next to it above.</li>
         <li><b>ONNX Runtime Web</b> 1.30, by Microsoft. MIT licence (<a href="https://github.com/microsoft/onnxruntime" target="_blank" rel="noopener">source</a>).</li>

@@ -13,7 +13,8 @@ automatically), and 170 voices in 49 languages can be added.
 
 Word highlighting is estimated (Piper doesn't report word times). A voice downloads from
 huggingface.co/rhasspy/piper-voices the first time it's used and is kept in the browser's cache.
-That download is the add-on's only network request.
+That download is the add-on's only network request, apart from the short samples *▶ Try* plays in
+Settings (from rhasspy.github.io/piper-samples).
 
 ```
 extension/          the add-on (Firefox + Chromium, Manifest V3)
@@ -56,16 +57,23 @@ Loading `extension/` directly in Firefox works too, with a harmless warning abou
 Picking another voice in the player or the popup while it reads restarts the current sentence in
 that voice.
 
-**Settings** (popup → *Settings*, or the add-on's options):
-- *Your voices*: the voices in the player and popup. Download a voice ahead of time, delete a
-  download to free disk space, or remove it from the list. Each shows its size and licence; voices that
-  are non-commercial, share-alike or have no stated licence are tagged.
-- *Add voices*: browse the catalogue by language and add voices to your list.
+**Settings** (⚙ on the player, popup → *Settings*, or the add-on's options):
+- *Your voices*: the voices in the player and popup, in list order (↑ ↓ to move). Download a voice ahead
+  of time, delete a download to free disk space, or remove it from the list. Each shows its size and
+  licence; voices that are non-commercial, share-alike or have no stated licence are tagged.
+  *▶ Try* plays the Piper project's sample of the voice (no model download); offline, a downloaded
+  voice reads "1, 2, 3, 4, 5" instead.
+- *Add voices*: search all voices (name, language, country), or filter by language, quality,
+  licence (hide non-commercial and unclear) and downloaded. 50 rows, then *Show all*.
 - *Language*: detection on or off, and the default voice for each language in your list (or, with
   detection off, the one voice to always use). English and Swedish are recognised from the words,
   paragraph by paragraph, so a page that mixes them switches voice; other languages come from the
   page's `lang` attribute.
-- *Playback*: speed, volume, and the highlight style (yellow/orange, blue, green, underline, off).
+- *Reading*: speed, volume, the highlight style (yellow/orange, blue, green, underline, off), a pause
+  after each sentence, follow the reading by scrolling, skip code blocks (`<pre>`), and the keyboard
+  shortcuts with where to change them.
+- *Storage and settings*: size of the downloaded voices, *Delete all downloads*, *Reset settings*,
+  *Export* / *Import* settings as a JSON file (unknown keys, wrong types and unknown voices are dropped).
 
 Only one tab reads at a time. The floating player has previous/next sentence, speed (0.75–2×) and
 voice controls. The current sentence is highlighted, the current word more strongly.

@@ -21,6 +21,7 @@ firefox/smoke||extension|150
 chromium/voice-management|PROFILE=nv-fresh-profile|extension/options.* extension/catalog.js extension/common.js extension/engine/piper-worker.js|240
 chromium/download-failure|PROFILE=nv-fresh-profile;EXTRA=--host-resolver-rules=MAP huggingface.co ~NOTFOUND|extension/engine extension/background.js extension/offscreen.*|150
 chromium/settings-voice-switch|KEEP=1|extension|150
+chromium/settings-extras|KEEP=1|extension/options.* extension/common.js extension/content.js extension/background.js tests/site/code.html|200
 chromium/older-revision|KEEP=1;EXTRA=--host-resolver-rules=MAP huggingface.co ~NOTFOUND|extension/engine/piper-worker.js extension/options.js|150
 chromium/mixed-and-controls|KEEP=1|extension|200
 chromium/warm-up|KEEP=1|extension/engine extension/offscreen.* extension/background.js|150
@@ -29,7 +30,7 @@ chromium/memory|KEEP=1;TIMEOUT=1000|extension/engine extension/offscreen.* exten
 firefox/memory|TIMEOUT=700|extension/engine extension/offscreen.* extension/background.js|760
 "
 QUICK="chromium/smoke firefox/smoke"
-AFFECTED="chromium/voice-management chromium/download-failure chromium/older-revision"   # added to quick when their files changed
+AFFECTED="chromium/voice-management chromium/download-failure chromium/older-revision chromium/settings-extras"   # added to quick when their files changed
 ALL="chromium/smoke firefox/smoke $AFFECTED chromium/settings-voice-switch chromium/mixed-and-controls"
 TIMING="chromium/warm-up chromium/long-page-cpu chromium/memory firefox/memory"
 

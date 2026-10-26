@@ -19,6 +19,9 @@ var NV = (() => {
     speed: 1.0,
     volume: 1.0,
     highlight: "classic", // classic | blue | green | underline | off
+    autoScroll: true, // keep the sentence being read in view
+    pause: 0, // extra seconds of silence after each sentence
+    skipCode: true, // don't read code blocks (<pre>)
   };
 
   const HIGHLIGHTS = {

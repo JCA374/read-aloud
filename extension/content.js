@@ -94,6 +94,7 @@
         if (!n.data.trim() || !range.intersectsNode(n)) return SKIPNODE;
         const el = n.parentElement;
         if (!el || el.closest(SKIP) || isFootnoteMark(el)) return SKIPNODE;
+        if (settings.skipCode && el.closest("pre")) return SKIPNODE; // code blocks
         if (skipBoilerplate && isBoilerplate(el, root)) return SKIPNODE;
         return isVisible(el, visible) ? ACCEPT : SKIPNODE;
       },
@@ -258,7 +259,7 @@
   });
 
   function scrollToRange(r) {
-    if (!r || Date.now() - lastUserScroll < 4000) return;
+    if (!r || !settings.autoScroll || Date.now() - lastUserScroll < 4000) return;
     const rect = r.getBoundingClientRect();
     if (!rect.height) return;
     if (rect.top < 60 || rect.bottom > innerHeight - 120) {
@@ -402,9 +403,9 @@
       src.onended = () => {
         if (this.source !== src) return;
         this.source = null;
-        // Pause a little longer between paragraphs than between sentences.
+        // Pause a little longer between paragraphs than between sentences (plus the pause from Settings).
         const next = this.segs[i + 1];
-        this.playIndex(i + 1, next && next.chunk !== seg.chunk ? 0.3 : 0);
+        this.playIndex(i + 1, (next && next.chunk !== seg.chunk ? 0.3 : 0) + (settings.pause || 0));
       };
       this.source = src;
       this.startAt = this.ctx.currentTime + gap;
@@ -715,6 +716,10 @@
     next: [["path", { d: "M16 5h2v14h-2zM5 6.2v11.6a.8.8 0 0 0 1.2.7l8.2-5.8a.8.8 0 0 0 0-1.4L6.2 5.5A.8.8 0 0 0 5 6.2z" }]],
     stop: [["rect", { x: 6, y: 6, width: 12, height: 12, rx: 2 }]],
     click: [["path", { d: "M9 3.5v11.2l2.7-2.6 2 4.6 2.2-1-2-4.5h3.8z" }]],
+    settings: [ // a ring with eight teeth
+      ["circle", { cx: 12, cy: 12, r: 8.2, fill: "none", stroke: "currentColor", "stroke-width": 3.2, "stroke-dasharray": "3.2 3.24" }],
+      ["circle", { cx: 12, cy: 12, r: 5.6, fill: "none", stroke: "currentColor", "stroke-width": 2.6 }],
+    ],
     close: [["path", { d: "M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4z" }]],
     speaker: [
       ["path", { d: "M4 9.5v5h3.5L12 19V5L7.5 9.5zM15 8.5a5 5 0 0 1 0 7M17.5 6a8.5 8.5 0 0 1 0 12", stroke: "currentColor", "stroke-width": 1.8, fill: "none", "stroke-linecap": "round" }],
@@ -813,6 +818,7 @@
           h("select", { class: "voice", title: "Voice" }),
           button("click", "Click-to-read: click any paragraph to start reading there (Esc to leave)", "click"),
           h("span", { class: "status" }),
+          button("settings small", "Settings: voices, languages, reading", "settings"),
           button("close small", "Close", "close"),
         ),
         button("bubble", "Read selection aloud", "speaker"),
@@ -825,6 +831,7 @@
       $(".stop").onclick = () => player.stop();
       this.els.play.onclick = () => player.toggle();
       this.els.click.onclick = () => setClickMode(!clickMode);
+      $(".settings").onclick = () => chrome.runtime.sendMessage({ type: "openOptions" }).catch(() => {});
       $(".close").onclick = () => {
         player.stop();
         setClickMode(false);

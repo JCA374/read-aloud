@@ -12,6 +12,7 @@ covers (`tests/out/.passed/`), so `quick` adds a longer test by itself when its 
 
 | Date | Commit | Run | Result |
 |---|---|---|---|
+| 2026-10-26 | d314799 + Settings update | `run.sh all` (9 tests) after the Settings update | Pass after test fixes: firefox/smoke 14 checks, chromium/smoke 24 (icon count now 8), voice-management 13, download-failure 3, older-revision 5, settings-extras 18, settings-voice-switch 7, mixed-and-controls 12. `./build.sh`: lint 0 errors, same 4 warnings |
 | 2026-10-25 | 36a4dbd + build split | `./build.sh` (Firefox and Chromium builds), then firefox/smoke on `dist/firefox`, chromium/smoke on the unpacked Chromium zip | Both pass (12 and 24 checks), no errors. Firefox build: no `offscreen` permission or service worker entry, lint 0 errors and 4 warnings (were 6; the 2 manifest warnings are gone). Two builds give identical zips |
 | 2026-10-25 | clean-up (after f8298dc) | `run.sh all` after the clean-up (licences, engine, 5 starter voices) | Pass, 7 tests, 70 checks, about 2 min. New instant checks: licence files exist, all 170 voices have a licence kind, starter voices free to use (a test with Lisa added flagged her). Build script checked: two builds give the same zip (same SHA-1) |
 | 2026-10-25 | 0dec750 + changes | `run.sh all` after removing 2 duplicate tests | Pass, 7 tests, 70 checks, 135 s (was 170 s). `chromium/read-en-sv` and `firefox/read-en-sv` removed: the smoke tests check the same; the one unique check (reading again starts within 2 s: 0.2 s) moved into the Chromium smoke test |
@@ -43,6 +44,9 @@ Re-run when: `extension/options.*`, `popup.*`, `common.js`, `catalog.js`, `engin
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-26 | d314799 + Settings update | chromium/settings-extras (new) | Pass, 18 checks: Try played rhasspy.github.io sample; fallback read locally (blob audio); "thor" → 4 Thorsten voices; licence filter hid Lisa; all languages 50 → 165; ↑ swapped Alba/Cori; storage "1, 64 MB"; reset + import restored speed 1.25, blue, pause 0.5, order; bad file cleaned to `{shown:[Cori]}`; code.html 5 pieces skipped vs 7; scroll 287 px on, 0 off. First runs failed on test mistakes only (fresh profile without Cori, wrong tab in front, status read during "Rendering…") |
+| 2026-10-26 | d314799 + Settings update | firefox/smoke | Pass, 14 checks: Try plays the online sample; shortcuts list shows Alt+Shift+R and the Firefox "Manage Extension Shortcuts" hint |
+| 2026-10-26 | — | online samples, curl | All 170 catalogue voices have `speaker_0.mp3` on rhasspy.github.io/piper-samples (HTTP 200) |
 | 2026-10-25 | clean-up (after f8298dc) | chromium/older-revision (new, KEEP, huggingface.co blocked) | Pass, 5 checks. Cori's files moved to a made-up older revision: Settings shows "✓ Downloaded", reading starts with downloads blocked, files end up under the current revision and the old copies are gone |
 | 2026-10-25 | clean-up (after f8298dc) | chromium/voice-management (fresh) | Pass, 13 checks. New: German list shows "Licence unclear" on Eva K, Karlsson, Ramona, "Non-commercial" on Pavoque, no tag on Thorsten (CC0). Screenshot looked right |
 | 2026-10-25 | clean-up (after f8298dc) | chromium/settings-voice-switch, download-failure (KEEP / fresh) | Pass, 7 and 3 checks |

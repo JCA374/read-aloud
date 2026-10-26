@@ -232,7 +232,8 @@
       <div class="feature"><h3>Follow along</h3><p>The sentence is shaded and the spoken word is marked, in the colours you choose. The page scrolls with the reading unless you scroll yourself.</p></div>
       <div class="feature"><h3>Many languages</h3><p>English and Swedish are recognised from the words, paragraph by paragraph, so mixed pages switch voice. Other languages follow what the page says it's written in.</p></div>
       <div class="feature"><h3>Starts fast, doesn't stall</h3><p>Reading starts with a short piece and keeps a minute of audio ready ahead. Opening the toolbar popup gets your voice ready, so the first words come in under a second.</p></div>
-      <div class="feature"><h3>Your own voice list</h3><p>Keep just the voices you like in the player. Pick a default voice for each language. Change voice while it reads and the sentence starts again in the new voice.</p></div>
+      <div class="feature"><h3>Your own voice list</h3><p>Keep just the voices you like in the player, in the order you like. Pick a default voice for each language. Change voice while it reads and the sentence starts again in the new voice.</p></div>
+      <div class="feature"><h3>Settings one click away</h3><p>The ⚙ button on the player opens Settings. Press <b>▶ Try</b> to hear any voice before you add it. Search all 170 voices, filter by quality or licence, and see how much space downloads use. Export your settings to a file and import them in another browser.</p></div>
       <div class="feature"><h3>Natural at any speed</h3><p>Speed is changed inside the voice, so it never sounds squeaky or slowed down. 0.75× to 2×.</p></div>
       <div class="feature"><h3>Light when idle</h3><p>Only one tab reads at a time. After you stop, it uses no CPU, and after a few quiet minutes it frees its memory.</p></div>
     </div>
@@ -241,6 +242,7 @@
   <section aria-labelledby="voice-h">
     <h2 id="voice-h">Voices</h2>
     <p>Neural Voices uses <a href="https://github.com/rhasspy/piper">Piper</a> voices. It starts with five, and Settings has <b>170 voices in 49 languages</b> to add. A voice downloads once, the first time you use it (most are about 63 MB), and then works offline. Settings shows each voice's size and licence, tags voices that are for non-commercial use or have no stated licence, and lets you delete downloads. The five starter voices are free to use.</p>
+    <figure style="margin:16px 0 0"><img src="media/settings.png" alt="The Settings page: your voices with Try, Remove and move buttons; searching and filtering voices to add; reading options; storage and settings." style="max-width:100%;height:auto;border:1px solid var(--line, #ddd);border-radius:8px"><figcaption style="font-size:13px;opacity:.75">Settings: your voices and adding new ones (left), reading options and storage (right).</figcaption></figure>
     <div class="voicecols">
       <div class="vgroup">
         <h3>English <span class="tag">· starter voices</span></h3>
@@ -281,6 +283,7 @@
           <tr><td><kbd>Alt+Shift+X</kbd></td><td>Stop reading.</td></tr>
           <tr><td><kbd>Esc</kbd></td><td>Stop reading, or leave click-to-read.</td></tr>
           <tr><td>Right-click</td><td><b>Read aloud</b> for a selection, or <b>Read aloud from here</b> anywhere on the page.</td></tr>
+          <tr><td>Change keys</td><td>Settings lists the keys and shows where to change them.</td></tr>
         </tbody>
       </table>
     </div>
@@ -288,7 +291,7 @@
 
   <section aria-labelledby="priv-h">
     <h2 id="priv-h">Privacy</h2>
-    <p>Everything runs inside your browser: the text you read is never sent anywhere. The only network use is downloading a voice the first time you use it, from Piper's official voice collection on huggingface.co, pinned to a fixed version and size-checked. No analytics, no accounts. Settings are stored in your browser.</p>
+    <p>Everything runs inside your browser: the text you read is never sent anywhere. The only network use is downloading a voice the first time you use it, from Piper's official voice collection on huggingface.co, pinned to a fixed version and size-checked, and playing a short sample from Piper's sample page (rhasspy.github.io) when you press <b>▶ Try</b> in Settings. No analytics, no accounts. Settings are stored in your browser.</p>
   </section>
 
   <section aria-labelledby="cred-h">
@@ -301,24 +304,25 @@
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 25 October 2026, after splitting the build: Firefox gets its own build without the Chromium-only parts, so it shows no manifest warnings.</p>
+    <p class="meta">Updated 26 October 2026, after the Settings update: a ⚙ button on the player, ▶ Try for every voice, search and filters, voice order, storage, reset, export and import, and new reading options.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
-      <div class="tile ok"><span class="n">23</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan, plus licences, a repeatable build, voices kept when the catalogue updates, and at most two voices in memory</span></div>
-      <div class="tile warn"><span class="n">5</span><span class="l">Built, not tested yet</span><span class="d">A really slow computer, clicking through Firefox by hand, listening by ear, word timing, keyboard shortcuts</span></div>
+      <div class="tile ok"><span class="n">24</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan, plus licences, a repeatable build, voices kept when the catalogue updates, at most two voices in memory, and the bigger Settings page</span></div>
+      <div class="tile warn"><span class="n">6</span><span class="l">Built, not tested yet</span><span class="d">A really slow computer, clicking through Firefox by hand, listening by ear, word timing, keyboard shortcuts, the pause after each sentence</span></div>
       <div class="tile todo"><span class="n">4</span><span class="l">Left to do</span><span class="d">Step 4: privacy note, permissions, signing, optional public listing</span></div>
     </div>
   </section>
 
   <section class="next" aria-labelledby="next-h">
     <h2 id="next-h">Do this next: reload the add-on</h2>
-    <p>The add-on's code changed (licences, Settings, the engine). Firefox keeps your downloaded voices.</p>
+    <p>The add-on's code changed (Settings, the player, reading options). Firefox keeps your downloaded voices.</p>
     <ol class="steps">
       <li><span>Open
         <span class="copy"><code id="u1">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u1" type="button">Copy</button></span>
         and click <b>Reload</b> under Neural Voices (if it isn't there: <b>Load Temporary Add-on…</b> and pick <code>extension/manifest.json</code>). Then reload the pages you read. The yellow warning about <code>"offscreen"</code> there is harmless: Firefox skips that Chromium-only part. For no warning, load <code>dist/firefox/manifest.json</code> instead (run <code>./build.sh</code> after each change).</span></li>
-      <li><span>Open Settings. <b>Lisa</b> now shows a yellow <b>Licence unclear</b> tag: her model card names no licence. She stays in your list; remove her if you only want clearly licensed voices. New installs start with five voices.</span></li>
+      <li><span>Start reading a page and click the new <b>⚙</b> on the player. In Settings, press <b>▶ Try</b> on a few voices, type a name or language in the search box, and look at <b>Reading</b> and <b>Storage and settings</b> at the bottom. Tell me what you'd change.</span></li>
+      <li><span><b>Lisa</b> shows a yellow <b>Licence unclear</b> tag: her model card names no licence. She stays in your list; remove her if you only want clearly licensed voices.</span></li>
       <li><span>Listen to <code>dist/speed-samples/</code> in the project folder: "in-voice" is how the add-on changes speed, "played-faster" is the cheap way, for comparison. Tell me if 2× sounds too rushed.</span></li>
       <li><span>When you want it to stay installed, or to share it, say <b>go for step 4</b> (signing).</span></li>
     </ol>
@@ -329,7 +333,7 @@
     <p>The plan says to use it yourself first and only release it when it feels clean and fast. Signing and listing on Mozilla's add-ons site are free.</p>
     <ul class="status">
       <li><span class="chip ok">Done</span><span class="item"><b>Licence check.</b> See "Licences checked" under What works.</span></li>
-      <li><span class="chip todo">To do</span><span class="item"><b>Privacy note.</b> Text never leaves the computer; the only network use is the one-time voice download.</span></li>
+      <li><span class="chip todo">To do</span><span class="item"><b>Privacy note.</b> Text never leaves the computer; the only network use is the one-time voice download and the samples played by ▶ Try.</span></li>
       <li><span class="chip todo">To do</span><span class="item"><b>Fewest permissions.</b> Now that the server is gone, the add-on asks for no website access of its own, only to run on the pages you read. Write a one-line reason for each permission.</span></li>
       <li><span class="chip ok">Done</span><span class="item"><b>Clean build and Mozilla's check.</b> <code>./build.sh</code> makes the upload file and checks it. Left for signing day: explain the 4 known warnings in the submission notes.</span></li>
       <li><span class="chip todo">To do</span><span class="item"><b>Signing (unlisted).</b> Upload to addons.mozilla.org as "On your own". It comes back signed (can take up to a day), stays installed in normal Firefox, and can be sent to friends, also on Android.</span></li>
@@ -362,6 +366,7 @@
       <li><span class="chip ok">Tested</span><span class="item"><b>Licences checked.</b> The add-on is free software under the GPL-3.0, which espeak-ng (included) requires. <code>LICENSE</code>, <code>THIRD-PARTY-NOTICES</code> and <code>licenses/</code> list every included part with its exact version, source and licence text, and go into the upload file. Settings tags voices that are non-commercial, share-alike or have no stated licence. Lisa (no licence named) is no longer a starter voice; the five starters are free to use.<span class="how">All six engine files compared byte for byte with the official npm packages: identical. Licence texts taken from the exact versions used. All 170 model cards read: 113 free to use, 13 share-alike, 23 non-commercial, 32 no licence stated. Settings showed the tags correctly (German list: 3 "Licence unclear", 1 "Non-commercial", none on Thorsten). The quick test now fails if a starter voice isn't free to use (tried with Lisa: flagged).</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>A clean, repeatable build, one per browser.</b> <code>./build.sh</code> makes <code>dist/neural-voices-0.3.0-firefox.zip</code> (31 files) and <code>-chromium.zip</code> (33 files), 13 MB each, with the licence files and without tests or notes. The Firefox build leaves out the hidden "offscreen" page and its permission, which only Chromium uses, so Firefox no longer warns about them. It's also unpacked in <code>dist/firefox/</code>.<span class="how">Built twice: identical files (same checksums). Firefox smoke test on the Firefox build: 12 checks pass; Chromium smoke test on the Chromium zip: 24 pass. Mozilla's checker on the Firefox build: 0 errors, 4 warnings (was 6). The 4 left: 3 lines in the background script that only Chromium runs, and 1 inside ONNX Runtime.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Voices survive catalogue updates.</b> When the voice list moves to a newer version of Piper's collection, voices you already downloaded are kept instead of downloading again.<span class="how">New automatic test: Cori's files moved to an older version's address, download site blocked. Settings still showed Cori as downloaded, reading started, and the files moved to the new address.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>A bigger Settings page.</b> A ⚙ button on the player opens it. Every voice has <b>▶ Try</b>: it plays Piper's own short sample, so you hear a voice without the 63 MB download; offline, a downloaded voice says "1, 2, 3, 4, 5" instead. Search all voices, filter by language, quality, licence or downloaded, move voices up and down in your list. Storage shows the downloads' size, with <b>Delete all downloads</b>. <b>Reset</b>, <b>Export</b> and <b>Import</b> settings (downloads stay). New reading options: follow the reading by scrolling (on/off), skip code blocks (on by default), a pause after each sentence. The keyboard shortcuts are listed, with where to change them.<span class="how">New automatic test in Chromium, 18 checks, all pass: ⚙ opened Settings; Try played the online sample, Stop stopped it, and with the sample blocked Cori read one locally; "thor" found 4 Thorsten voices; the licence filter hid Lisa; "all languages" showed 50 then all 165 not in your list; ↑ swapped the first two voices; storage showed "1, 64 MB"; reset, then import, gave back the exported settings; a bad file's unknown voices and wrong values were dropped; a page with a code block had 5 pieces with skipping on, 7 with it off; with scrolling on the page moved 287 px, with it off 0. Firefox: the sample played and the shortcut text showed. The online samples were checked for all 170 voices: every one exists. All other tests re-run in both browsers: pass.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>At most two voices in memory.</b> Each loaded voice holds about 60–100 MB; the engine now keeps only the two used last (enough for a page mixing two languages), and never unloads the one that's speaking.<span class="how">The Chromium smoke test uses three voices in a row: passes with no errors. Memory re-measured: Chromium +390–575 MB while reading, 240 MB freed after 5 idle minutes; Firefox +300–320 MB, back to the start 30 s after Stop. Start-up unchanged: first sound 3.4 s cold, page blocked 0.13 s on a 400-paragraph page.</span></span></li>
     </ul>
   </section>
@@ -373,6 +378,7 @@
       <li><span class="chip warn">Not tested</span><span class="item"><b>Clicking through Firefox by hand.</b> Firefox was tested by scripts, not by a person using the speaker bubble, popup and player.</span></li>
       <li><span class="chip warn">Not tested</span><span class="item"><b>Listening by ear.</b> Speed and pitch were measured; nobody has listened to the samples or the volume slider yet.</span></li>
       <li><span class="chip warn">Not tested</span><span class="item"><b>Word timing.</b> Piper doesn't say when each word starts, so the highlight is estimated. It may run a little ahead or behind.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Pause after each sentence.</b> The setting is saved and used, but no test measures the silence between sentences yet. Listen with "Long (0.5 s)" to judge it.</span></li>
       <li><span class="chip warn">Not tested</span><span class="item"><b>Keyboard shortcuts.</b> The test browsers can't press add-on shortcuts. They use the same code as the popup buttons, which are tested.</span></li>
     </ul>
   </section>
@@ -420,6 +426,7 @@
       <div class="slip"><span class="what">The test speed-up session stopped halfway (25 October).</span><span class="cost">The terminal closed during the first run of the new test command. Nothing was lost; the work was picked up from the saved plan and the files on disk.</span></div>
       <div class="slip"><span class="what">Five mistakes in the new tests themselves.</span><span class="cost">The settings check looked for a part of the page by an old name. One check waited for a message the add-on only writes when reading stops. One looked at only the first 3 German voices. One Firefox test never opened an add-on page to send its commands from. And a Firefox "read" command could go to a tab that was just closing. Each one failed a run and cost 1–3 minutes to fix and re-run. None was a fault in the add-on.</span></div>
       <div class="slip"><span class="what">Clean-up session (25 October), Claude Opus 5.5, planned first, then built.</span><span class="cost">Small slips, each caught before it reached a commit: a style rule for dark mode written in the wrong order (would have lost to the light one), a warning in the catalogue tool that would always have flagged Lisa, a screenshot script that expected an argument the test runner doesn't pass (1 minute), and a planned fix for a flaky check that an earlier session had already removed. No test failed because of the add-on.</span></div>
+      <div class="slip"><span class="what">Settings session (26 October), Claude Opus 5.5, planned first, then built.</span><span class="cost">The add-on worked on the first full run; four mistakes were in the new test. It assumed Cori was already downloaded, but changing the background script makes the test browser start fresh. It sent "read page" to the Settings tab the ⚙ button had just opened. It read the player's status while it still said "Rendering…". And the smoke test still expected 7 player icons, not 8. Each cost one re-run of 1–2 minutes.</span></div>
       <div class="slip"><span class="what">Too much text in the terminal.</span><span class="cost">You said the replies were hard to read. That's why this page exists.</span></div>
     </div>
     <div class="verdict">
