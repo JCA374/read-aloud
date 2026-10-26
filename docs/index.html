@@ -183,6 +183,9 @@
 
   /* ---------- about: install ---------- */
   pre.cmd { margin: 0; background: var(--code-bg); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font: 14px/1.6 var(--mono); }
+  .tbl.git td:first-child, .tbl.cmds td:last-child { white-space: nowrap; }
+  ul.changes { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+  ul.changes b { display: inline-block; min-width: 52px; }
   .cmdwrap { display: grid; gap: 6px; }
   .cmdwrap .cp { justify-self: start; }
   .install ol.steps > li > div { display: grid; gap: 8px; min-width: 0; }
@@ -272,14 +275,61 @@
 
   <section class="install" id="install" aria-labelledby="inst-h">
     <h2 id="inst-h">Install</h2>
-    <p>There's no signed release yet, so for now you load it from the source code. Nothing else needs installing.</p>
+    <p>There's no signed release yet, so for now you load it from the code on GitHub. Nothing else needs installing: no server, no Python, no accounts.</p>
     <ol class="steps">
-      <li><div><span><b>Get the code</b> (or download it as a ZIP from GitHub and unpack it)</span>
-        <div class="cmdwrap"><pre class="cmd" id="c1">git clone https://github.com/JCA374/read-aloud.git</pre><button class="cp" data-copy="c1" type="button">Copy</button></div></div></li>
-      <li><div><span><b>Firefox:</b> open <span class="copy"><code id="u0">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u0" type="button">Copy</button></span>, click <b>Load Temporary Add-on…</b> and pick <code>extension/manifest.json</code>. Firefox removes it when it restarts, until there's a signed version.</span>
-        <span><b>Chromium:</b> open <code>chrome://extensions</code>, turn on <b>Developer mode</b>, click <b>Load unpacked</b> and pick the <code>extension</code> folder. It stays installed.</span></div></li>
-      <li><div><span><b>Reload</b> the pages you want to hear, then select text and click the speaker, or press <b>Read page</b> in the toolbar popup. The first time, the voice downloads (a few seconds).</span></div></li>
+      <li><div><span><b>Get the code</b> (or click <b>Code → Download ZIP</b> on <a href="https://github.com/JCA374/read-aloud">GitHub</a> and unpack it)</span>
+        <div class="cmdwrap"><pre class="cmd" id="c1">git clone https://github.com/JCA374/read-aloud.git
+cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button></div></div></li>
+      <li><div><span><b>Firefox:</b> open <span class="copy"><code id="u0">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u0" type="button">Copy</button></span>, click <b>Load Temporary Add-on…</b> and pick <code>extension/manifest.json</code>. Firefox shows a yellow note about <code>"offscreen"</code>: that's harmless, it's a part only Chromium uses. Firefox removes the add-on when it restarts, until there's a signed version.</span>
+        <span><b>Chromium</b> (Chrome, Edge, Brave): open <code>chrome://extensions</code>, turn on <b>Developer mode</b>, click <b>Load unpacked</b> and pick the <code>extension</code> folder. It stays installed.</span></div></li>
+      <li><div><span><b>Reload</b> the pages you want to hear, then select text and click the speaker, or press <b>Read page</b> in the toolbar popup. The first time, the voice downloads (about 63 MB, a few seconds). Click <b>⚙</b> on the player to choose voices.</span></div></li>
     </ol>
+  </section>
+
+  <section aria-labelledby="git-h">
+    <h2 id="git-h">The code on GitHub</h2>
+    <p>Everything is public at <a href="https://github.com/JCA374/read-aloud">github.com/JCA374/read-aloud</a>, under the GPL-3.0 licence. The <code>main</code> branch is always the version that passed the tests. This page is built from the same repository.</p>
+    <h3>Get the newest version</h3>
+    <div class="cmdwrap"><pre class="cmd" id="c2">git pull</pre><button class="cp" data-copy="c2" type="button">Copy</button></div>
+    <p>Then click <b>Reload</b> under Neural Voices (Firefox: <code>about:debugging</code>; Chromium: <code>chrome://extensions</code>) and reload your open pages. Your settings and downloaded voices stay.</p>
+    <h3>What's where</h3>
+    <div class="tbl git">
+      <table>
+        <tbody>
+          <tr><td><code>extension/</code></td><td>The add-on itself. Load this folder. The player and page reading are in <code>content.js</code>, Settings in <code>options.*</code>, the toolbar popup in <code>popup.*</code>.</td></tr>
+          <tr><td><code>extension/engine/</code></td><td>The voice engine: Piper running as WebAssembly in a background worker (ONNX Runtime Web and espeak-ng, unchanged copies of the official packages).</td></tr>
+          <tr><td><code>extension/catalog.js</code></td><td>The list of 170 voices, pinned to one fixed version of Piper's voice collection, with sizes and licences. Made by <code>tools/make-catalog.mjs</code>.</td></tr>
+          <tr><td><code>build.sh</code></td><td>Makes the files to install or upload: one zip for Firefox, one for Chromium, in <code>dist/</code>.</td></tr>
+          <tr><td><code>tests/</code></td><td>Automatic tests that drive real Chromium and Firefox. Results are logged in <code>tests/RESULTS.md</code>.</td></tr>
+          <tr><td><code>LICENSE</code>, <code>THIRD-PARTY-NOTICES</code></td><td>The GPL-3.0 text and every included part with its version, source and licence.</td></tr>
+          <tr><td><code>docs/</code></td><td>This page.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Build and test</h3>
+    <div class="tbl cmds">
+      <table>
+        <tbody>
+          <tr><td>Make the install files: <code>dist/neural-voices-0.3.0-firefox.zip</code> and <code>-chromium.zip</code>. Firefox can also load <code>dist/firefox/manifest.json</code>, which has no "offscreen" note</td><td><code>./build.sh</code></td></tr>
+          <tr><td>Check a change in both browsers (about 1.5 min)</td><td><code>tests/run.sh</code></td></tr>
+          <tr><td>Run every test (needs Node.js, Chromium and Firefox)</td><td><code>tests/run.sh all</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Recent changes</h3>
+    <ul class="changes">
+      <li><b>26 Oct</b> Settings shows voice licences as plain text, without warning tags.</li>
+      <li><b>26 Oct</b> Bigger Settings: ⚙ on the player, ▶ Try for every voice, search and filters, voice order, storage, reset, export and import, reading options.</li>
+      <li><b>25 Oct</b> Separate Firefox and Chromium builds.</li>
+      <li><b>25 Oct</b> Licences checked and included; repeatable build; at most two voices in memory.</li>
+      <li><b>25 Oct</b> Faster automatic tests in both browsers side by side.</li>
+      <li><b>25 Oct</b> Passes Mozilla's add-on checker.</li>
+      <li><b>23 Oct</b> Intro video on this page, narrated by the add-on's own voices.</li>
+      <li><b>22 Oct</b> The add-on runs Piper inside the browser; the old local server is gone.</li>
+      <li><b>22 Oct</b> 170 voices in 49 languages, downloads with progress, Swedish and mixed-language pages.</li>
+      <li><b>21 Oct</b> First version.</li>
+    </ul>
+    <p class="meta">Full history: <a href="https://github.com/JCA374/read-aloud/commits/main">commits on GitHub</a>.</p>
   </section>
 
   <section aria-labelledby="keys-h">
@@ -312,7 +362,7 @@
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 26 October 2026, after removing the licence tags: Settings now shows each voice's licence as plain text, with no "Licence unclear" or "Non-commercial" warnings, since the add-on is for personal use.</p>
+    <p class="meta">Updated 26 October 2026, after adding a GitHub section to the About tab (getting and updating the code, what's where, build and test, recent changes) and after removing the licence tags: Settings now shows each voice's licence as plain text, with no "Licence unclear" or "Non-commercial" warnings, since the add-on is for personal use.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
