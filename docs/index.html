@@ -365,7 +365,7 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 26 October 2026, after checking the add-on against Mozilla's add-on policies: it meets them; reviewer notes and a library check are ready for signing.</p>
+    <p class="meta">Updated 26 October 2026, after testing Kokoro's "Heart" voice on the graphics card: best 0.87× real time, still too slow, so it wasn't added.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
@@ -473,7 +473,7 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
         </tbody>
       </table>
     </div>
-    <h3>Kokoro's "Heart" voice: measured, too slow for now</h3>
+    <h3>Kokoro's "Heart" voice: measured on the processor and the graphics card, too slow for now</h3>
     <p>Kokoro (the model behind the af_heart voice) may be added: it and its voices are Apache-2.0, which fits the add-on's GPL-3.0. But it's about 4 times bigger than a Piper voice, and in the browser's CPU engine it can't keep up with speech. Making 7.8 s of speech took (ONNX Runtime 1.30, the same engine the add-on uses):</p>
     <div class="tbl">
       <table>
@@ -482,11 +482,14 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
           <tr><td>325 MB model, one core</td><td class="num">45 s: 0.17×</td></tr>
           <tr><td>92 MB model, four cores</td><td class="num">31 s: 0.25×</td></tr>
           <tr><td>325 MB model, four cores</td><td class="num">16 s: 0.48×</td></tr>
+          <tr><td>Graphics card (WebGPU, Chromium), 92 MB model</td><td class="num">42 s: 0.19×</td></tr>
+          <tr><td>Graphics card (WebGPU, Chromium), 325 MB model</td><td class="num">14 s: 0.56×</td></tr>
+          <tr><td>Graphics card (WebGPU, Chromium), 163 MB half-size model</td><td class="num">8.8 s: 0.87× (best)</td></tr>
           <tr><td>For comparison: a Piper voice, one core</td><td class="num">about 3× real time</td></tr>
         </tbody>
       </table>
     </div>
-    <p>It needs to be faster than 1× to read without pauses. The one way left is the graphics card (WebGPU), which works in Chromium but not yet everywhere in Firefox, and isn't measured here.</p>
+    <p>It needs to be faster than 1× to read without pauses. Even the best case (the graphics card in Chromium, this computer's built-in Intel UHD 620) stays under 1×, so reading would stop for about a second after every long sentence, after a 163 MB download. Firefox 158 on Linux has no WebGPU at all (checked: no <code>navigator.gpu</code>), so in Firefox only the processor rows apply. Not added. Worth trying again on a computer with a stronger graphics card, or when Firefox gets WebGPU on Linux.</p>
   </section>
 
   <section class="review" aria-labelledby="review-h">
