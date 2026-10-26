@@ -40,12 +40,7 @@ await opt.ev(`(() => { const s = document.querySelector('#search'); s.value = 't
 const found = await opt.ev(`[...document.querySelectorAll('#add .voice b')].map(b => b.textContent).join(', ')`);
 check("search 'thor' finds Thorsten in all languages", /Thorsten/.test(found) && (await opt.ev(`document.querySelector('#addLang').value`)) === "all", found);
 await opt.ev(`(() => { const s = document.querySelector('#search'); s.value = ''; s.dispatchEvent(new Event('input')); })()`);
-await opt.ev(`(() => { const s = document.querySelector('#addLang'); s.value = 'sv'; s.dispatchEvent(new Event('change')); })()`);
-const sv = await opt.ev(`[...document.querySelectorAll('#add .voice b')].map(b => b.textContent).join(', ')`);
-await opt.ev(`document.querySelector('#freeOnly').click()`);
-const svFree = await opt.ev(`[...document.querySelectorAll('#add .voice b')].map(b => b.textContent).join(', ')`);
-check("hiding non-commercial and unclear licences hides Lisa (unclear)", /Lisa/.test(sv) && !/Lisa/.test(svFree), `${sv} -> ${svFree}`);
-await opt.ev(`document.querySelector('#freeOnly').click()`);
+check("no licence filter", !(await opt.ev(`document.querySelector('#freeOnly')`)));
 await opt.ev(`(() => { const s = document.querySelector('#addLang'); s.value = 'all'; s.dispatchEvent(new Event('change')); })()`);
 const capped = await opt.ev(`[document.querySelectorAll('#add .voice').length, document.querySelector('#addCount').textContent, document.querySelector('#showAll').hidden]`);
 await opt.ev(`document.querySelector('#showAll').click()`);

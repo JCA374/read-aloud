@@ -60,11 +60,11 @@ that voice.
 **Settings** (⚙ on the player, popup → *Settings*, or the add-on's options):
 - *Your voices*: the voices in the player and popup, in list order (↑ ↓ to move). Download a voice ahead
   of time, delete a download to free disk space, or remove it from the list. Each shows its size and
-  licence; voices that are non-commercial, share-alike or have no stated licence are tagged.
+  licence (as named on its model card, with a link to the card).
   *▶ Try* plays the Piper project's sample of the voice (no model download); offline, a downloaded
   voice reads "1, 2, 3, 4, 5" instead.
-- *Add voices*: search all voices (name, language, country), or filter by language, quality,
-  licence (hide non-commercial and unclear) and downloaded. 50 rows, then *Show all*.
+- *Add voices*: search all voices (name, language, country), or filter by language, quality
+  and downloaded. 50 rows, then *Show all*.
 - *Language*: detection on or off, and the default voice for each language in your list (or, with
   detection off, the one voice to always use). English and Swedish are recognised from the words,
   paragraph by paragraph, so a page that mixes them switches voice; other languages come from the

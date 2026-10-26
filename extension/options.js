@@ -4,7 +4,7 @@ const REPO = "https://huggingface.co/rhasspy/piper-voices/resolve/"; // files fr
 const SAMPLES = "https://rhasspy.github.io/piper-samples/samples"; // the Piper project's sample of every voice
 const DETAILS = Object.fromEntries(NV_CATALOG.voices.map((v) => [v.id, v]));
 const ADD_LIMIT = 50; // rows shown under "Add voices" before "Show all"
-const FILTER_DEFAULTS = { lang: "en", quality: "", freeOnly: false, downloadedOnly: false };
+const FILTER_DEFAULTS = { lang: "en", quality: "", downloadedOnly: false };
 
 let settings;
 let voices; // all voices in the catalogue
@@ -123,12 +123,6 @@ async function trySample(id) {
 
 // ---------------------------------------------------------------- voice rows
 
-// Licences that limit what you may do with the voice's audio get a tag: [text, explanation].
-const LICENCE_TAGS = {
-  "non-commercial": ["Non-commercial", "Fine for personal use; not for anything you sell or earn from."],
-  "share-alike": ["Share-alike", "Free to use; things you make from it and share must use the same licence."],
-  unclear: ["Licence unclear", "The model card doesn't state a licence. Personal use only, to be safe."],
-};
 const QUALITY = { x_low: "extra low quality", low: "low quality", high: "high quality" };
 
 // One voice: name, details, licence, and its buttons (the first one is the main action).
@@ -138,8 +132,10 @@ function voiceRow(v, buttons) {
   let state = null;
   if (d && progress[v.id] != null) state = el("span", { className: "state" }, el("progress", { max: 100, value: progress[v.id] }), ` ${progress[v.id]}%`);
   else if (d && downloaded.has(v.id)) state = el("span", { className: "state ok", textContent: "✓ Downloaded" });
-  const tag = d && LICENCE_TAGS[d.kind];
-  const licence = d && el("div", { className: "licence" }, tag ? el("span", { className: `tag ${d.kind}`, title: tag[1], textContent: tag[0] }) : null, `Licence: ${d.licence}`, d.card ? " · " : "", d.card ? el("a", { href: fileUrl(d.card), target: "_blank", rel: "noopener", textContent: "model card" }) : null);
+  // The licence as the model card names it (left out when it names none), and a link to the card.
+  const named = d && d.kind !== "unclear" ? `Licence: ${d.licence}` : null;
+  const card = d?.card ? el("a", { href: fileUrl(d.card), target: "_blank", rel: "noopener", textContent: "model card" }) : null;
+  const licence = d && el("div", { className: "licence" }, named, named && card ? " · " : null, card);
   const tryButton = button(trying === v.id ? "■ Stop" : "▶ Try", () => trySample(v.id), { className: "try", title: "Play a short sample of this voice" });
   const [main, ...rest] = buttons;
   return el(
@@ -176,8 +172,12 @@ function renderMine() {
           disabled: mine.length < 2,
           title: mine.length < 2 ? "Keep at least one voice" : "Remove from your list (the download is kept)",
         }),
-        button("↑", () => move(i, -1), { className: "move up", disabled: i === 0, title: "Move up" }),
-        button("↓", () => move(i, 1), { className: "move down", disabled: i === mine.length - 1, title: "Move down" }),
+        el(
+          "span",
+          { className: "order" },
+          button("↑", () => move(i, -1), { className: "move up", disabled: i === 0, title: "Move up" }),
+          button("↓", () => move(i, 1), { className: "move down", disabled: i === mine.length - 1, title: "Move down" }),
+        ),
       );
       return voiceRow(v, buttons);
     }),
@@ -192,7 +192,6 @@ function filterVoices(all, f, q, mine, have) {
     if (mine.has(v.id) || !d) return false;
     if (f.lang !== "all" && v.lang !== f.lang) return false;
     if (f.quality && d.quality !== f.quality) return false;
-    if (f.freeOnly && (d.kind === "non-commercial" || d.kind === "unclear")) return false;
     if (f.downloadedOnly && !have.has(v.id)) return false;
     const text = `${v.label} ${d.langName} ${d.country} ${v.id}`.toLowerCase();
     return words.every((w) => text.includes(w));
@@ -210,7 +209,6 @@ function renderAdd() {
   select.value = filter.lang;
   if (select.value !== filter.lang) select.value = filter.lang = "en";
   $("quality").value = filter.quality;
-  $("freeOnly").checked = filter.freeOnly;
   $("downloadedOnly").checked = filter.downloadedOnly;
   const mine = NV.shownVoices(voices, settings);
   const rows = filterVoices(voices, filter, query, new Set(mine.map((v) => v.id)), downloaded);
@@ -347,7 +345,6 @@ function render() {
 
 $("addLang").onchange = () => setFilter({ lang: $("addLang").value });
 $("quality").onchange = () => setFilter({ quality: $("quality").value });
-$("freeOnly").onchange = () => setFilter({ freeOnly: $("freeOnly").checked });
 $("downloadedOnly").onchange = () => setFilter({ downloadedOnly: $("downloadedOnly").checked });
 $("search").oninput = () => {
   query = $("search").value;

@@ -44,6 +44,7 @@ Re-run when: `extension/options.*`, `popup.*`, `common.js`, `catalog.js`, `engin
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-26 | Settings update + tags removed | chromium/voice-management, chromium/settings-extras, then quick run | Pass (13, 18; smoke 24 and 14, older-revision 5). No `.tag` anywhere; Thorsten shows "Licence: CC0"; voices with no named licence show only the model card link; the licence filter is gone |
 | 2026-10-26 | d314799 + Settings update | chromium/settings-extras (new) | Pass, 18 checks: Try played rhasspy.github.io sample; fallback read locally (blob audio); "thor" → 4 Thorsten voices; licence filter hid Lisa; all languages 50 → 165; ↑ swapped Alba/Cori; storage "1, 64 MB"; reset + import restored speed 1.25, blue, pause 0.5, order; bad file cleaned to `{shown:[Cori]}`; code.html 5 pieces skipped vs 7; scroll 287 px on, 0 off. First runs failed on test mistakes only (fresh profile without Cori, wrong tab in front, status read during "Rendering…") |
 | 2026-10-26 | d314799 + Settings update | firefox/smoke | Pass, 14 checks: Try plays the online sample; shortcuts list shows Alt+Shift+R and the Firefox "Manage Extension Shortcuts" hint |
 | 2026-10-26 | — | online samples, curl | All 170 catalogue voices have `speaker_0.mp3` on rhasspy.github.io/piper-samples (HTTP 200) |
