@@ -27,3 +27,6 @@ button:disabled { opacity: .5; cursor: default; }
 .text span { position: absolute; color: transparent; white-space: pre; transform-origin: 0 0; cursor: text; }
 .text span::selection { background: rgba(0, 100, 255, .25); }
 .text .para { display: contents; }
+/* The highlight colours only the background here: the text layer's own letters (another font) must stay
+   invisible, or they show as a second copy over the printed text. */
+.text span::highlight(nv-classic-word), .text span::highlight(nv-blue-word), .text span::highlight(nv-green-word) { color: transparent; }

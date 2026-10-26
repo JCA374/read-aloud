@@ -30,6 +30,8 @@ check("Read button reads the PDF, words highlighted", !!word, JSON.stringify(wor
 const words = new Set();
 await waitFor(async () => { const w = await hl(v, "word"); if (w) words.add(w); return words.size >= 6; }, 15000);
 check("highlight moves through the PDF text", words.size >= 6, [...words].join(" "));
+const ghost = await v.ev(`getComputedStyle(document.querySelector('.text span'), '::highlight(nv-classic-word)').color`);
+check("the highlight colours only the background (no second copy of the text over the PDF's)", ghost === "rgba(0, 0, 0, 0)", ghost);
 const st = await status();
 check("popup and shortcuts reach the viewer (status by tab message)", st?.state === "playing", JSON.stringify(st));
 await toAll("toggle");

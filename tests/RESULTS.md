@@ -45,6 +45,7 @@ Re-run when: `extension/options.*`, `popup.*`, `common.js`, `catalog.js`, `engin
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-26 | PDF highlight fix | chromium/pdf, firefox/smoke | Pass (15, 16). New check: the word highlight's text colour is transparent in the viewer (failed with the old CSS: white). Screenshots: doc.pdf and a real two-column paper (arXiv 1706.03762, not committed): highlight on the printed words, no ghost copy |
 | 2026-10-26 | PDF viewer (0.4.0) | chromium/pdf (new) | Pass, 14 checks: doc.pdf from the test server, 4 paragraphs, "light-"+"house" joined, 2 pages drawn, read with moving word highlight, status/pause/stop via `NV.sendToTab`, zoom keeps the text, Chromium's own PDF viewer hands over on Read and reading starts. Fixed on the way: the viewer answered the engine's internal runtime messages (now only `cmd` messages) |
 | 2026-10-26 | PDF viewer (0.4.0) | firefox/smoke | Pass, 16 checks: the viewer read doc.pdf (4 paragraphs, words highlighted) |
 | 2026-10-26 | Settings update + tags removed | chromium/voice-management, chromium/settings-extras, then quick run | Pass (13, 18; smoke 24 and 14, older-revision 5). No `.tag` anywhere; Thorsten shows "Licence: CC0"; voices with no named licence show only the model card link; the licence filter is gone |
