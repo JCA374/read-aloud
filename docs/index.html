@@ -157,43 +157,25 @@
   .reader p { font-size: clamp(19px, 3.4vw, 23px); line-height: 1.55; max-width: none; }
   .reader .sent { background: var(--hl-sentence); border-radius: 4px; padding: 2px 0; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
   .reader .word.on { background: var(--hl-word); color: #fff; border-radius: 4px; }
-  .player { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
-  .player .pp { width: 34px; height: 34px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; }
-  .player .pp svg { width: 16px; height: 16px; fill: #fff; }
-  .player .pill { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; }
   .cta { display: flex; gap: 10px; flex-wrap: wrap; }
   .btn { font: 600 16px var(--sans); text-decoration: none; padding: 10px 18px; border-radius: 10px; border: 1px solid var(--line); color: var(--ink); background: var(--surface); }
   .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-  /* ---------- about: features ---------- */
-  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); overflow: hidden; }
-  .feature { padding: 18px; display: grid; gap: 6px; align-content: start; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 0 -1px -1px 0; }
-  .feature h3 { font-size: 17px; }
-  .feature p { font-size: 15px; color: var(--muted); }
-
-  /* ---------- about: voices ---------- */
-  .voicecols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
-  .vgroup { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 10px; align-content: start; }
-  .vgroup .tag { font-size: 13px; color: var(--muted); }
-  .vlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-  .vlist li { display: flex; justify-content: space-between; gap: 10px; font-size: 15px; border-top: 1px dashed var(--line); padding-top: 6px; }
-  .vlist li:first-child { border-top: 0; padding-top: 0; }
-  .vlist .who { color: var(--muted); }
+  /* ---------- about: lists and screenshot ---------- */
+  ol.plain, ul.plain { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 65ch; }
+  .shot { margin: 0; display: grid; gap: 6px; }
+  .shot img { max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; }
+  .shot figcaption { font-size: 14px; color: var(--muted); }
 
   /* ---------- about: install ---------- */
   pre.cmd { margin: 0; background: var(--code-bg); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font: 14px/1.6 var(--mono); }
-  .tbl.git td:first-child, .tbl.cmds td:last-child { white-space: nowrap; }
-  ul.changes { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
-  ul.changes b { display: inline-block; min-width: 52px; }
   .cmdwrap { display: grid; gap: 6px; }
   .cmdwrap .cp { justify-self: start; }
   .install ol.steps > li > div { display: grid; gap: 8px; min-width: 0; }
   .note { font-size: 15px; color: var(--muted); }
   kbd { white-space: nowrap; }
   .devhead { display: grid; gap: 6px; }
-  .video { display: grid; gap: 10px; }
-  .video video { width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; border: 1px solid var(--line); background: #000; }
   .devhead p { color: var(--muted); }
 </style>
 
@@ -209,14 +191,10 @@
 
   <div class="panel" id="about" role="tabpanel" aria-labelledby="tab-about">
   <section class="hero" aria-labelledby="hero-h">
-    <h1 id="hero-h">Hear any web page, read by a natural voice inside your browser</h1>
-    <p class="lede">Neural Voices is a Firefox add-on (it also works in Chromium). Select text or press play, and it reads to you while highlighting each word. The voices run inside the browser itself: nothing else to install, free, and the text you read never leaves your computer.</p>
+    <h1 id="hero-h">Neural Voices reads web pages aloud</h1>
+    <p class="lede">A free browser add-on for Firefox (it also works in Chrome, Edge and Brave). It reads articles and PDFs to you in a natural voice and marks each word as it is spoken.</p>
     <div class="reader" aria-label="Example of the reading highlight">
       <p id="demo"><span class="sent">The storm arrived just after midnight, and the light kept turning.</span> She counted the seconds between each flash.</p>
-      <div class="player" aria-hidden="true">
-        <span class="pp"><svg viewBox="0 0 24 24"><rect x="6.5" y="5" width="4" height="14" rx="1"/><rect x="13.5" y="5" width="4" height="14" rx="1"/></svg></span>
-        <span class="pill">1×</span><span class="pill">Cori (UK)</span><span>1 / 2</span>
-      </div>
     </div>
     <div class="cta">
       <a class="btn primary" href="#install">Install</a>
@@ -224,115 +202,43 @@
     </div>
   </section>
 
-  <section class="video" id="video" aria-labelledby="video-h">
-    <h2 id="video-h">See it in under two minutes</h2>
-    <video controls preload="none" poster="media/intro.jpg">
-      <source src="media/intro.mp4" type="video/mp4">
-      <track kind="captions" src="media/intro.vtt" srclang="en" label="English" default>
-      Your browser can't play this video. <a href="media/intro.mp4">Download it (2 MB)</a>.
-    </video>
-    <p class="note">Narrated by Neural Voices itself, so these are synthetic voices: Cori (trained on public-domain recordings from LibriVox) and <a href="https://huggingface.co/yeagersthlm/piper-voice-sv-alma">Alma</a> by yeagersthlm (CC BY 4.0, used unchanged). Captions are included.</p>
+  <section aria-labelledby="how-h">
+    <h2 id="how-h">How it works</h2>
+    <ol class="plain">
+      <li><b>Pick what to hear.</b> Select some text and click the speaker button, or press <b>Read page</b> in the toolbar.</li>
+      <li><b>Listen and follow along.</b> The sentence is shaded and the spoken word is marked. The page scrolls with the reading.</li>
+      <li><b>Control it from the small player.</b> Pause, change speed (0.75× to 2×), switch voice, or stop.</li>
+    </ol>
+    <p>The voices run inside your browser. There is no server and no account, and your text never leaves your computer.</p>
   </section>
 
   <section aria-labelledby="feat-h">
-    <h2 id="feat-h">What it does</h2>
-    <div class="features">
-      <div class="feature"><h3>Read a selection</h3><p>Select text and a speaker button appears where you let go of the mouse. Click it to listen.</p></div>
-      <div class="feature"><h3>Read the whole page</h3><p>Starts at the title of the article. Skips menus, sidebars, footers and footnote marks like [1].</p></div>
-      <div class="feature"><h3>Click to read</h3><p>Turn it on, then click any sentence. Reading starts at that exact sentence and carries on from there.</p></div>
-      <div class="feature"><h3>Follow along</h3><p>The sentence is shaded and the spoken word is marked, in the colours you choose. The page scrolls with the reading unless you scroll yourself.</p></div>
-      <div class="feature"><h3>Many languages</h3><p>English and Swedish are recognised from the words, paragraph by paragraph, so mixed pages switch voice. Other languages follow what the page says it's written in.</p></div>
-      <div class="feature"><h3>Starts fast, doesn't stall</h3><p>Reading starts with a short piece and keeps a minute of audio ready ahead. Opening the toolbar popup gets your voice ready, so the first words come in under a second.</p></div>
-      <div class="feature"><h3>Your own voice list</h3><p>Keep just the voices you like in the player, in the order you like. Pick a default voice for each language. Change voice while it reads and the sentence starts again in the new voice.</p></div>
-      <div class="feature"><h3>PDFs too</h3><p>Press <b>Read page</b> on a PDF, or right-click a link to one and choose <b>Read PDF aloud</b>. It opens in Neural Voices' own PDF viewer, which reads it with the same highlighting. Open PDFs from your computer from the popup, or drag one in.</p></div>
-      <div class="feature"><h3>Settings one click away</h3><p>The ⚙ button on the player opens Settings. Press <b>▶ Try</b> to hear any voice before you add it. Search all 170 voices, filter by language or quality, and see how much space downloads use. Export your settings to a file and import them in another browser.</p></div>
-      <div class="feature"><h3>Natural at any speed</h3><p>Speed is changed inside the voice, so it never sounds squeaky or slowed down. 0.75× to 2×.</p></div>
-      <div class="feature"><h3>Light when idle</h3><p>Only one tab reads at a time. After you stop, it uses no CPU, and after a few quiet minutes it frees its memory.</p></div>
-    </div>
+    <h2 id="feat-h">What it can do</h2>
+    <ul class="plain">
+      <li>Reads the main article and skips menus, sidebars and footers.</li>
+      <li>Reads PDFs, from the web or from your computer.</li>
+      <li>Click any sentence to start reading from there.</li>
+      <li>English and Swedish are recognised automatically, so mixed pages switch voice.</li>
+      <li>170 voices in 49 languages. Press <b>▶ Try</b> in Settings to hear one before you add it.</li>
+      <li>Works offline once a voice is downloaded.</li>
+    </ul>
   </section>
 
   <section aria-labelledby="voice-h">
     <h2 id="voice-h">Voices</h2>
-    <p>Neural Voices uses <a href="https://github.com/rhasspy/piper">Piper</a> voices. It starts with five, and Settings has <b>170 voices in 49 languages</b> to add. A voice downloads once, the first time you use it (most are about 63 MB), and then works offline. Settings shows each voice's size and licence, with a link to its model card, and lets you delete downloads. Neural Voices is made for personal use; the five starter voices are free to use for anything.</p>
-    <figure style="margin:16px 0 0"><img src="media/settings.png" alt="The Settings page: your voices with Try, Remove and move buttons; searching and filtering voices to add; reading options; storage and settings." style="max-width:100%;height:auto;border:1px solid var(--line, #ddd);border-radius:8px"><figcaption style="font-size:13px;opacity:.75">Settings: your voices and adding new ones (left), reading options and storage (right).</figcaption></figure>
-    <div class="voicecols">
-      <div class="vgroup">
-        <h3>English <span class="tag">· starter voices</span></h3>
-        <ul class="vlist">
-          <li><span>Cori</span><span class="who">UK English, woman</span></li>
-          <li><span>Alba</span><span class="who">Scottish English, woman</span></li>
-          <li><span>Northern English</span><span class="who">UK English, man</span></li>
-        </ul>
-      </div>
-      <div class="vgroup">
-        <h3>Swedish <span class="tag">· starter voices</span></h3>
-        <ul class="vlist">
-          <li><span>Alma</span><span class="who">Swedish, woman</span></li>
-          <li><span>NST</span><span class="who">Swedish, man</span></li>
-        </ul>
-      </div>
-    </div>
+    <p>Neural Voices uses <a href="https://github.com/rhasspy/piper">Piper</a> voices. It comes with five: Cori, Alba and a Northern English voice for English, and Alma and NST for Swedish. A voice downloads once, the first time you use it (most are about 63 MB). Settings shows each voice's licence.</p>
+    <figure class="shot"><img src="media/settings.png" alt="The Settings page: your voices with Try and Remove buttons, searching voices to add, reading options and storage."><figcaption>The Settings page.</figcaption></figure>
   </section>
 
   <section class="install" id="install" aria-labelledby="inst-h">
     <h2 id="inst-h">Install</h2>
-    <p>There's no signed release yet, so for now you load it from the code on GitHub. Nothing else needs installing: no server, no Python, no accounts.</p>
+    <p>The add-on isn't in the add-on stores yet. For now, load it from the code:</p>
     <ol class="steps">
-      <li><div><span><b>Get the code</b> (or click <b>Code → Download ZIP</b> on <a href="https://github.com/JCA374/read-aloud">GitHub</a> and unpack it)</span>
-        <div class="cmdwrap"><pre class="cmd" id="c1">git clone https://github.com/JCA374/read-aloud.git
-cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button></div></div></li>
-      <li><div><span><b>Firefox:</b> open <span class="copy"><code id="u0">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u0" type="button">Copy</button></span>, click <b>Load Temporary Add-on…</b> and pick <code>extension/manifest.json</code>. Firefox shows a yellow note about <code>"offscreen"</code>: that's harmless, it's a part only Chromium uses. Firefox removes the add-on when it restarts, until there's a signed version.</span>
-        <span><b>Chromium</b> (Chrome, Edge, Brave): open <code>chrome://extensions</code>, turn on <b>Developer mode</b>, click <b>Load unpacked</b> and pick the <code>extension</code> folder. It stays installed.</span></div></li>
-      <li><div><span><b>Reload</b> the pages you want to hear, then select text and click the speaker, or press <b>Read page</b> in the toolbar popup. The first time, the voice downloads (about 63 MB, a few seconds). Click <b>⚙</b> on the player to choose voices.</span></div></li>
+      <li><div><span><b>Get the code:</b> on <a href="https://github.com/JCA374/read-aloud">GitHub</a>, click <b>Code → Download ZIP</b> and unpack it.</span></div></li>
+      <li><div><span><b>Firefox:</b> open <span class="copy"><code id="u0">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u0" type="button">Copy</button></span>, click <b>Load Temporary Add-on…</b> and pick <code>extension/manifest.json</code>. Firefox removes it again when it restarts.</span>
+        <span><b>Chrome, Edge or Brave:</b> open <code>chrome://extensions</code>, turn on <b>Developer mode</b>, click <b>Load unpacked</b> and pick the <code>extension</code> folder.</span></div></li>
+      <li><div><span><b>Reload</b> the page you want to hear, then press <b>Read page</b> in the toolbar.</span></div></li>
     </ol>
-  </section>
-
-  <section aria-labelledby="git-h">
-    <h2 id="git-h">The code on GitHub</h2>
-    <p>Everything is public at <a href="https://github.com/JCA374/read-aloud">github.com/JCA374/read-aloud</a>, under the GPL-3.0 licence. The <code>main</code> branch is always the version that passed the tests. This page is built from the same repository.</p>
-    <h3>Get the newest version</h3>
-    <div class="cmdwrap"><pre class="cmd" id="c2">git pull</pre><button class="cp" data-copy="c2" type="button">Copy</button></div>
-    <p>Then click <b>Reload</b> under Neural Voices (Firefox: <code>about:debugging</code>; Chromium: <code>chrome://extensions</code>) and reload your open pages. Your settings and downloaded voices stay.</p>
-    <h3>What's where</h3>
-    <div class="tbl git">
-      <table>
-        <tbody>
-          <tr><td><code>extension/</code></td><td>The add-on itself. Load this folder. The player and page reading are in <code>content.js</code>, Settings in <code>options.*</code>, the toolbar popup in <code>popup.*</code>.</td></tr>
-          <tr><td><code>extension/engine/</code></td><td>The voice engine: Piper running as WebAssembly in a background worker (ONNX Runtime Web and espeak-ng, unchanged copies of the official packages).</td></tr>
-          <tr><td><code>extension/pdf-viewer.js</code>, <code>pdf/</code></td><td>The PDF viewer, and pdf.js (Mozilla's PDF engine) that it uses.</td></tr>
-          <tr><td><code>extension/catalog.js</code></td><td>The list of 170 voices, pinned to one fixed version of Piper's voice collection, with sizes and licences. Made by <code>tools/make-catalog.mjs</code>.</td></tr>
-          <tr><td><code>build.sh</code></td><td>Makes the files to install or upload: one zip for Firefox, one for Chromium, in <code>dist/</code>.</td></tr>
-          <tr><td><code>tests/</code></td><td>Automatic tests that drive real Chromium and Firefox. Results are logged in <code>tests/RESULTS.md</code>.</td></tr>
-          <tr><td><code>LICENSE</code>, <code>THIRD-PARTY-NOTICES</code></td><td>The GPL-3.0 text and every included part with its version, source and licence.</td></tr>
-          <tr><td><code>docs/</code></td><td>This page.</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <h3>Build and test</h3>
-    <div class="tbl cmds">
-      <table>
-        <tbody>
-          <tr><td>Make the install files: <code>dist/neural-voices-0.4.0-firefox.zip</code> and <code>-chromium.zip</code>. Firefox can also load <code>dist/firefox/manifest.json</code>, which has no "offscreen" note</td><td><code>./build.sh</code></td></tr>
-          <tr><td>Check a change in both browsers (about 1.5 min)</td><td><code>tests/run.sh</code></td></tr>
-          <tr><td>Run every test (needs Node.js, Chromium and Firefox)</td><td><code>tests/run.sh all</code></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <h3>Recent changes</h3>
-    <ul class="changes">
-      <li><b>26 Oct</b> Reads PDFs, in its own PDF viewer.</li>
-      <li><b>26 Oct</b> Settings shows voice licences as plain text, without warning tags.</li>
-      <li><b>26 Oct</b> Bigger Settings: ⚙ on the player, ▶ Try for every voice, search and filters, voice order, storage, reset, export and import, reading options.</li>
-      <li><b>25 Oct</b> Separate Firefox and Chromium builds.</li>
-      <li><b>25 Oct</b> Licences checked and included; repeatable build; at most two voices in memory.</li>
-      <li><b>25 Oct</b> Faster automatic tests in both browsers side by side.</li>
-      <li><b>25 Oct</b> Passes Mozilla's add-on checker.</li>
-      <li><b>23 Oct</b> Intro video on this page, narrated by the add-on's own voices.</li>
-      <li><b>22 Oct</b> The add-on runs Piper inside the browser; the old local server is gone.</li>
-      <li><b>22 Oct</b> 170 voices in 49 languages, downloads with progress, Swedish and mixed-language pages.</li>
-      <li><b>21 Oct</b> First version.</li>
-    </ul>
-    <p class="meta">Full history: <a href="https://github.com/JCA374/read-aloud/commits/main">commits on GitHub</a>.</p>
   </section>
 
   <section aria-labelledby="keys-h">
@@ -340,11 +246,9 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
     <div class="tbl">
       <table>
         <tbody>
-          <tr><td><kbd>Alt+Shift+R</kbd></td><td>Read the selection or the page. Press again to pause or resume, from any tab.</td></tr>
-          <tr><td><kbd>Alt+Shift+X</kbd></td><td>Stop reading.</td></tr>
-          <tr><td><kbd>Esc</kbd></td><td>Stop reading, or leave click-to-read.</td></tr>
-          <tr><td>Right-click</td><td><b>Read aloud</b> for a selection, or <b>Read aloud from here</b> anywhere on the page.</td></tr>
-          <tr><td>Change keys</td><td>Settings lists the keys and shows where to change them.</td></tr>
+          <tr><td><kbd>Alt+Shift+R</kbd></td><td>Read, pause or resume.</td></tr>
+          <tr><td><kbd>Alt+Shift+X</kbd> or <kbd>Esc</kbd></td><td>Stop.</td></tr>
+          <tr><td>Right-click</td><td><b>Read aloud</b> or <b>Read aloud from here</b>.</td></tr>
         </tbody>
       </table>
     </div>
@@ -352,12 +256,12 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
 
   <section aria-labelledby="priv-h">
     <h2 id="priv-h">Privacy</h2>
-    <p>Everything runs inside your browser: the text you read is never sent anywhere. The only network use is downloading a voice the first time you use it, from Piper's official voice collection on huggingface.co, pinned to a fixed version and size-checked, playing a short sample from Piper's sample page (rhasspy.github.io) when you press <b>▶ Try</b> in Settings, and fetching a PDF you ask it to read from the site it's on (the first time for a site, it may ask your permission). No analytics, no accounts. Settings are stored in your browser.</p>
+    <p>The text you read is never sent anywhere. The add-on only goes online to download a voice the first time you use it (from Piper's voice collection on huggingface.co), to play a short sample when you press <b>▶ Try</b>, and to fetch a PDF you ask it to read. No analytics, no accounts. Settings stay in your browser.</p>
   </section>
 
   <section aria-labelledby="cred-h">
     <h2 id="cred-h">Credits</h2>
-    <p>Built on <a href="https://github.com/rhasspy/piper">Piper</a> (voices), <a href="https://github.com/microsoft/onnxruntime">ONNX Runtime Web</a> (runs the voice, MIT licence) and <a href="https://github.com/rhasspy/espeak-ng">espeak-ng</a> (turns text into speech sounds, GPL-3.0) with <a href="https://github.com/rhasspy/piper-phonemize">piper-phonemize</a> (MIT), compiled for the browser by <a href="https://github.com/diffusion-studio/piper-wasm">piper-wasm</a>. Because espeak-ng is GPL-3.0, Neural Voices is free software under the GPL-3.0 too; the add-on carries the full licence texts and a list of every included part. Each voice has its own licence, shown in Settings.</p>
+    <p>Built on <a href="https://github.com/rhasspy/piper">Piper</a>, <a href="https://github.com/microsoft/onnxruntime">ONNX Runtime Web</a>, <a href="https://github.com/rhasspy/espeak-ng">espeak-ng</a>, <a href="https://github.com/diffusion-studio/piper-wasm">piper-wasm</a> and <a href="https://mozilla.github.io/pdf.js/">pdf.js</a>. Neural Voices is free software under the GPL-3.0 licence. The code is on <a href="https://github.com/JCA374/read-aloud">GitHub</a>.</p>
   </section>
   </div>
 
@@ -365,11 +269,11 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 26 October 2026, after Mozilla signed version 0.4.0 (unlisted, passed the automatic check).</p>
+    <p class="meta">Updated 26 October 2026, after the About tab was rewritten as a short, simple page and the intro video was removed.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
-      <div class="tile ok"><span class="n">25</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan, plus licences, a repeatable build, voices kept when the catalogue updates, at most two voices in memory, the bigger Settings page, and reading PDFs</span></div>
+      <div class="tile ok"><span class="n">24</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan, plus licences, a repeatable build, voices kept when the catalogue updates, at most two voices in memory, the bigger Settings page, and reading PDFs</span></div>
       <div class="tile warn"><span class="n">7</span><span class="l">Built, not tested yet</span><span class="d">A really slow computer, clicking through Firefox by hand, listening by ear, word timing, keyboard shortcuts, the pause after each sentence, PDFs from Firefox's own viewer and real websites</span></div>
       <div class="tile todo"><span class="n">1</span><span class="l">Left to do</span><span class="d">Step 4: optional public listing (signing done)</span></div>
     </div>
@@ -420,7 +324,6 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
       <li><span class="chip ok">Tested</span><span class="item"><b>Steady memory.</b> About 300–550 MB more while reading, flat over time.<span class="how">6 minutes at 2× on a 400-paragraph page in Chromium, 3 minutes in Firefox, sampled every 30 s.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Nothing left running.</b> After Stop the audio pauses; after 5 quiet minutes the engine shuts down and frees its memory.<span class="how">Firefox: CPU 0 within a minute and memory back to the start within 2 minutes (it used to keep about 8% of a core busy; fixed). Chromium: CPU 0, 210 MB freed, hidden engine page closed.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Old server removed.</b> No server code, no Kokoro, no permission to talk to <code>127.0.0.1</code>. On this computer: the auto-start service, menu icon, Python environment (1.6 GB) and server voices (242 MB) are deleted.<span class="how">Tests re-run afterwards in both browsers: passing. The project and its pages no longer mention the server except as history.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Intro video on the homepage.</b> 10 slides (purpose, how it looks, auto-detect, your voices, speed, privacy, voice licences, credits, how to try it), narrated by the add-on's own voices, with captions. Rebuild with <code>tools/video/make-video.sh</code>.<span class="how">103 s, 2.2 MB, H.264 + AAC. Frames at 5, 32, 52 and 95 s show the right slides; no silent gaps over 2 s; captions timed from the voice's word timings. Licences checked: Cori's recordings are public domain, Alma is CC BY 4.0 and credited, no share-alike or non-commercial voices used. Nobody has listened to it yet.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Passes Mozilla's add-on checker.</b> No errors. The add-on no longer builds its player or voice lists from HTML text, which Mozilla's reviewers flag, and it says which Firefox for Android it needs.<span class="how"><code>web-ext lint</code>: 12 warnings before, 6 after. The 6 left can't be fixed here: 5 are parts only Chromium uses (Firefox skips them) and 1 is inside ONNX Runtime, the voice engine's own code. Re-tested afterwards in Chromium and Firefox (reading, settings, voice lists, player controls, a screenshot of the player): all pass, no errors.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Fast, automatic tests.</b> One command, <code>tests/run.sh</code>, runs quick checks and a short "smoke" test in Chromium and Firefox at the same time, and skips any test whose files haven't changed since it last passed. Every test now prints a clear pass or fail line and waits for things to happen instead of waiting fixed times. A stuck test is stopped after its time limit. Results are logged in <code>tests/RESULTS.md</code>.<span class="how">Normal check: 92 s (it used to take over 20 minutes, choosing and running tests by hand). With nothing changed: 4 s. All tests: 135 s, all passing; they took 514 s one after another before. Two tests that only repeated the smoke tests were removed. With the player broken on purpose, both smoke tests failed with a clear line. A test that never ends was stopped at its limit and the run carried on.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Licences checked.</b> The add-on is free software under the GPL-3.0, which espeak-ng (included) requires. <code>LICENSE</code>, <code>THIRD-PARTY-NOTICES</code> and <code>licenses/</code> list every included part with its exact version, source and licence text, and go into the upload file. Settings shows each voice's licence as plain text, without warning tags (it's an add-on for personal use). Lisa (no licence named) is no longer a starter voice; the five starters are free to use.<span class="how">All six engine files compared byte for byte with the official npm packages: identical. Licence texts taken from the exact versions used. All 170 model cards read: 113 free to use, 13 share-alike, 23 non-commercial, 32 no licence stated. Settings shows the named licences (German list: Thorsten "CC0"); for voices whose card names none, it shows only the model card link. No tags, checked by the voice-management test. The quick test now fails if a starter voice isn't free to use (tried with Lisa: flagged).</span></span></li>
