@@ -2,7 +2,7 @@ Neural Voices: third-party notices
 ==================================
 
 Neural Voices is free software under the GNU General Public License, version 3 (see LICENSE).
-It includes the parts below, unchanged, in engine/vendor/. Their full licence texts are in licenses/.
+It includes the parts below, unchanged, in engine/vendor/ and pdf/. Their full licence texts are in licenses/.
 Source code of Neural Voices: https://github.com/JCA374/read-aloud
 
 
@@ -38,6 +38,19 @@ Source code of Neural Voices: https://github.com/JCA374/read-aloud
       (licenses/emscripten-LICENSE.txt).
 
 3. Icons (icons/*.png): made for Neural Voices; GPL-3.0 like the rest of the add-on.
+
+4. pdf.js 6.4.299 (npm package pdfjs-dist), in pdf/, unchanged: shows PDFs in the add-on's PDF viewer.
+   https://github.com/mozilla/pdf.js  Licence: Apache-2.0, Copyright Mozilla Foundation
+   (licenses/pdfjs-LICENSE.txt). Files: pdf.min.mjs, pdf.worker.min.mjs, cmaps/, iccs/, standard_fonts/,
+   wasm/. Included with it, each with its licence next to it:
+   a) wasm/openjpeg.wasm: OpenJPEG, BSD-2-Clause (wasm/LICENSE_OPENJPEG, wasm/LICENSE_PDFJS_OPENJPEG).
+   b) wasm/jbig2.wasm: from PDFium, BSD-3-Clause (wasm/LICENSE_JBIG2, wasm/LICENSE_PDFJS_JBIG2).
+   c) wasm/qcms_bg.wasm: qcms colour management, MIT (wasm/LICENSE_QCMS, wasm/LICENSE_PDFJS_QCMS).
+   d) standard_fonts/Foxit*.pfb: Foxit fonts from PDFium, BSD-3-Clause (standard_fonts/LICENSE_FOXIT).
+   e) standard_fonts/LiberationSans-*.ttf: Liberation fonts by Red Hat, GPL-2.0 with the font
+      exception (standard_fonts/LICENSE_LIBERATION). Font data files used as they are, alongside the
+      add-on's code.
+   pdf.js's files for scripts inside PDFs (quickjs) are left out: the viewer doesn't run them.
 
 
 Voices

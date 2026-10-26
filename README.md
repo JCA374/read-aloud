@@ -14,7 +14,17 @@ automatically), and 170 voices in 49 languages can be added.
 Word highlighting is estimated (Piper doesn't report word times). A voice downloads from
 huggingface.co/rhasspy/piper-voices the first time it's used and is kept in the browser's cache.
 That download is the add-on's only network request, apart from the short samples *▶ Try* plays in
-Settings (from rhasspy.github.io/piper-samples).
+Settings (from rhasspy.github.io/piper-samples) and fetching a PDF you ask it to read.
+
+**PDFs.** The browsers' own PDF viewers don't run add-on scripts, so the add-on has its own viewer
+(`extension/pdf.html`, `pdf-viewer.js`) built on pdf.js 6.4 (`extension/pdf/`, unchanged from npm
+`pdfjs-dist`). It draws the pages and lays the text over them as positioned spans grouped into
+paragraphs (`data-nv-block`), with spaces between lines and line-end hyphens joined, so `content.js`
+reads and highlights it like a web page. In the viewer, commands arrive as runtime messages addressed to
+its tab (`NV.sendToTab`). Ways in: *Read page* on a PDF in Chromium's viewer (the content script runs in
+its outer page and hands over), the popup's *Read this PDF* on a PDF in Firefox's viewer, right-click a
+PDF link → *Read PDF aloud*, or open/drag a file into the viewer. Fetching a PDF from another site uses
+the optional host permission for that site, asked for the first time if the browser needs it.
 
 ```
 extension/          the add-on (Firefox + Chromium, Manifest V3)

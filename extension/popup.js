@@ -8,9 +8,10 @@ async function activeTab() {
 async function send(cmd) {
   const tab = await activeTab();
   try {
-    return await chrome.tabs.sendMessage(tab.id, { cmd });
+    return await NV.sendToTab(tab.id, { cmd });
   } catch {
-    $("nopage").hidden = false;
+    // Firefox's own PDF viewer runs no add-on scripts: offer to open the PDF in ours.
+    $(NV.looksLikePdf(tab.url) ? "pdf" : "nopage").hidden = false;
     return null;
   }
 }
@@ -66,6 +67,15 @@ $("click").onclick = async () => {
   window.close();
 };
 $("stop").onclick = async () => render(await send("stop"));
+$("openPdf").onclick = async () => {
+  const tab = await activeTab();
+  await chrome.tabs.update(tab.id, { url: NV.pdfViewerUrl(tab.url, true) });
+  window.close();
+};
+$("openViewer").onclick = () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL("pdf.html") });
+  window.close();
+};
 $("settings").onclick = () => {
   chrome.runtime.openOptionsPage();
   window.close();

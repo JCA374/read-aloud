@@ -92,5 +92,21 @@ var NV = (() => {
     );
   }
 
-  return { STARTER_VOICES, DEFAULTS, HIGHLIGHTS, shownVoices, listLangs, langDefault, voiceFor, pick, allVoices, fillVoiceSelect };
+  // A message to a tab's content script. The PDF viewer is an add-on page, which tabs.sendMessage can't
+  // reach, so it gets the message as a runtime message with the tab's id.
+  async function sendToTab(tabId, msg) {
+    try {
+      return await chrome.tabs.sendMessage(tabId, msg);
+    } catch (e) {
+      if (!/Receiving end does not exist/i.test(e?.message)) throw e; // a content script got it but didn't reply
+      const res = await chrome.runtime.sendMessage({ ...msg, toTab: tabId }).catch(() => undefined);
+      if (res === undefined) throw e;
+      return res;
+    }
+  }
+
+  const looksLikePdf = (url) => /^(https?|file):\/\/[^?#]+\.pdf([?#]|$)/i.test(url || "");
+  const pdfViewerUrl = (url, read) => chrome.runtime.getURL(`pdf.html?file=${encodeURIComponent(url)}${read ? "&read=1" : ""}`);
+
+  return { sendToTab, looksLikePdf, pdfViewerUrl, STARTER_VOICES, DEFAULTS, HIGHLIGHTS, shownVoices, listLangs, langDefault, voiceFor, pick, allVoices, fillVoiceSelect };
 })();

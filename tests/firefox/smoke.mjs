@@ -1,7 +1,7 @@
 // Quick check of the add-on in Firefox, in one session: settings and popup voice lists, reading English and
 // Swedish (right voice, words highlighted), Stop, no errors. The player's buttons are covered by the
 // Chromium smoke test (same content script). Exits 1 if any check fails.
-import { browser, EXT, waitFor, check, finish } from "./lib.mjs";
+import { browser, EXT, SITE, waitFor, check, finish } from "./lib.mjs";
 
 const b = await browser(process.argv[2], { quiet: true });
 // 1. Settings page and popup, starting from default settings
@@ -38,5 +38,14 @@ for (const [page, voice] of [["long.html", "en_GB-cori"], ["sv.html", "sv_SE-alm
   check(`${page}: Stop`, (await waitFor(async () => (await b.status()).state === "idle", 3000)) !== null);
   await b.close(tab);
 }
+
+// 3. A PDF in the add-on's viewer: text laid out, read with words highlighted
+const viewer = (await b.send("browsingContext.create", { type: "tab" })).result.context;
+await b.goto(viewer, `${EXT}/pdf.html?file=${encodeURIComponent(`${SITE}/doc.pdf`)}&read=1`);
+const paras = await waitFor(() => b.ev(viewer, `!document.querySelector('#read').disabled && document.querySelectorAll('[data-nv-block]').length`), 15000);
+check("PDF viewer: text in paragraphs", paras === 4, `${paras} paragraphs; ${await b.ev(viewer, `document.querySelector('#notice').textContent`)}`);
+const pdfWord = await waitFor(() => b.word(viewer), 30000, 100);
+check("PDF viewer: reads with words highlighted", !!pdfWord, JSON.stringify(pdfWord));
+await b.ev(b.ext, `chrome.tabs.query({}).then(ts => Promise.allSettled(ts.map(t => NV.sendToTab(t.id, {cmd: 'stop'})))).then(() => true)`);
 
 finish(b.errors());

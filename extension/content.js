@@ -68,6 +68,9 @@
   }
 
   function blockOf(el, cache = new Map()) {
+    // A paragraph of a PDF page (pdf.html): its lines are placed one by one, so they don't form a block themselves.
+    const para = el.closest?.("[data-nv-block]");
+    if (para) return para;
     for (let e = el; e && e !== document.body; e = e.parentElement) {
       let d = cache.get(e);
       if (d === undefined) cache.set(e, (d = getComputedStyle(e).display));
@@ -634,6 +637,8 @@
   }
 
   function readPage() {
+    // The browser's own PDF viewer (Chromium runs content scripts in its outer page): open the PDF in ours.
+    if (document.contentType === "application/pdf") return chrome.runtime.sendMessage({ type: "openPdf", url: location.href, read: true }).catch(() => {});
     const root = pickRoot();
     const range = document.createRange();
     range.selectNodeContents(root);
@@ -940,7 +945,19 @@
 
   // ---------------------------------------------------------------- messages from popup / background
 
+  // In the add-on's PDF viewer (an add-on page, not a web page) commands come as runtime messages
+  // addressed to its tab; pdf.js starts reading with a "nv-read-page" event once the text is ready.
+  const ADDON_PAGE = location.protocol.endsWith("-extension:");
+  let myTab = null;
+  if (ADDON_PAGE) {
+    chrome.tabs.getCurrent().then((t) => (myTab = t?.id ?? null));
+    addEventListener("nv-read-page", () => readPage());
+    addEventListener("nv-stop", () => player.stop());
+  }
+
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+    // Only commands. (The PDF viewer, an add-on page, also sees the add-on's internal messages.)
+    if (!msg.cmd || (msg.toTab != null && msg.toTab !== myTab)) return;
     switch (msg.cmd) {
       case "readSelection":
         readSelection() || readPage();

@@ -12,6 +12,7 @@ covers (`tests/out/.passed/`), so `quick` adds a longer test by itself when its 
 
 | Date | Commit | Run | Result |
 |---|---|---|---|
+| 2026-10-26 | PDF viewer (0.4.0) | `run.sh all` (9 tests) and `./build.sh` | Pass, 112 checks. Build 15 MB (235 files, 169 of them pdf.js character maps); lint 0 errors, 6 warnings (2 new, inside pdf.js) |
 | 2026-10-26 | d314799 + Settings update | `run.sh all` (9 tests) after the Settings update | Pass after test fixes: firefox/smoke 14 checks, chromium/smoke 24 (icon count now 8), voice-management 13, download-failure 3, older-revision 5, settings-extras 18, settings-voice-switch 7, mixed-and-controls 12. `./build.sh`: lint 0 errors, same 4 warnings |
 | 2026-10-25 | 36a4dbd + build split | `./build.sh` (Firefox and Chromium builds), then firefox/smoke on `dist/firefox`, chromium/smoke on the unpacked Chromium zip | Both pass (12 and 24 checks), no errors. Firefox build: no `offscreen` permission or service worker entry, lint 0 errors and 4 warnings (were 6; the 2 manifest warnings are gone). Two builds give identical zips |
 | 2026-10-25 | clean-up (after f8298dc) | `run.sh all` after the clean-up (licences, engine, 5 starter voices) | Pass, 7 tests, 70 checks, about 2 min. New instant checks: licence files exist, all 170 voices have a licence kind, starter voices free to use (a test with Lisa added flagged her). Build script checked: two builds give the same zip (same SHA-1) |
@@ -44,6 +45,8 @@ Re-run when: `extension/options.*`, `popup.*`, `common.js`, `catalog.js`, `engin
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-10-26 | PDF viewer (0.4.0) | chromium/pdf (new) | Pass, 14 checks: doc.pdf from the test server, 4 paragraphs, "light-"+"house" joined, 2 pages drawn, read with moving word highlight, status/pause/stop via `NV.sendToTab`, zoom keeps the text, Chromium's own PDF viewer hands over on Read and reading starts. Fixed on the way: the viewer answered the engine's internal runtime messages (now only `cmd` messages) |
+| 2026-10-26 | PDF viewer (0.4.0) | firefox/smoke | Pass, 16 checks: the viewer read doc.pdf (4 paragraphs, words highlighted) |
 | 2026-10-26 | Settings update + tags removed | chromium/voice-management, chromium/settings-extras, then quick run | Pass (13, 18; smoke 24 and 14, older-revision 5). No `.tag` anywhere; Thorsten shows "Licence: CC0"; voices with no named licence show only the model card link; the licence filter is gone |
 | 2026-10-26 | d314799 + Settings update | chromium/settings-extras (new) | Pass, 18 checks: Try played rhasspy.github.io sample; fallback read locally (blob audio); "thor" → 4 Thorsten voices; licence filter hid Lisa; all languages 50 → 165; ↑ swapped Alba/Cori; storage "1, 64 MB"; reset + import restored speed 1.25, blue, pause 0.5, order; bad file cleaned to `{shown:[Cori]}`; code.html 5 pieces skipped vs 7; scroll 287 px on, 0 off. First runs failed on test mistakes only (fresh profile without Cori, wrong tab in front, status read during "Rendering…") |
 | 2026-10-26 | d314799 + Settings update | firefox/smoke | Pass, 14 checks: Try plays the online sample; shortcuts list shows Alt+Shift+R and the Firefox "Manage Extension Shortcuts" hint |

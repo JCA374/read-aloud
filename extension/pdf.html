@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PDF · Neural Voices</title>
+  <link rel="stylesheet" href="pdf.css">
+  <link rel="stylesheet" href="content.css">
+</head>
+<body>
+  <header id="bar">
+    <img src="icons/icon32.png" alt="">
+    <span id="name">Neural Voices</span>
+    <span id="pageInfo"></span>
+    <span class="grow"></span>
+    <button id="read" type="button" disabled>▶ Read</button>
+    <button id="zoomOut" type="button" title="Smaller">−</button>
+    <button id="zoomIn" type="button" title="Bigger">+</button>
+    <button id="open" type="button">Open a PDF…</button>
+    <input id="file" type="file" accept="application/pdf,.pdf" hidden>
+  </header>
+  <div id="notice" hidden></div>
+  <main id="pages" role="main"></main>
+  <script src="common.js"></script>
+  <script src="content.js"></script>
+  <script type="module" src="pdf-viewer.js"></script>
+</body>
+</html>

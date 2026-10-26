@@ -12,6 +12,8 @@ header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 header img { width: 22px; height: 22px; }
 h1 { font-size: 15px; margin: 0; flex: 1; }
 .notice { background: var(--field); border-left: 3px solid var(--bad); padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; }
+#pdf { border-left-color: var(--accent); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+#pdf[hidden] { display: none; }
 .notice code { display: block; margin-top: 4px; font-size: 12px; user-select: all; }
 .actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 14px; }
 button { font: inherit; padding: 8px 4px; border-radius: 8px; border: 1px solid var(--line); background: var(--field); color: var(--fg); cursor: pointer; }
@@ -24,4 +26,4 @@ output { float: right; color: var(--fg); }
 .keys { color: var(--muted); font-size: 12px; margin: 4px 0 0; }
 kbd { font: 11px ui-monospace, monospace; padding: 1px 4px; border: 1px solid var(--line); border-radius: 4px; }
 label small { font-size: 11px; }
-button.link { display: block; width: 100%; margin-top: 10px; background: none; border: 0; color: var(--accent); text-decoration: underline; padding: 4px 0; }
+button.link { display: block; width: 100%; margin-top: 6px; background: none; border: 0; color: var(--accent); text-decoration: underline; padding: 4px 0; }

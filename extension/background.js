@@ -45,14 +45,25 @@ function piperTts(msg, tabId) {
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({ id: "read-selection", title: "Read aloud", contexts: ["selection"] });
   chrome.contextMenus.create({ id: "read-from-here", title: "Read aloud from here", contexts: ["page", "link", "image"] });
+  chrome.contextMenus.create({ id: "read-pdf", title: "Read PDF aloud", contexts: ["link"], targetUrlPatterns: ["*://*/*.pdf", "*://*/*.pdf?*", "*://*/*.PDF"] });
 });
 
 function toTab(tabId, msg) {
-  chrome.tabs.sendMessage(tabId, msg).catch(() => {});
+  return NV.sendToTab(tabId, msg).catch(() => {});
+}
+
+// Show a PDF in the add-on's viewer (pdf.html), in the same tab or a new one next to it.
+function openPdf(url, tab, { read = true, newTab = false } = {}) {
+  const viewer = NV.pdfViewerUrl(url, read);
+  if (newTab || !tab?.id) return chrome.tabs.create({ url: viewer, index: tab ? tab.index + 1 : undefined, openerTabId: tab?.id });
+  return chrome.tabs.update(tab.id, { url: viewer }).catch((e) => console.warn("[Neural Voices] couldn't open the PDF viewer:", e));
 }
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === "read-pdf") return openPdf(info.linkUrl, tab, { newTab: true });
   if (!tab?.id) return;
+  // Firefox's own PDF viewer runs no content scripts: "Read aloud from here" there opens the PDF in ours.
+  if (NV.looksLikePdf(tab.url) && info.menuItemId === "read-from-here") return NV.sendToTab(tab.id, { cmd: "status" }).catch(() => openPdf(tab.url, tab));
   toTab(tab.id, { cmd: info.menuItemId === "read-selection" ? "readSelection" : "readFromHere" });
 });
 
@@ -81,7 +92,10 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
 chrome.commands.onCommand.addListener(async (command) => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const target = (await readingTab()) ?? tab?.id;
-  if (target) toTab(target, { cmd: command === "stop" ? "stop" : "toggle" });
+  if (!target) return;
+  const msg = { cmd: command === "stop" ? "stop" : "toggle" };
+  // A PDF in Firefox's own viewer can't be reached: Read opens it in the add-on's viewer.
+  NV.sendToTab(target, msg).catch(() => command === "read" && target === tab?.id && NV.looksLikePdf(tab.url) && openPdf(tab.url, tab));
 });
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -106,6 +120,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   if (msg.type === "openOptions") {
     chrome.runtime.openOptionsPage();
+    return;
+  }
+  if (msg.type === "openPdf") {
+    openPdf(msg.url, sender.tab, { read: msg.read });
     return;
   }
   if (msg.type === "voices") {
