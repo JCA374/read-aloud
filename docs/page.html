@@ -357,24 +357,24 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 26 October 2026, after uploading version 0.4.0 to Mozilla for signing (unlisted); waiting for the signed file.</p>
+    <p class="meta">Updated 26 October 2026, after Mozilla signed version 0.4.0 (unlisted, passed the automatic check).</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
       <div class="tile ok"><span class="n">25</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan, plus licences, a repeatable build, voices kept when the catalogue updates, at most two voices in memory, the bigger Settings page, and reading PDFs</span></div>
       <div class="tile warn"><span class="n">7</span><span class="l">Built, not tested yet</span><span class="d">A really slow computer, clicking through Firefox by hand, listening by ear, word timing, keyboard shortcuts, the pause after each sentence, PDFs from Firefox's own viewer and real websites</span></div>
-      <div class="tile todo"><span class="n">2</span><span class="l">Left to do</span><span class="d">Step 4: signing (uploaded, waiting for Mozilla), optional public listing</span></div>
+      <div class="tile todo"><span class="n">1</span><span class="l">Left to do</span><span class="d">Step 4: optional public listing (signing done)</span></div>
     </div>
   </section>
 
   <section class="next" aria-labelledby="next-h">
-    <h2 id="next-h">Do this next: try PDFs, then install the signed add-on</h2>
+    <h2 id="next-h">Do this next: install the signed add-on, then try PDFs</h2>
     <p>The add-on's code changed (a PDF viewer). Firefox keeps your downloaded voices.</p>
     <ol class="steps">
       <li><span>Open
         <span class="copy"><code id="u1">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u1" type="button">Copy</button></span>
         and click <b>Reload</b> under Neural Voices. Then open a PDF on the web, click the toolbar button and press <b>Read this PDF</b>. The first time for a site, it may ask to allow that site.</span></li>
-      <li><span><b>Wait for Mozilla's email.</b> Version 0.4.0 was uploaded on 26 October 2026 ("On your own", unlisted). Signing is automatic and usually takes minutes; if a person reviews it first, up to a day or two. Then, in the Developer Hub: <b>My Add-ons → Neural Voices → Manage Status &amp; Versions</b>, click 0.4.0 and download the signed <code>.xpi</code> into <code>dist/</code>. Tell me when you have it, or follow "Get the signed file and install it" in <code>docs/upload-manually.md</code>.</span></li>
+      <li><span><b>Install the signed add-on.</b> Mozilla signed version 0.4.0 on 26 October 2026 (passed the automatic check). In the Developer Hub: <b>My Add-ons → Neural Voices → Manage Status &amp; Versions</b>, click 0.4.0 and download the <code>.xpi</code> into <code>dist/</code>. In Firefox, remove the temporary copy first (<code>about:debugging</code> → <b>Remove</b>), then open <span class="copy"><code id="u9">about:addons</code><button class="cp" data-copy="u9" type="button">Copy</button></span>, click ⚙ → <b>Install Add-on From File…</b> and pick the <code>.xpi</code>. Voices may download once more.</span></li>
       <li><span>Listen to <code>dist/speed-samples/</code> in the project folder and tell me if 2× sounds too rushed.</span></li>
     </ol>
   </section>
@@ -388,7 +388,7 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
       <li><span class="chip ok">Done</span><span class="item"><b>Privacy note.</b> Text never leaves the computer; the only network use is the one-time voice download, the samples played by ▶ Try, and fetching a PDF you ask it to read.</span></li>
       <li><span class="chip ok">Done</span><span class="item"><b>Fewest permissions.</b> The add-on runs on the pages you read; "activeTab" lets the popup see that a tab is a PDF; other sites' PDFs are fetched only with the per-site permission you grant. Write a one-line reason for each permission.</span></li>
       <li><span class="chip ok">Done</span><span class="item"><b>Clean build and Mozilla's check.</b> <code>./build.sh</code> makes the upload file and checks it. Left for signing day: explain the 6 known warnings in the submission notes (3 Chromium-only lines, and code inside ONNX Runtime and pdf.js).</span></li>
-      <li><span class="chip warn">Waiting</span><span class="item"><b>Signing (unlisted).</b> Uploaded 26 October 2026 as "On your own", with the source code and reviewer notes; waiting for Mozilla. It comes back signed (can take up to a day), stays installed in normal Firefox, and can be sent to friends, also on Android.</span></li>
+      <li><span class="chip ok">Done</span><span class="item"><b>Signing (unlisted).</b> Uploaded 26 October 2026 as "On your own", with the source code and reviewer notes. Version 0.4.0 passed Mozilla's automatic check and was signed the same day ("tentatively approved": a person may still review it later and ask for changes). It comes back signed (can take up to a day), stays installed in normal Firefox, and can be sent to friends, also on Android.</span></li>
       <li><span class="chip todo">Optional</span><span class="item"><b>Public listing.</b> A store description, screenshots and an icon, if you decide to publish it later. Chrome's store would be an optional extra with a small one-off fee.</span></li>
     </ul>
   </section>
@@ -442,7 +442,7 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
     <div class="pipe">
       <div class="box"><span class="chip ok">Done</span><h3>The add-on</h3><p>Works on its own in Firefox and Chromium. Nothing else to install or keep running.</p></div>
       <span class="arrow" aria-hidden="true">→</span>
-      <div class="box"><span class="chip todo">Step 4</span><h3>Signed by Mozilla</h3><p>Firefox only keeps add-ons that Mozilla has signed. Free, and it can stay unlisted.</p></div>
+      <div class="box"><span class="chip ok">Done</span><h3>Signed by Mozilla</h3><p>Version 0.4.0 signed on 26 October 2026, unlisted.</p></div>
       <span class="arrow" aria-hidden="true">→</span>
       <div class="box"><span class="chip todo">Then</span><h3>Installed for good</h3><p>Open the signed <code>.xpi</code> file in Firefox and click <b>Add</b>. Send the same file to friends.</p></div>
     </div>
