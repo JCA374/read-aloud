@@ -13,7 +13,10 @@ addons.mozilla.org (AMO) are free.
 2. **Licences.** `LICENSE` (GPL-3.0, because espeak-ng is GPL-3.0), `THIRD-PARTY-NOTICES` and `licenses/`
    are at the top of the repo; `build.sh` puts them in the zip, and `tests/run.sh` checks they exist and that
    every voice has a licence kind and every starter voice is free to use. If a vendored file changes, update
-   the versions, commits and texts in `THIRD-PARTY-NOTICES`, `licenses/` and `extension/engine/vendor/README.md`.
+   the versions, commits and texts in `THIRD-PARTY-NOTICES`, `licenses/` and `extension/engine/vendor/README.md`,
+   and the list in `tools/check-vendor.sh`. Run `tools/check-vendor.sh` before each upload: every bundled library
+   file must match its npm package (Mozilla asks that minified code be verifiable). Manual upload steps and the
+   notes for reviewers: `docs/upload-manually.md`.
    If the voice catalogue changes (`node tools/make-catalog.mjs`), check the licence counts it prints, then `tests/run.sh` (starter voices must stay free to use).
 3. **Version.** Raise `version` in `extension/manifest.json` (every upload needs a higher one). Never change
    `browser_specific_settings.gecko.id` (`neural-voices@jca374.github.io`): signing and updates depend on it.

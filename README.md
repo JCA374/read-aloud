@@ -53,6 +53,10 @@ Chromium uses (the offscreen page, its permission and the service worker entry),
 manifest warnings; it is also unpacked in `dist/firefox/`. Mozilla's checker (`web-ext lint`) runs on it.
 Loading `extension/` directly in Firefox works too, with a harmless warning about the `offscreen` permission.
 
+`tools/check-vendor.sh` downloads the bundled libraries (onnxruntime-web, piper-wasm, pdfjs-dist) from npm
+and checks that all 204 vendored files are byte-for-byte identical. Uploading by hand to addons.mozilla.org,
+with notes for the reviewers: `docs/upload-manually.md`.
+
 ## Using it
 
 | Do this | Get this |

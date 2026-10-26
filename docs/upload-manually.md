@@ -33,7 +33,8 @@ It's free.
    - Wait for the automatic check. It shows 0 errors and some warnings; that's fine. Click **Continue**.
 5. **Source code:** "Do you need to submit source code?" Choose **Yes** and upload
    `dist/neural-voices-0.4.0-source.zip`. (Everything is also public at
-   <https://github.com/JCA374/read-aloud>.)
+   <https://github.com/JCA374/read-aloud>.) Before uploading, you can run `tools/check-vendor.sh`:
+   it checks that every bundled library file is identical to its official npm package.
 6. **Version details:**
    - Release notes (optional): `Reads web pages and PDFs aloud with Piper voices that run in the browser.`
    - Notes to reviewer: paste the text in the next section.
@@ -50,9 +51,14 @@ running as WebAssembly; there is no server and no data collection.
 
 - 'wasm-unsafe-eval' in the CSP is needed to run WebAssembly (ONNX Runtime Web, espeak-ng via
   piper-wasm, and pdf.js image decoders).
-- Third-party libraries are included unchanged from npm: onnxruntime-web 1.30.0,
-  @diffusionstudio/piper-wasm 1.0.0, pdfjs-dist 6.4.299. Versions, sources and licences are in
-  THIRD-PARTY-NOTICES and extension/engine/vendor/README.md.
+- Minified code: only third-party libraries, included unchanged from npm: onnxruntime-web 1.30.0,
+  @diffusionstudio/piper-wasm 1.0.0, pdfjs-dist 6.4.299 (in engine/vendor/ and pdf/). To verify, run
+  tools/check-vendor.sh in the source package: it downloads the three packages with npm and compares
+  all 204 files byte for byte. Everything else is unminified source written for the add-on.
+  Versions, sources and licences: THIRD-PARTY-NOTICES and extension/engine/vendor/README.md.
+- No remote code: the downloaded voice models are ONNX data files (neural network weights), run by the
+  bundled ONNX Runtime; no JavaScript or WebAssembly is downloaded. pdf.js runs with scripting off
+  (no PDF JavaScript) and isEvalSupported: false.
 - Lint warnings: UNSUPPORTED_API (chrome.offscreen in background.js) is the Chromium-only path and
   doesn't run in Firefox. UNSAFE_VAR_ASSIGNMENT is inside the minified libraries (ort.wasm.min.js,
   pdf.min.mjs, pdf.worker.min.mjs), not in the add-on's own code.
@@ -60,7 +66,28 @@ running as WebAssembly; there is no server and no data collection.
   size-checked) the first time a voice is used; short voice samples from rhasspy.github.io when the user
   presses "Try" in Settings; and a PDF the user asks to read, from its own site (optional host
   permission, asked per site).
-- Source: https://github.com/JCA374/read-aloud (GPL-3.0). Build: ./build.sh
+- Permissions: content script on all pages (reads the page's text and shows the player there);
+  storage (settings); contextMenus ("Read aloud" menu items); activeTab (the popup checks whether the
+  current tab is a PDF); optional host permissions, asked per site only when the user opens a PDF from
+  that site in the viewer. The Firefox build has no "offscreen" permission (Chromium only).
+- Data: declared "none" (data_collection_permissions). Page text is turned into speech inside the
+  browser and never sent anywhere. Settings stay in browser storage; Export saves a local file only.
+- Privacy: https://jca374.github.io/read-aloud/ (section "Privacy").
+- Source: https://github.com/JCA374/read-aloud (GPL-3.0). Build: ./build.sh (makes
+  dist/neural-voices-<version>-firefox.zip from extension/, adding LICENSE and notices; no
+  transpiling or bundling).
+
+How to test:
+1. Open any article (e.g. a Wikipedia page). Click the toolbar button, then "Read page". The first
+   time, the English voice downloads (about 63 MB, a few seconds), then reading starts with the
+   current sentence and word highlighted. Alt+Shift+R pauses, Alt+Shift+X stops.
+2. Select some text: a speaker button appears next to it; click it to hear the selection.
+3. Open a PDF on the web (e.g. https://arxiv.org/pdf/1706.03762), click the toolbar button, then
+   "Read this PDF". It opens in the add-on's own viewer (pdf.html) and is read aloud. The first time
+   for a site, the viewer may ask for permission to fetch files from it.
+4. Settings (the gear on the player, or the add-on's preferences): voices per language, ▶ Try
+   samples, download and delete voices, reading options.
+No account or credentials are needed.
 ```
 
 ## Get the signed file and install it
