@@ -357,7 +357,7 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 26 October 2026, after fixing the PDF highlight: it no longer draws a second copy of the word over the printed text.</p>
+    <p class="meta">Updated 26 October 2026, after measuring Kokoro's "Heart" voice: its licence fits, but in the browser it makes speech 2–5 times slower than it's spoken.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
@@ -455,7 +455,7 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
     <div class="tbl">
       <table>
         <tbody>
-          <tr><td>Engine download (in the add-on)</td><td class="num">13 MB zipped</td></tr>
+          <tr><td>Engine download (in the add-on, with the PDF viewer)</td><td class="num">15 MB zipped</td></tr>
           <tr><td>Each voice, downloaded once</td><td class="num">most 63 MB (21–137 MB)</td></tr>
           <tr><td>Extra memory while reading</td><td class="num">300–550 MB</td></tr>
           <tr><td>Time to make 3 s of speech (one core)</td><td class="num">about 1 s</td></tr>
@@ -464,6 +464,20 @@ cd read-aloud</pre><button class="cp" data-copy="c1" type="button">Copy</button>
         </tbody>
       </table>
     </div>
+    <h3>Kokoro's "Heart" voice: measured, too slow for now</h3>
+    <p>Kokoro (the model behind the af_heart voice) may be added: it and its voices are Apache-2.0, which fits the add-on's GPL-3.0. But it's about 4 times bigger than a Piper voice, and in the browser's CPU engine it can't keep up with speech. Making 7.8 s of speech took (ONNX Runtime 1.30, the same engine the add-on uses):</p>
+    <div class="tbl">
+      <table>
+        <tbody>
+          <tr><td>92 MB model, one core (how the add-on runs today)</td><td class="num">40 s: 0.2× real time</td></tr>
+          <tr><td>325 MB model, one core</td><td class="num">45 s: 0.17×</td></tr>
+          <tr><td>92 MB model, four cores</td><td class="num">31 s: 0.25×</td></tr>
+          <tr><td>325 MB model, four cores</td><td class="num">16 s: 0.48×</td></tr>
+          <tr><td>For comparison: a Piper voice, one core</td><td class="num">about 3× real time</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>It needs to be faster than 1× to read without pauses. The one way left is the graphics card (WebGPU), which works in Chromium but not yet everywhere in Firefox, and isn't measured here.</p>
   </section>
 
   <section class="review" aria-labelledby="review-h">

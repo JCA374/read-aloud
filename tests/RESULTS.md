@@ -98,6 +98,7 @@ Re-run when: `lengthFor` in `engine/piper-worker.js`, or the ONNX Runtime versio
 
 | Date | Script | Result |
 |---|---|---|
+| 2026-10-26 | Kokoro-82M v1.0 ONNX (onnx-community, rev 1939ad2a8e), af_heart, onnxruntime-web 1.30.0 in node, 120 phoneme tokens (7.8 s of audio), 2nd run | q8 92 MB: 1 thread 39.5 s (0.20×), 4 threads 31.3 s (0.25×). fp32 325 MB: 1 thread 44.9 s (0.17×), 4 threads 16.0 s (0.48×). 30–200 tokens at q8/1 thread: 0.19–0.24×. Load 2.7 s. Too slow on CPU; WebGPU not measured. Licence: Apache-2.0 (model, voices, kokoro-js) |
 | 2026-10-22 | engine/speed-pitch.py (with `lengthFor` curve) | Pitch steady: Alma 176–181 Hz, Cori 204–210 Hz at 0.75–2×. Playing faster instead: 133–356 Hz. 2× takes the same time as playing 2× faster |
 | 2026-10-22 | engine/speed-calibration.py | Plain 1/speed gives 0.82× / 1.30× / 1.59× at 0.75 / 1.5 / 2. Curve k = 1.4 (≤1) and 1.4 + 0.4·(speed−1) gives 0.75× / 1.25× / 1.54× / 1.71–1.75× / 1.87–1.93× |
 | 2026-10-22 | engine/ort-optimisation-bench.mjs (Alma, node) | Set-up 2.1–2.5 s for all levels (all, extended, basic, disabled); speed the same (0.40 real-time factor). Not worth changing |
