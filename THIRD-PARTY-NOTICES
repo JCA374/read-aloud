@@ -50,6 +50,7 @@ Source code of Neural Voices: https://github.com/JCA374/read-aloud
    e) standard_fonts/LiberationSans-*.ttf: Liberation fonts by Red Hat, GPL-2.0 with the font
       exception (standard_fonts/LICENSE_LIBERATION). Font data files used as they are, alongside the
       add-on's code.
+   f) iccs/CGATS001Compat-v2-micro.icc: a colour profile, CC0 1.0 (iccs/LICENSE).
    pdf.js's files for scripts inside PDFs (quickjs) are left out: the viewer doesn't run them.
 
 
