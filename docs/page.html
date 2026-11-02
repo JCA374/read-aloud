@@ -260,7 +260,7 @@
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 2 November 2026, after adding the pronunciation dictionary (not released yet) and <code>tools/try.sh</code> for trying changes before a release.</p>
+    <p class="meta">Updated 2 November 2026, after fixing typing in the pronunciation dictionary (not released yet) and <code>tools/try.sh</code> for trying changes before a release.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
@@ -284,7 +284,7 @@
   <section aria-labelledby="works-h">
     <h2 id="works-h">What works</h2>
     <ul class="status">
-      <li><span class="chip ok">Tested</span><span class="item"><b>Pronunciation dictionary</b> (new, not released yet). Settings → <b>Pronunciation</b>: a word or phrase, how to say it, and for all voices or one language's voices. <b>▶ Now</b> and <b>▶ With fix</b> to compare. Right-click a selected word → <b>Fix pronunciation</b>. Only the voice hears the change; the page and the highlight keep the original word. Included in export and import.<span class="how">New automatic test, 15 checks, all pass: add, replace, edit, remove and ▶ Try work; with "NASA" → the long form, the audio went from 0.65 s to 3.33 s while the highlight words stayed "NASA"; reading the test page sent "The Keeper of sherry light" to the voice; a Swedish-only entry wasn't used by the English voice; a bad import file kept only its 2 good entries. Plus 7 quick checks of the matching rules (any case, whole words, phrases, per language).</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Pronunciation dictionary</b> (new, not released yet). Settings → <b>Pronunciation</b>: a word or phrase, how to say it, and for all voices or one language's voices. <b>▶ Now</b> and <b>▶ With fix</b> to compare. Right-click a selected word → <b>Fix pronunciation</b>. Only the voice hears the change; the page and the highlight keep the original word. Included in export and import.<span class="how">New automatic test, 17 checks, all pass, including typing with real key presses: add, replace, edit, remove and ▶ Try work; with "NASA" → the long form, the audio went from 0.65 s to 3.33 s while the highlight words stayed "NASA"; reading the test page sent "The Keeper of sherry light" to the voice; a Swedish-only entry wasn't used by the English voice; a bad import file kept only its 2 good entries. Plus 7 quick checks of the matching rules (any case, whole words, phrases, per language).</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Reads web pages, with no server.</b> Piper runs as WebAssembly inside the add-on. Selection, the whole article (menus and footers skipped), or from a clicked sentence.<span class="how">Automated in Firefox 158 and Chromium: English and Swedish read with words highlighted, no errors. First sound 3–4 s from cold, 0.75 s after the popup's warm-up.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Controls and highlights.</b> Pause, next, previous, speed, Stop and Escape; five highlight styles; one tab reads at a time.<span class="how">On a 400-paragraph page each control did what it says. Switching style changed the highlight at once. Starting a second tab stopped the first.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Languages.</b> Each paragraph gets the voice for its language.<span class="how">A page mixing English and Swedish switched voice every paragraph; a German page was read with Thorsten.</span></span></li>
@@ -334,6 +334,7 @@
     <h3>Slips</h3>
     <div class="slips">
       <div class="slip"><span class="what">The page was published without first reading the live version.</span><span class="cost">The publish was refused once; it cost one extra round. Nothing was lost.</span></div>
+      <div class="slip"><span class="what">You couldn't type in "Say it as".</span><span class="cost">You found it in the test window. The Enter-key shortcut cancelled every other key. The test had filled the boxes directly instead of typing, so it missed this. Fixed in a few minutes, and the test now types real keys (it fails on the broken version).</span></div>
       <div class="slip"><span class="what">The new test opened Settings with a "#" in the address.</span><span class="cost">The test browser drops that part, so the test couldn't find the tab. One failed run, about 1 minute to fix and re-run. Not a fault in the add-on.</span></div>
       <div class="slip"><span class="what">Two wrong details in the first draft of <code>docs/ARCHITECTURE.md</code>.</span><span class="cost">It said word times come from phonemes (they're spread by word length) and described pdf.js settings loosely. Caught by checking the code before committing.</span></div>
     </div>

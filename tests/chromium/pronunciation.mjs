@@ -14,6 +14,22 @@ const fill = (word, say, lang = "") =>
 
 check("language choices: all voices, English, Swedish", await opt.ev(`[...$('dictLang').options].map(o => o.textContent).join(' | ')`) === "All voices | English voices | Swedish voices");
 
+// Typing with real key presses (a key handler must not swallow letters), then Enter adds it.
+const typeInto = async (id, text) => {
+  await opt.ev(`$('${id}').value = ''; $('${id}').focus()`);
+  for (const ch of text) {
+    await opt.send("Input.dispatchKeyEvent", { type: "keyDown", key: ch, text: ch });
+    await opt.send("Input.dispatchKeyEvent", { type: "keyUp", key: ch });
+  }
+  return opt.ev(`$('${id}').value`);
+};
+check("typing works in both boxes", (await typeInto("dictWord", "Tyop")) === "Tyop" && (await typeInto("dictSay", "typo")) === "typo", await opt.ev(`$('dictWord').value + '|' + $('dictSay').value`));
+await opt.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r" });
+const typed = await waitFor(async () => (await dict()).some((e) => e.word === "Tyop" && e.say === "typo"), 3000);
+check("Enter adds the word", !!typed, JSON.stringify(await dict()));
+await b.sw.ev(`chrome.storage.local.remove('dictionary')`);
+await waitFor(() => opt.ev(`!document.querySelector('#dict .voice')`), 3000);
+
 await fill("Skerry", "sherry");
 let d = await waitFor(async () => { const x = await dict(); return x.length === 1 && x; }, 3000);
 check("Add saves the word", d?.[0]?.word === "Skerry" && d[0].say === "sherry" && d[0].lang === "", JSON.stringify(d));

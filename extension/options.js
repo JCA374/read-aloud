@@ -409,7 +409,11 @@ function renderDict() {
 }
 
 $("dictAdd").onclick = addDict;
-for (const id of ["dictWord", "dictSay"]) $(id).onkeydown = (ev) => ev.key === "Enter" && addDict();
+for (const id of ["dictWord", "dictSay"]) {
+  $(id).onkeydown = (ev) => {
+    if (ev.key === "Enter") addDict();
+  };
+}
 $("dictBefore").onclick = () => dictForm().word && sayWord(dictForm().word, null, dictForm().lang);
 $("dictAfter").onclick = () => dictForm().word && dictForm().say && sayWord(dictForm().word, dictForm().say, dictForm().lang);
 // From the right-click menu: options.html?word=…#pronunciation
