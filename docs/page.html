@@ -224,12 +224,11 @@
 
   <section class="install" id="install" aria-labelledby="inst-h">
     <h2 id="inst-h">Install</h2>
-    <p>The add-on isn't in the add-on stores yet. For now, load it from the code:</p>
+    <p>Neural Voices is signed by Mozilla, but not listed in the add-on store yet. Get it from GitHub:</p>
     <ol class="steps">
-      <li><div><span><b>Get the code:</b> on <a href="https://github.com/JCA374/read-aloud">GitHub</a>, click <b>Code → Download ZIP</b> and unpack it.</span></div></li>
-      <li><div><span><b>Firefox:</b> open <span class="copy"><code id="u0">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u0" type="button">Copy</button></span>, click <b>Load Temporary Add-on…</b> and pick <code>extension/manifest.json</code>. Firefox removes it again when it restarts.</span>
-        <span><b>Chrome, Edge or Brave:</b> open <code>chrome://extensions</code>, turn on <b>Developer mode</b>, click <b>Load unpacked</b> and pick the <code>extension</code> folder.</span></div></li>
-      <li><div><span><b>Reload</b> the page you want to hear, then press <b>Read page</b> in the toolbar.</span></div></li>
+      <li><div><span><b>Firefox:</b> open the <a href="https://github.com/JCA374/read-aloud/releases/latest">latest release</a> and click <code>neural-voices-…-signed.xpi</code>. Firefox asks whether to add it: click <b>Add</b>.</span></div></li>
+      <li><div><span><b>Chrome, Edge or Brave:</b> download <code>neural-voices-…-chromium.zip</code> from the same release and unzip it. Open <code>chrome://extensions</code>, turn on <b>Developer mode</b>, click <b>Load unpacked</b> and pick the folder.</span></div></li>
+      <li><div><span><b>Reload</b> the page you want to hear, then press <b>Read page</b> in the toolbar. The first voice downloads once (about 63 MB).</span></div></li>
     </ol>
   </section>
 
@@ -248,7 +247,7 @@
 
   <section aria-labelledby="priv-h">
     <h2 id="priv-h">Privacy</h2>
-    <p>The text you read is never sent anywhere. The add-on only goes online to download a voice the first time you use it (from Piper's voice collection on huggingface.co), to play a short sample when you press <b>▶ Try</b>, and to fetch a PDF you ask it to read. No analytics, no accounts. Settings stay in your browser.</p>
+    <p>The text you read is never sent anywhere. The add-on only goes online to download a voice the first time you use it (from Piper's voice collection on huggingface.co), to play a short sample when you press <b>▶ Try</b>, and to fetch a PDF you ask it to read. No analytics, no accounts. Settings stay in your browser. Full <a href="https://github.com/JCA374/read-aloud/blob/main/PRIVACY.md">privacy policy</a>.</p>
   </section>
 
   <section aria-labelledby="cred-h">
@@ -261,152 +260,81 @@
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 2 November 2026, after the signed 0.4.0 file was downloaded from Mozilla with API keys.</p>
+    <p class="meta">Updated 2 November 2026, after the clean-up: old files removed, new documentation, signing with API keys, and version 0.4.0 on GitHub Releases.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
-      <div class="tile ok"><span class="n">24</span><span class="l">Working and tested</span><span class="d">Steps 0–3 of the plan, plus licences, a repeatable build, voices kept when the catalogue updates, at most two voices in memory, the bigger Settings page, and reading PDFs</span></div>
-      <div class="tile warn"><span class="n">7</span><span class="l">Built, not tested yet</span><span class="d">A really slow computer, clicking through Firefox by hand, listening by ear, word timing, keyboard shortcuts, the pause after each sentence, PDFs from Firefox's own viewer and real websites</span></div>
-      <div class="tile todo"><span class="n">1</span><span class="l">Left to do</span><span class="d">Step 4: optional public listing (signing done)</span></div>
+      <div class="tile ok"><span class="n">12</span><span class="l">Working and tested</span><span class="d">Reading, controls, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the release</span></div>
+      <div class="tile warn"><span class="n">7</span><span class="l">Built, not tested yet</span><span class="d">A slow computer, Firefox by hand, listening by ear, word timing, shortcuts, the pause after sentences, PDFs in Firefox's own viewer</span></div>
+      <div class="tile todo"><span class="n">1</span><span class="l">Left to do</span><span class="d">A public listing in the store, when you decide (checklist in <code>docs/LISTING.md</code>)</span></div>
     </div>
   </section>
 
   <section class="next" aria-labelledby="next-h">
-    <h2 id="next-h">Do this next: install the signed add-on, then try PDFs</h2>
-    <p>The add-on's code changed (a PDF viewer). Firefox keeps your downloaded voices.</p>
+    <h2 id="next-h">Do this next: install the signed add-on</h2>
     <ol class="steps">
-      <li><span>Open
-        <span class="copy"><code id="u1">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u1" type="button">Copy</button></span>
-        and click <b>Reload</b> under Neural Voices. Then open a PDF on the web, click the toolbar button and press <b>Read this PDF</b>. The first time for a site, it may ask to allow that site.</span></li>
-      <li><span><b>Install the signed add-on.</b> The signed file is downloaded: <code>dist/neural-voices-0.4.0-signed.xpi</code>. In Firefox, remove the temporary copy first (<code>about:debugging</code> → <b>Remove</b>), then open <span class="copy"><code id="u9">about:addons</code><button class="cp" data-copy="u9" type="button">Copy</button></span>, click ⚙ → <b>Install Add-on From File…</b> and pick that <code>.xpi</code>. Voices may download once more.</span></li>
-      <li><span>Listen to <code>dist/speed-samples/</code> in the project folder and tell me if 2× sounds too rushed.</span></li>
+      <li><span>In Firefox, remove the temporary copy: open <span class="copy"><code id="u1">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u1" type="button">Copy</button></span> and click <b>Remove</b> under Neural Voices.</span></li>
+      <li><span>Download <code>neural-voices-0.4.0-signed.xpi</code> from the <a href="https://github.com/JCA374/read-aloud/releases/latest">latest release</a> (it's also in <code>dist/</code>) and drag it into a Firefox window. Click <b>Add</b>. Voices may download once more.</span></li>
+      <li><span>Open a PDF on the web, click the toolbar button and press <b>Read this PDF</b>. This is the one PDF path not tested yet.</span></li>
+      <li><span>Tell me what to change next. When you want people to get the change, say "make a release".</span></li>
     </ol>
-  </section>
-
-  <section aria-labelledby="step4-h">
-    <h2 id="step4-h">Step 4: packaging and signing (planned, when you decide)</h2>
-    <p>The plan says to use it yourself first and only release it when it feels clean and fast. Signing and listing on Mozilla's add-ons site are free.</p>
-    <ul class="status">
-      <li><span class="chip ok">Done</span><span class="item"><b>Licence check.</b> See "Licences checked" under What works.</span></li>
-      <li><span class="chip ok">Done</span><span class="item"><b>Mozilla's add-on policies checked.</b> No surprises (it does only what its name says), no data collected (declared "none"), no remote code (voice models are data, PDF scripts off), source code provided, and the minified parts are only unchanged libraries: <code>tools/check-vendor.sh</code> downloads them from npm and found all 204 files identical (and caught a changed file when tried). Notes for the reviewers, with test steps and a reason for each permission, are in <code>docs/upload-manually.md</code>.</span></li>
-      <li><span class="chip ok">Done</span><span class="item"><b>Privacy note.</b> Text never leaves the computer; the only network use is the one-time voice download, the samples played by ▶ Try, and fetching a PDF you ask it to read.</span></li>
-      <li><span class="chip ok">Done</span><span class="item"><b>Fewest permissions.</b> The add-on runs on the pages you read; "activeTab" lets the popup see that a tab is a PDF; other sites' PDFs are fetched only with the per-site permission you grant. Write a one-line reason for each permission.</span></li>
-      <li><span class="chip ok">Done</span><span class="item"><b>Clean build and Mozilla's check.</b> <code>./build.sh</code> makes the upload file and checks it. Left for signing day: explain the 6 known warnings in the submission notes (3 Chromium-only lines, and code inside ONNX Runtime and pdf.js).</span></li>
-      <li><span class="chip ok">Done</span><span class="item"><b>Signing (unlisted).</b> Uploaded 26 October 2026 as "On your own", with the source code and reviewer notes. Version 0.4.0 passed Mozilla's automatic check and was signed the same day ("tentatively approved": a person may still review it later and ask for changes). It comes back signed (can take up to a day), stays installed in normal Firefox, and can be sent to friends, also on Android. On 2 November 2026 the signed file was downloaded through Mozilla's API (keys kept in <code>.amo-keys</code>, which git ignores). Checked: its SHA-256 matches what Mozilla lists, it contains Mozilla's signature files, and apart from those its contents are identical to the uploaded build.</span></li>
-      <li><span class="chip todo">Optional</span><span class="item"><b>Public listing.</b> A store description, screenshots and an icon, if you decide to publish it later. Chrome's store would be an optional extra with a small one-off fee.</span></li>
-    </ul>
   </section>
 
   <section aria-labelledby="works-h">
     <h2 id="works-h">What works</h2>
     <ul class="status">
-      <li><span class="chip ok">Tested</span><span class="item"><b>Reads with no server.</b> Piper runs as WebAssembly in a background worker inside the add-on. All engine code ships in the add-on (13 MB zipped); only the voices download.<span class="how">Firefox 158 and Chromium, automated: English and Swedish pages read with words highlighted, no errors. Re-run after the server code was removed: still passing.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Read a selection, the page, or from a click.</b> Starts at the title, skips menus, footers and footnote marks.<span class="how">Selection and click-to-read were checked with real mouse clicks in Chromium; page reading in every test run since. The text handling hasn't changed since then.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Fast start, no pauses.</b> Reading starts with short pieces (45, 80, 140, 220 characters) and then keeps a minute of audio ready.<span class="how">With the voice ready: first sound 3–4 s from cold, and no pauses in any run on one full CPU core.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Quick start.</b> Opening the popup gets your voice ready if it's downloaded; otherwise the player says "Starting the voice…".<span class="how">Chromium: first sound 3.4–3.8 s cold, 0.74–0.76 s after the warm-up.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>One tab at a time.</b> Starting in a tab stops any other tab that's reading.<span class="how">Two tabs in Chromium: starting the second stopped the first, and back again.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Controls.</b> Pause, resume, next, previous, speed, Stop and Escape.<span class="how">On a 400-paragraph page: pause held the audio and highlight, next and previous moved one sentence, speed changed live, Escape and Stop both stopped and cleared the highlight. Preparing that page froze it for 0.13–0.17 s.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Highlighting and its styles.</b> Yellow/orange, blue, green, underline only, or off.<span class="how">Switching style while reading changed the highlight at once; "off" removed it.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Swedish, mixed pages and other languages.</b> Each paragraph gets the voice for its language; other languages follow the page's language tag.<span class="how">A Swedish page marked as English was read with Alma. A page alternating English and Swedish switched between Cori and Alma every paragraph. A German page was read with Thorsten.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Settings and your voice list.</b> Tick the voices for the player and popup, a default voice per language, language detection on or off, speed, volume, highlight style.<span class="how">Chromium: lists showed only ticked voices; with no Swedish voice, Settings says Swedish text uses the English voice; detection off shows one picker. Firefox: the page and popup render.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Changing voice applies at once.</b> The current sentence starts again in the new voice.<span class="how">3.4 s to a downloaded voice that wasn't loaded, about 1.5 s back to a loaded one.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Voice catalogue.</b> 170 voices in 49 languages, with size and licence. Add, download ahead, delete downloads, remove. Pinned to one fixed version of Piper's collection.<span class="how">Added Thorsten (German), downloaded it with a progress bar, deleted it.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Safe downloads.</b> Progress in the player, size check, 3 tries, then a clear message. A damaged voice re-downloads.<span class="how">Player went 0% → 82% then read. With the download site blocked, it stopped after 6.6 s with "Couldn't download the voice Cori… Check your internet connection".</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Natural speed, and 2× means 2×.</b><span class="how">Pitch measured: Alma 176–181 Hz at every speed (playing faster: 133–356 Hz). 2× was really 1.6× before a correction, 1.9× after.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Steady memory.</b> About 300–550 MB more while reading, flat over time.<span class="how">6 minutes at 2× on a 400-paragraph page in Chromium, 3 minutes in Firefox, sampled every 30 s.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Nothing left running.</b> After Stop the audio pauses; after 5 quiet minutes the engine shuts down and frees its memory.<span class="how">Firefox: CPU 0 within a minute and memory back to the start within 2 minutes (it used to keep about 8% of a core busy; fixed). Chromium: CPU 0, 210 MB freed, hidden engine page closed.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Old server removed.</b> No server code, no Kokoro, no permission to talk to <code>127.0.0.1</code>. On this computer: the auto-start service, menu icon, Python environment (1.6 GB) and server voices (242 MB) are deleted.<span class="how">Tests re-run afterwards in both browsers: passing. The project and its pages no longer mention the server except as history.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Passes Mozilla's add-on checker.</b> No errors. The add-on no longer builds its player or voice lists from HTML text, which Mozilla's reviewers flag, and it says which Firefox for Android it needs.<span class="how"><code>web-ext lint</code>: 12 warnings before, 6 after. The 6 left can't be fixed here: 5 are parts only Chromium uses (Firefox skips them) and 1 is inside ONNX Runtime, the voice engine's own code. Re-tested afterwards in Chromium and Firefox (reading, settings, voice lists, player controls, a screenshot of the player): all pass, no errors.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Fast, automatic tests.</b> One command, <code>tests/run.sh</code>, runs quick checks and a short "smoke" test in Chromium and Firefox at the same time, and skips any test whose files haven't changed since it last passed. Every test now prints a clear pass or fail line and waits for things to happen instead of waiting fixed times. A stuck test is stopped after its time limit. Results are logged in <code>tests/RESULTS.md</code>.<span class="how">Normal check: 92 s (it used to take over 20 minutes, choosing and running tests by hand). With nothing changed: 4 s. All tests: 135 s, all passing; they took 514 s one after another before. Two tests that only repeated the smoke tests were removed. With the player broken on purpose, both smoke tests failed with a clear line. A test that never ends was stopped at its limit and the run carried on.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Licences checked.</b> The add-on is free software under the GPL-3.0, which espeak-ng (included) requires. <code>LICENSE</code>, <code>THIRD-PARTY-NOTICES</code> and <code>licenses/</code> list every included part with its exact version, source and licence text, and go into the upload file. Settings shows each voice's licence as plain text, without warning tags (it's an add-on for personal use). Lisa (no licence named) is no longer a starter voice; the five starters are free to use.<span class="how">All six engine files compared byte for byte with the official npm packages: identical. Licence texts taken from the exact versions used. All 170 model cards read: 113 free to use, 13 share-alike, 23 non-commercial, 32 no licence stated. Settings shows the named licences (German list: Thorsten "CC0"); for voices whose card names none, it shows only the model card link. No tags, checked by the voice-management test. The quick test now fails if a starter voice isn't free to use (tried with Lisa: flagged).</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>A clean, repeatable build, one per browser.</b> <code>./build.sh</code> makes <code>dist/neural-voices-0.4.0-firefox.zip</code> (31 files) and <code>-chromium.zip</code> (33 files), 13 MB each, with the licence files and without tests or notes. The Firefox build leaves out the hidden "offscreen" page and its permission, which only Chromium uses, so Firefox no longer warns about them. It's also unpacked in <code>dist/firefox/</code>.<span class="how">Built twice: identical files (same checksums). Firefox smoke test on the Firefox build: 12 checks pass; Chromium smoke test on the Chromium zip: 24 pass. Mozilla's checker on the Firefox build: 0 errors, 4 warnings (was 6). The 4 left: 3 lines in the background script that only Chromium runs, and 1 inside ONNX Runtime.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Voices survive catalogue updates.</b> When the voice list moves to a newer version of Piper's collection, voices you already downloaded are kept instead of downloading again.<span class="how">New automatic test: Cori's files moved to an older version's address, download site blocked. Settings still showed Cori as downloaded, reading started, and the files moved to the new address.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>A bigger Settings page.</b> A ⚙ button on the player opens it. Every voice has <b>▶ Try</b>: it plays Piper's own short sample, so you hear a voice without the 63 MB download; offline, a downloaded voice says "1, 2, 3, 4, 5" instead. Search all voices, filter by language, quality or downloaded, move voices up and down in your list. Storage shows the downloads' size, with <b>Delete all downloads</b>. <b>Reset</b>, <b>Export</b> and <b>Import</b> settings (downloads stay). New reading options: follow the reading by scrolling (on/off), skip code blocks (on by default), a pause after each sentence. The keyboard shortcuts are listed, with where to change them.<span class="how">New automatic test in Chromium, 18 checks, all pass: ⚙ opened Settings; Try played the online sample, Stop stopped it, and with the sample blocked Cori read one locally; "thor" found 4 Thorsten voices; "all languages" showed 50 then all 165 not in your list; ↑ swapped the first two voices; storage showed "1, 64 MB"; reset, then import, gave back the exported settings; a bad file's unknown voices and wrong values were dropped; a page with a code block had 5 pieces with skipping on, 7 with it off; with scrolling on the page moved 287 px, with it off 0. Firefox: the sample played and the shortcut text showed. The online samples were checked for all 170 voices: every one exists. All other tests re-run in both browsers: pass.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Reads PDFs.</b> The browser's own PDF viewer doesn't let add-ons in, so Neural Voices has its own, built on pdf.js (Mozilla's PDF engine, the one inside Firefox). It draws the pages and lays the text over them, grouped into paragraphs, so reading, highlighting, the player, popup and shortcuts work as on a web page. Ways in: <b>Read page</b> on a PDF in Chromium switches to it by itself; in Firefox the popup shows <b>Read this PDF</b>; right-click a PDF link for <b>Read PDF aloud</b>; or open a file from your computer (popup link, button or drag and drop). Zoom in and out. Password-protected and scanned PDFs (no text) get a clear message.<span class="how">New Chromium test, 14 checks, all pass: a 2-page test PDF opened from a web address; its text came out as 4 paragraphs with a word split by a hyphen joined again ("light-" + "house"); both pages drawn; the Read button read it with the word highlight moving; status, pause and stop reached the viewer the way popup and shortcuts send them; zoom kept the same text; a PDF open in Chromium's own viewer moved to ours on Read and started reading. Firefox: the viewer read the same PDF with words highlighted. All other tests re-run in both browsers: 9 tests, 112 checks, pass. Found and fixed on the way: the viewer, being an add-on page, also received the engine's internal messages and answered them, which silenced the voice. After your report, fixed: the word highlight painted its own white copy of the word over the printed one (the hidden text layer uses a slightly different font); now it only colours the background. Checked by screenshots of the test PDF and a real two-column research paper (highlight on the printed words, no second copy), and a new test check that fails without the fix.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>At most two voices in memory.</b> Each loaded voice holds about 60–100 MB; the engine now keeps only the two used last (enough for a page mixing two languages), and never unloads the one that's speaking.<span class="how">The Chromium smoke test uses three voices in a row: passes with no errors. Memory re-measured: Chromium +390–575 MB while reading, 240 MB freed after 5 idle minutes; Firefox +300–320 MB, back to the start 30 s after Stop. Start-up unchanged: first sound 3.4 s cold, page blocked 0.13 s on a 400-paragraph page.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Reads web pages, with no server.</b> Piper runs as WebAssembly inside the add-on. Selection, the whole article (menus and footers skipped), or from a clicked sentence.<span class="how">Automated in Firefox 158 and Chromium: English and Swedish read with words highlighted, no errors. First sound 3–4 s from cold, 0.75 s after the popup's warm-up.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Controls and highlights.</b> Pause, next, previous, speed, Stop and Escape; five highlight styles; one tab reads at a time.<span class="how">On a 400-paragraph page each control did what it says. Switching style changed the highlight at once. Starting a second tab stopped the first.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Languages.</b> Each paragraph gets the voice for its language.<span class="how">A page mixing English and Swedish switched voice every paragraph; a German page was read with Thorsten.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Voices.</b> 170 voices in 49 languages, downloads with progress and size check, a clear message when offline, kept when the voice list updates, changes apply at once.<span class="how">Download site blocked: stopped after 6.6 s with a clear message. A voice stored under an older address was kept and read without downloading.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Settings page.</b> ▶ Try, search and filters, voice order, storage, reset, export and import, reading options.<span class="how">Automated test, 18 checks, all pass. All 170 online samples exist.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Reads PDFs</b> in the add-on's own viewer.<span class="how">Chromium test, 14 checks: paragraphs, hyphen joining, highlights, zoom, hand-over from Chromium's viewer. Firefox read the same PDF. Screenshots checked for the highlight.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Natural speed.</b> 0.75× to 2× without the voice going high.<span class="how">Pitch measured: Alma 176–181 Hz at every speed. 2× measured at 1.9×.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Memory, and nothing left running.</b><span class="how">300–550 MB more while reading, flat over 6 minutes. After Stop: CPU 0, memory freed after 5 idle minutes.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Mozilla's checks and signing.</b> Version 0.4.0 signed by Mozilla (unlisted) on 26 October.<span class="how">Mozilla's checker: 0 errors. <code>tools/check-vendor.sh</code>: all 204 library files identical to npm. The signed file matches Mozilla's checksum and holds the same code as the upload.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Build and tests.</b> <code>./build.sh</code> and <code>tests/run.sh</code>.<span class="how">After the clean-up, the build is byte for byte the same as the file sent to Mozilla (same SHA-256), so the add-on didn't change. Quick tests: instant checks pass (syntax, manifest, licences, Mozilla's checker); the browser tests were skipped because nothing they cover changed.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Signing tools.</b> <code>tools/sign.sh</code> signs a new version with your API keys (kept in <code>.amo-keys</code>, which git ignores). <code>tools/amo.py</code> lists versions and downloads signed files.<span class="how">The keys log in. <code>amo.py</code> downloaded 0.4.0 and checked Mozilla's checksum. <code>sign.sh</code> refused version 0.4.0 ("must be higher") before uploading anything. The full upload runs at the next version.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>GitHub Release v0.4.0.</b> The signed Firefox file and the Chromium zip, for anyone with the link.<span class="how">The file downloaded from the release link has the same SHA-256 as Mozilla's signed file (32dd2f43…), and GitHub serves it as a Firefox add-on, so clicking it in Firefox offers to install.</span></span></li>
     </ul>
   </section>
 
   <section aria-labelledby="untested-h">
     <h2 id="untested-h">Built, not tested yet</h2>
     <ul class="status">
-      <li><span class="chip warn">Not tested</span><span class="item"><b>A really slow computer.</b> Not tried on real slow hardware. A simulation that squeezed the whole browser into half a CPU core took 39 s to the first sound, and then rendered a bit slower than it speaks. With one full core it's fine. The popup warm-up helps most on slow machines.</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>Clicking through Firefox by hand.</b> Firefox was tested by scripts, not by a person using the speaker bubble, popup and player.</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>Listening by ear.</b> Speed and pitch were measured; nobody has listened to the samples or the volume slider yet.</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>Word timing.</b> Piper doesn't say when each word starts, so the highlight is estimated. It may run a little ahead or behind.</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>PDFs from Firefox's own viewer, and from real websites.</b> The tests used a small PDF from the test server, which needed no permission. Not yet tried: the popup's <b>Read this PDF</b> on a PDF in Firefox's own viewer, the right-click menu, the "allow this site" prompt, and long or two-column PDFs (paragraph and column order there is a best guess).</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>Pause after each sentence.</b> The setting is saved and used, but no test measures the silence between sentences yet. Listen with "Long (0.5 s)" to judge it.</span></li>
-      <li><span class="chip warn">Not tested</span><span class="item"><b>Keyboard shortcuts.</b> The test browsers can't press add-on shortcuts. They use the same code as the popup buttons, which are tested.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>A really slow computer.</b> Not tried on real slow hardware. A simulation with half a CPU core took 39 s to the first sound and then rendered a bit slower than it speaks. With one full core it's fine.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Clicking through Firefox by hand.</b> Firefox was tested by scripts, not by a person.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Listening by ear.</b> Speed and pitch were measured; nobody has judged the voices or the volume slider by ear.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Word timing.</b> Piper doesn't say when each word starts, so the highlight is estimated and may run a little ahead or behind.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>PDFs in Firefox's own viewer and from real websites.</b> Not yet tried: <b>Read this PDF</b> from Firefox's viewer, the right-click menu, the "allow this site" prompt, long or two-column PDFs.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Pause after each sentence.</b> Saved and used, but no test measures the silence.</span></li>
+      <li><span class="chip warn">Not tested</span><span class="item"><b>Keyboard shortcuts.</b> Test browsers can't press add-on shortcuts. They use the same code as the popup buttons, which are tested.</span></li>
     </ul>
   </section>
 
   <section aria-labelledby="perm-h">
     <h2 id="perm-h">How it becomes permanent</h2>
     <div class="pipe">
-      <div class="box"><span class="chip ok">Done</span><h3>The add-on</h3><p>Works on its own in Firefox and Chromium. Nothing else to install or keep running.</p></div>
+      <div class="box"><span class="chip ok">Done</span><h3>Signed by Mozilla</h3><p>Version 0.4.0, unlisted. New versions: <code>tools/sign.sh</code>.</p></div>
       <span class="arrow" aria-hidden="true">→</span>
-      <div class="box"><span class="chip ok">Done</span><h3>Signed by Mozilla</h3><p>Version 0.4.0 signed on 26 October 2026, unlisted. Signed file downloaded 2 November.</p></div>
+      <div class="box"><span class="chip ok">Done</span><h3>On GitHub Releases</h3><p>Anyone with the link can install it. You install it in your Firefox (step 2 above).</p></div>
       <span class="arrow" aria-hidden="true">→</span>
-      <div class="box"><span class="chip todo">Then</span><h3>Installed for good</h3><p>Open the signed <code>.xpi</code> file in Firefox and click <b>Add</b>. Send the same file to friends.</p></div>
+      <div class="box"><span class="chip todo">When you decide</span><h3>Listed in the store</h3><p>Found by anyone, updates itself. Needs a human review. Checklist: <code>docs/LISTING.md</code>.</p></div>
     </div>
-    <p class="meta">In Chromium, "Load unpacked" from <code>chrome://extensions</code> is already permanent.</p>
-  </section>
-
-  <section aria-labelledby="voices-h">
-    <h2 id="voices-h">The engine in numbers</h2>
-    <div class="tbl">
-      <table>
-        <tbody>
-          <tr><td>Engine download (in the add-on, with the PDF viewer)</td><td class="num">15 MB zipped</td></tr>
-          <tr><td>Each voice, downloaded once</td><td class="num">most 63 MB (21–137 MB)</td></tr>
-          <tr><td>Extra memory while reading</td><td class="num">300–550 MB</td></tr>
-          <tr><td>Time to make 3 s of speech (one core)</td><td class="num">about 1 s</td></tr>
-          <tr><td>First sound: voice ready / cold / first download</td><td class="num">0.75 s / 3–4 s / 5–8 s</td></tr>
-          <tr><td>After Stop</td><td class="num">CPU 0; memory freed after 5 min</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <h3>Kokoro's "Heart" voice: measured on the processor and the graphics card, too slow for now</h3>
-    <p>Kokoro (the model behind the af_heart voice) may be added: it and its voices are Apache-2.0, which fits the add-on's GPL-3.0. But it's about 4 times bigger than a Piper voice, and in the browser's CPU engine it can't keep up with speech. Making 7.8 s of speech took (ONNX Runtime 1.30, the same engine the add-on uses):</p>
-    <div class="tbl">
-      <table>
-        <tbody>
-          <tr><td>92 MB model, one core (how the add-on runs today)</td><td class="num">40 s: 0.2× real time</td></tr>
-          <tr><td>325 MB model, one core</td><td class="num">45 s: 0.17×</td></tr>
-          <tr><td>92 MB model, four cores</td><td class="num">31 s: 0.25×</td></tr>
-          <tr><td>325 MB model, four cores</td><td class="num">16 s: 0.48×</td></tr>
-          <tr><td>Graphics card (WebGPU, Chromium), 92 MB model</td><td class="num">42 s: 0.19×</td></tr>
-          <tr><td>Graphics card (WebGPU, Chromium), 325 MB model</td><td class="num">14 s: 0.56×</td></tr>
-          <tr><td>Graphics card (WebGPU, Chromium), 163 MB half-size model</td><td class="num">8.8 s: 0.87× (best)</td></tr>
-          <tr><td>For comparison: a Piper voice, one core</td><td class="num">about 3× real time</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p>It needs to be faster than 1× to read without pauses. Even the best case (the graphics card in Chromium, this computer's built-in Intel UHD 620) stays under 1×, so reading would stop for about a second after every long sentence, after a 163 MB download. Firefox 158 on Linux has no WebGPU at all (checked: no <code>navigator.gpu</code>), so in Firefox only the processor rows apply. Not added. Worth trying again on a computer with a stronger graphics card, or when Firefox gets WebGPU on Linux.</p>
+    <p class="meta">In Chromium, "Load unpacked" is already permanent.</p>
   </section>
 
   <section class="review" aria-labelledby="review-h">
     <h2 id="review-h">How the session went</h2>
     <div class="verdict">
-      <p><b>Short version:</b> built by Claude (Opus 5.5) in one long session, working through the plan's steps 0 to 3 with automated tests after each. The mistakes below cost retries; each was caught by checking numbers that looked wrong. None touched your files or other programs.</p>
+      <p><b>This session (2 November):</b> Claude Opus 5.5, planned first (plan approved by you), then built. Checked that your API keys work, downloaded and verified the signed file, removed the old video tools and speed samples, wrote the new documents, a signing script and the release. The add-on code wasn't touched.</p>
     </div>
-    <h3>Slips along the way</h3>
+    <h3>Slips</h3>
     <div class="slips">
-      <div class="slip"><span class="what">A test command stopped itself, three times.</span><span class="cost">The cleanup pattern matched its own command line, even after the project notes warned about it. Fixed by looking up processes first. Nothing else was stopped.</span></div>
-      <div class="slip"><span class="what">It assumed a test port was free.</span><span class="cost">Another program already used it. It moved to a different port and left that program alone.</span></div>
-      <div class="slip"><span class="what">The selection speaker first appeared in the middle of the line.</span><span class="cost">Seen in a screenshot. It now appears where you let go of the mouse.</span></div>
-      <div class="slip"><span class="what">Several test runs measured the wrong thing.</span><span class="cost">Tabs looked up by address, a stale cached file list, a quoting mistake, a renamed settings page, a CPU limit that didn't apply, a crashed memory script, half of Firefox's processes missed, and a reused profile running old code. Each cost a rerun; together about 35 minutes, mostly waiting for long runs. The tests are now saved with these fixes.</span></div>
-      <div class="slip"><span class="what">A test runner hung after a passing test (25 October).</span><span class="cost">The small web server it starts kept the runner's output open, so the run never reported back. It cost about 15 minutes of waiting. Fixed in both runners.</span></div>
-      <div class="slip"><span class="what">The test speed-up session stopped halfway (25 October).</span><span class="cost">The terminal closed during the first run of the new test command. Nothing was lost; the work was picked up from the saved plan and the files on disk.</span></div>
-      <div class="slip"><span class="what">Five mistakes in the new tests themselves.</span><span class="cost">The settings check looked for a part of the page by an old name. One check waited for a message the add-on only writes when reading stops. One looked at only the first 3 German voices. One Firefox test never opened an add-on page to send its commands from. And a Firefox "read" command could go to a tab that was just closing. Each one failed a run and cost 1–3 minutes to fix and re-run. None was a fault in the add-on.</span></div>
-      <div class="slip"><span class="what">Clean-up session (25 October), Claude Opus 5.5, planned first, then built.</span><span class="cost">Small slips, each caught before it reached a commit: a style rule for dark mode written in the wrong order (would have lost to the light one), a warning in the catalogue tool that would always have flagged Lisa, a screenshot script that expected an argument the test runner doesn't pass (1 minute), and a planned fix for a flaky check that an earlier session had already removed. No test failed because of the add-on.</span></div>
-      <div class="slip"><span class="what">Settings session (26 October), Claude Opus 5.5, planned first, then built.</span><span class="cost">The add-on worked on the first full run; four mistakes were in the new test. It assumed Cori was already downloaded, but changing the background script makes the test browser start fresh. It sent "read page" to the Settings tab the ⚙ button had just opened. It read the player's status while it still said "Rendering…". And the smoke test still expected 7 player icons, not 8. Each cost one re-run of 1–2 minutes.</span></div>
-      <div class="slip"><span class="what">The PDF highlight showed a second copy of the word (26 October).</span><span class="cost">You spotted it. The tests checked that the highlight moved, not how it looked, and no screenshot was taken before shipping. Fixed the same day, with a check that would have caught it.</span></div>
-      <div class="slip"><span class="what">PDF session (26 October).</span><span class="cost">Three test runs went to test mistakes: Chromium rewrote the viewer's address so the test couldn't find the tab, the test read paragraphs before page 2 was ready, and it looked for the PDF tab by an address the add-on isn't allowed to see without a click. One real bug was found by the tests and fixed (above). About 6 minutes of reruns.</span></div>
-      <div class="slip"><span class="what">Too much text in the terminal.</span><span class="cost">You said the replies were hard to read. That's why this page exists.</span></div>
+      <div class="slip"><span class="what">The page was published without first reading the live version.</span><span class="cost">The publish was refused once; it cost one extra round. Nothing was lost.</span></div>
+      <div class="slip"><span class="what">Two wrong details in the first draft of <code>docs/ARCHITECTURE.md</code>.</span><span class="cost">It said word times come from phonemes (they're spread by word length) and described pdf.js settings loosely. Caught by checking the code before committing.</span></div>
     </div>
     <div class="verdict">
-      <p><b>Suggestion:</b> before signing, run one careful review with <code>/code-review high</code>. It catches the kind of mistakes listed above before they reach a signed release.</p>
+      <p><b>Suggestion:</b> for each change, say whether it should go out as a new version. Then every change ends up in the changelog and the release notes write themselves.</p>
     </div>
   </section>
 
@@ -415,15 +343,14 @@
     <div class="tbl">
       <table>
         <tbody>
-          <tr><td>Build the Firefox and Chromium files (and check them)</td><td><code>./build.sh</code></td></tr>
-          <tr><td>Run Mozilla's add-on checker</td><td><code>npx web-ext lint --source-dir extension</code></td></tr>
           <tr><td>Check a change (about 1.5 min; 4 s if the add-on didn't change)</td><td><code>tests/run.sh</code></td></tr>
-          <tr><td>Run every test, before a release (about 2.5 min)</td><td><code>tests/run.sh all</code></td></tr>
-          <tr><td>Speed and memory measurements (15–25 min, nothing else at the same time)</td><td><code>tests/run.sh timing</code></td></tr>
-          <tr><td>Run one test</td><td><code>tests/run.sh chromium/voice-management</code></td></tr>
-          <tr><td>Latest result of every test, and when to re-run it</td><td><code>tests/RESULTS.md</code></td></tr>
+          <tr><td>Every test, before a release</td><td><code>tests/run.sh all</code></td></tr>
+          <tr><td>Build the Firefox and Chromium files (and check them)</td><td><code>./build.sh</code></td></tr>
+          <tr><td>Sign a new version with Mozilla</td><td><code>tools/sign.sh</code></td></tr>
+          <tr><td>Versions on Mozilla (keys loaded)</td><td><code>python3 tools/amo.py versions neural-voices@jca374.github.io</code></td></tr>
+          <tr><td>Check the bundled libraries against npm</td><td><code>tools/check-vendor.sh</code></td></tr>
           <tr><td>Update the voice catalogue</td><td><code>node tools/make-catalog.mjs</code></td></tr>
-          <tr><td>Where Firefox keeps the voices</td><td>In Firefox's own storage for the add-on. Delete them in Settings.</td></tr>
+          <tr><td>Documents</td><td><code>README.md</code>, <code>docs/ARCHITECTURE.md</code>, <code>docs/RELEASING.md</code>, <code>docs/LISTING.md</code>, <code>CHANGELOG.md</code>, <code>PRIVACY.md</code></td></tr>
         </tbody>
       </table>
     </div>
