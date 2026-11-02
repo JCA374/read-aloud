@@ -269,7 +269,7 @@
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 26 October 2026, after the About tab was rewritten as a short, simple page and the intro video was removed.</p>
+    <p class="meta">Updated 2 November 2026, after the signed 0.4.0 file was downloaded from Mozilla with API keys.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
@@ -286,7 +286,7 @@
       <li><span>Open
         <span class="copy"><code id="u1">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u1" type="button">Copy</button></span>
         and click <b>Reload</b> under Neural Voices. Then open a PDF on the web, click the toolbar button and press <b>Read this PDF</b>. The first time for a site, it may ask to allow that site.</span></li>
-      <li><span><b>Install the signed add-on.</b> Mozilla signed version 0.4.0 on 26 October 2026 (passed the automatic check). In the Developer Hub: <b>My Add-ons → Neural Voices → Manage Status &amp; Versions</b>, click 0.4.0 and download the <code>.xpi</code> into <code>dist/</code>. In Firefox, remove the temporary copy first (<code>about:debugging</code> → <b>Remove</b>), then open <span class="copy"><code id="u9">about:addons</code><button class="cp" data-copy="u9" type="button">Copy</button></span>, click ⚙ → <b>Install Add-on From File…</b> and pick the <code>.xpi</code>. Voices may download once more.</span></li>
+      <li><span><b>Install the signed add-on.</b> The signed file is downloaded: <code>dist/neural-voices-0.4.0-signed.xpi</code>. In Firefox, remove the temporary copy first (<code>about:debugging</code> → <b>Remove</b>), then open <span class="copy"><code id="u9">about:addons</code><button class="cp" data-copy="u9" type="button">Copy</button></span>, click ⚙ → <b>Install Add-on From File…</b> and pick that <code>.xpi</code>. Voices may download once more.</span></li>
       <li><span>Listen to <code>dist/speed-samples/</code> in the project folder and tell me if 2× sounds too rushed.</span></li>
     </ol>
   </section>
@@ -300,7 +300,7 @@
       <li><span class="chip ok">Done</span><span class="item"><b>Privacy note.</b> Text never leaves the computer; the only network use is the one-time voice download, the samples played by ▶ Try, and fetching a PDF you ask it to read.</span></li>
       <li><span class="chip ok">Done</span><span class="item"><b>Fewest permissions.</b> The add-on runs on the pages you read; "activeTab" lets the popup see that a tab is a PDF; other sites' PDFs are fetched only with the per-site permission you grant. Write a one-line reason for each permission.</span></li>
       <li><span class="chip ok">Done</span><span class="item"><b>Clean build and Mozilla's check.</b> <code>./build.sh</code> makes the upload file and checks it. Left for signing day: explain the 6 known warnings in the submission notes (3 Chromium-only lines, and code inside ONNX Runtime and pdf.js).</span></li>
-      <li><span class="chip ok">Done</span><span class="item"><b>Signing (unlisted).</b> Uploaded 26 October 2026 as "On your own", with the source code and reviewer notes. Version 0.4.0 passed Mozilla's automatic check and was signed the same day ("tentatively approved": a person may still review it later and ask for changes). It comes back signed (can take up to a day), stays installed in normal Firefox, and can be sent to friends, also on Android.</span></li>
+      <li><span class="chip ok">Done</span><span class="item"><b>Signing (unlisted).</b> Uploaded 26 October 2026 as "On your own", with the source code and reviewer notes. Version 0.4.0 passed Mozilla's automatic check and was signed the same day ("tentatively approved": a person may still review it later and ask for changes). It comes back signed (can take up to a day), stays installed in normal Firefox, and can be sent to friends, also on Android. On 2 November 2026 the signed file was downloaded through Mozilla's API (keys kept in <code>.amo-keys</code>, which git ignores). Checked: its SHA-256 matches what Mozilla lists, it contains Mozilla's signature files, and apart from those its contents are identical to the uploaded build.</span></li>
       <li><span class="chip todo">Optional</span><span class="item"><b>Public listing.</b> A store description, screenshots and an icon, if you decide to publish it later. Chrome's store would be an optional extra with a small one-off fee.</span></li>
     </ul>
   </section>
@@ -353,7 +353,7 @@
     <div class="pipe">
       <div class="box"><span class="chip ok">Done</span><h3>The add-on</h3><p>Works on its own in Firefox and Chromium. Nothing else to install or keep running.</p></div>
       <span class="arrow" aria-hidden="true">→</span>
-      <div class="box"><span class="chip ok">Done</span><h3>Signed by Mozilla</h3><p>Version 0.4.0 signed on 26 October 2026, unlisted.</p></div>
+      <div class="box"><span class="chip ok">Done</span><h3>Signed by Mozilla</h3><p>Version 0.4.0 signed on 26 October 2026, unlisted. Signed file downloaded 2 November.</p></div>
       <span class="arrow" aria-hidden="true">→</span>
       <div class="box"><span class="chip todo">Then</span><h3>Installed for good</h3><p>Open the signed <code>.xpi</code> file in Firefox and click <b>Add</b>. Send the same file to friends.</p></div>
     </div>
