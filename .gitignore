@@ -4,3 +4,6 @@ __pycache__/
 CLAUDE.local.md
 tools/video/out/
 tests/out/
+
+# Mozilla (addons.mozilla.org) API keys, never commit
+.amo-keys
