@@ -3,6 +3,28 @@
 Browser add-on (`extension/`, Firefox + Chromium, MV3) that reads web pages aloud with Piper voices running
 inside the browser (WebAssembly, `extension/engine/`). No server. See README.md.
 
+Version 0.4.0 is signed by Mozilla (unlisted) and on GitHub Releases; `extension/` is that version.
+The owner will keep asking for changes; listing it publicly in the store is the eventual goal, when the
+owner decides (`docs/LISTING.md`).
+
+## Docs (keep them accurate when something changes)
+
+- `README.md`: what it is, install, using it, development, docs map.
+- `docs/ARCHITECTURE.md`: files, message flow, engine, storage, PDFs, browser differences.
+- `docs/RELEASING.md`: version bump, `tools/sign.sh`, GitHub Release. `docs/reviewer-notes.txt`: notes
+  sent to Mozilla's reviewers (update when permissions, libraries or network use change).
+- `docs/LISTING.md`: checklist for a public listing. `PRIVACY.md`: privacy policy (update when the add-on
+  uses the network, storage or permissions differently).
+- `CHANGELOG.md`: add every user-visible change under **Unreleased**.
+
+## Making a change
+
+1. Edit `extension/`. Update `docs/ARCHITECTURE.md` if the structure or messages change.
+2. Run the tests (`addon-tests` skill) and log them.
+3. Add the change to `CHANGELOG.md` under **Unreleased**.
+4. Update the project page (`status-page` skill), commit and push.
+5. A new version for people to install: the `release` skill (only when the owner asks).
+
 ## The project page: About tab + Development tab
 
 The user finds long terminal replies hard to read. Report progress on the project page, not in the terminal.
@@ -41,7 +63,7 @@ The user finds long terminal replies hard to read. Report progress on the projec
 - `status-page`: the steps to update and publish the page (above).
 - `addon-tests`: which browser tests to run, how, and logging them in `tests/RESULTS.md`.
   Check that log first: don't re-run a test when nothing it covers has changed.
-- `release`: packaging, licences and signing (step 4 of the brief).
+- `release`: version, build, signing with the API keys (`tools/sign.sh`) and the GitHub Release.
 - `web-ext`: reference for Mozilla's `web-ext` tool (lint, run, build, sign flags). Adapted from testland/qa (MIT).
 
 Machine-specific notes (setup, testing quirks) are in `CLAUDE.local.md`, which is not committed.

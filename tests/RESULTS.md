@@ -12,6 +12,7 @@ covers (`tests/out/.passed/`), so `quick` adds a longer test by itself when its 
 
 | Date | Commit | Run | Result |
 |---|---|---|---|
+| 2026-11-02 | clean-up (docs, tools; extension unchanged) | `run.sh` (quick) and `./build.sh` | Pass: instant checks 27 s, all 7 browser tests skipped (nothing they cover changed). Build byte-identical to the 0.4.0 upload (Firefox zip SHA-256 d675cefc…, Chromium 0d30e1cf…), lint 0 errors, 4 warnings. Runner notes timing tests are due from earlier engine changes; not run |
 | 2026-10-26 | PDF viewer (0.4.0) | `run.sh all` (9 tests) and `./build.sh` | Pass, 112 checks. Build 15 MB (235 files, 169 of them pdf.js character maps); lint 0 errors, 6 warnings (2 new, inside pdf.js) |
 | 2026-10-26 | d314799 + Settings update | `run.sh all` (9 tests) after the Settings update | Pass after test fixes: firefox/smoke 14 checks, chromium/smoke 24 (icon count now 8), voice-management 13, download-failure 3, older-revision 5, settings-extras 18, settings-voice-switch 7, mixed-and-controls 12. `./build.sh`: lint 0 errors, same 4 warnings |
 | 2026-10-25 | 36a4dbd + build split | `./build.sh` (Firefox and Chromium builds), then firefox/smoke on `dist/firefox`, chromium/smoke on the unpacked Chromium zip | Both pass (12 and 24 checks), no errors. Firefox build: no `offscreen` permission or service worker entry, lint 0 errors and 4 warnings (were 6; the 2 manifest warnings are gone). Two builds give identical zips |
