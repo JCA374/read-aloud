@@ -12,6 +12,7 @@ covers (`tests/out/.passed/`), so `quick` adds a longer test by itself when its 
 
 | Date | Commit | Run | Result |
 |---|---|---|---|
+| 2026-11-02 | pronunciation dictionary (uncommitted) | `run.sh` (quick) | Instant checks pass, including new pronunciation rule checks (7 cases). firefox/smoke 16, chromium/smoke 24, voice-management 13, download-failure 3, older-revision 5, pdf 15: pass. settings-extras: fail (see above). `tools/try.sh` checked headless: Firefox started with its own profile and installed extension/ as a temporary add-on |
 | 2026-11-02 | clean-up (docs, tools; extension unchanged) | `run.sh` (quick) and `./build.sh` | Pass: instant checks 27 s, all 7 browser tests skipped (nothing they cover changed). Build byte-identical to the 0.4.0 upload (Firefox zip SHA-256 d675cefc…, Chromium 0d30e1cf…), lint 0 errors, 4 warnings. Runner notes timing tests are due from earlier engine changes; not run |
 | 2026-10-26 | PDF viewer (0.4.0) | `run.sh all` (9 tests) and `./build.sh` | Pass, 112 checks. Build 15 MB (235 files, 169 of them pdf.js character maps); lint 0 errors, 6 warnings (2 new, inside pdf.js) |
 | 2026-10-26 | d314799 + Settings update | `run.sh all` (9 tests) after the Settings update | Pass after test fixes: firefox/smoke 14 checks, chromium/smoke 24 (icon count now 8), voice-management 13, download-failure 3, older-revision 5, settings-extras 18, settings-voice-switch 7, mixed-and-controls 12. `./build.sh`: lint 0 errors, same 4 warnings |
@@ -46,6 +47,8 @@ Re-run when: `extension/options.*`, `popup.*`, `common.js`, `catalog.js`, `engin
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-11-02 | pronunciation dictionary (uncommitted) | chromium/pronunciation (new) | Pass, 15 checks: add, replace (any case), edit, remove, ▶ Try plays; engine reads the replacement ("NASA." 0.65 s → 3.33 s with the long form) while word times keep "NASA"; reading long.html sent "The Keeper of sherry light"; the Swedish-only entry wasn't used by the English voice; import kept 2 of 6 entries; ?word= prefills Settings. First run failed on a test mistake (a # in the address is dropped when the test opens a tab) |
+| 2026-11-02 | pronunciation dictionary (uncommitted) | chromium/settings-extras | **Fail**, 1 check: auto-scroll. Scrolling is right (287 px on, 0 off), but the player's "N / M" status never showed within 15 s after 14 × next. Fails the same way on the code before this change (4e88d08), so not caused by this change; test still to fix |
 | 2026-10-26 | PDF highlight fix | chromium/pdf, firefox/smoke | Pass (15, 16). New check: the word highlight's text colour is transparent in the viewer (failed with the old CSS: white). Screenshots: doc.pdf and a real two-column paper (arXiv 1706.03762, not committed): highlight on the printed words, no ghost copy |
 | 2026-10-26 | PDF viewer (0.4.0) | chromium/pdf (new) | Pass, 14 checks: doc.pdf from the test server, 4 paragraphs, "light-"+"house" joined, 2 pages drawn, read with moving word highlight, status/pause/stop via `NV.sendToTab`, zoom keeps the text, Chromium's own PDF viewer hands over on Read and reading starts. Fixed on the way: the viewer answered the engine's internal runtime messages (now only `cmd` messages) |
 | 2026-10-26 | PDF viewer (0.4.0) | firefox/smoke | Pass, 16 checks: the viewer read doc.pdf (4 paragraphs, words highlighted) |

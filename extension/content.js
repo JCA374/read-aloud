@@ -9,6 +9,7 @@
   const STAGES = [45, 80, 140, 220]; // max characters of the first pieces: short first, so sound starts fast
   let settings = { ...NV.DEFAULTS };
   let voices = NV.STARTER_VOICES;
+  let dictRev = 0; // counts changes to your pronunciations, so pieces rendered before a change are redone
 
   function loadVoices() {
     NV.allVoices().then((v) => {
@@ -28,6 +29,7 @@
     if (["voice", "voiceSv", "fixedVoice", "langVoices"].some((k) => k in changes && !picked(k).includes(player.override))) player.override = null;
     if ("volume" in changes) player.setVolume();
     if ("highlight" in changes) player.redrawHighlights();
+    if ("dictionary" in changes) dictRev++;
     player.settingsChanged();
     ui.sync();
   });
@@ -272,6 +274,18 @@
 
   // ---------------------------------------------------------------- player
 
+  // A speech request. With your pronunciations applied, "say" is what the voice reads (the voice's language
+  // picks the entries); "text" stays as on the page, for the word highlight.
+  function ttsRequest(text, voice) {
+    const req = { type: "tts", text, voice, speed: settings.speed };
+    const say = NV.applyDictionary(text, voices.find((v) => v.id === voice)?.lang || voice.slice(6, 8), settings.dictionary);
+    if (say !== text) {
+      req.say = say;
+      console.debug(`[Neural Voices] pronunciation: ${JSON.stringify(say)}`);
+    }
+    return req;
+  }
+
   function b64ToBytes(b64) {
     if (Uint8Array.fromBase64) return Uint8Array.fromBase64(b64).buffer; // newer browsers; the loop below otherwise
     const bin = atob(b64);
@@ -307,7 +321,7 @@
     },
 
     key(i) {
-      return `${i}|${this.voice(i)}|${settings.speed}`;
+      return `${i}|${this.voice(i)}|${settings.speed}|${dictRev}`;
     },
 
     fetch(i) {
@@ -315,7 +329,7 @@
       if (!this.cache.has(key)) {
         const seg = this.segs[i];
         const p = chrome.runtime
-          .sendMessage({ type: "tts", text: seg.text, voice: this.voice(i), speed: settings.speed })
+          .sendMessage(ttsRequest(seg.text, this.voice(i)))
           .then(async (res) => {
             if (!res || res.error) return { error: res?.error || "offline", fatal: !!res?.fatal };
             this.download = null;
@@ -595,7 +609,7 @@
     if (!segs.length) return;
     const voice = NV.voiceFor(segs[0].lang || lang, settings, voices);
     const first = stageStart(segs, 0)[0];
-    chrome.runtime.sendMessage({ type: "tts", text: first.text, voice, speed: settings.speed }).catch(() => {});
+    chrome.runtime.sendMessage(ttsRequest(first.text, voice)).catch(() => {});
   }
 
   function plan(range, root, skipBoilerplate, startAt) {

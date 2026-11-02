@@ -22,6 +22,7 @@ var NV = (() => {
     autoScroll: true, // keep the sentence being read in view
     pause: 0, // extra seconds of silence after each sentence
     skipCode: true, // don't read code blocks (<pre>)
+    dictionary: [], // your pronunciations: [{word, say, lang}], lang "" = every language
   };
 
   const HIGHLIGHTS = {
@@ -105,8 +106,22 @@ var NV = (() => {
     }
   }
 
+  // Your pronunciations: whole words or phrases, any case, replaced by how to say them. Only the voice hears
+  // the replacement; the page and the highlight keep the original words. lang: the voice's language.
+  const WORD = "[\\p{L}\\p{N}_]";
+  function applyDictionary(text, lang, dictionary) {
+    const entries = (dictionary || []).filter((e) => e.word?.trim() && (!e.lang || e.lang === lang));
+    if (!entries.length) return text;
+    const key = (w) => w.trim().toLowerCase().replace(/\s+/g, " ");
+    entries.sort((a, b) => key(b.word).length - key(a.word).length); // longer phrases first
+    const say = new Map(entries.map((e) => [key(e.word), e.say]));
+    const escaped = [...say.keys()].map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+"));
+    const re = new RegExp(`(?<!${WORD})(?:${escaped.join("|")})(?!${WORD})`, "giu");
+    return text.replace(re, (m) => say.get(key(m)) ?? m);
+  }
+
   const looksLikePdf = (url) => /^(https?|file):\/\/[^?#]+\.pdf([?#]|$)/i.test(url || "");
   const pdfViewerUrl = (url, read) => chrome.runtime.getURL(`pdf.html?file=${encodeURIComponent(url)}${read ? "&read=1" : ""}`);
 
-  return { sendToTab, looksLikePdf, pdfViewerUrl, STARTER_VOICES, DEFAULTS, HIGHLIGHTS, shownVoices, listLangs, langDefault, voiceFor, pick, allVoices, fillVoiceSelect };
+  return { sendToTab, applyDictionary, looksLikePdf, pdfViewerUrl, STARTER_VOICES, DEFAULTS, HIGHLIGHTS, shownVoices, listLangs, langDefault, voiceFor, pick, allVoices, fillVoiceSelect };
 })();

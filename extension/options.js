@@ -290,6 +290,9 @@ function cleanSettings(data) {
       if (known(v)) out[k] = v;
     } else if (k === "fixedVoice") {
       if (v === "" || known(v)) out[k] = v;
+    } else if (k === "dictionary") {
+      const ok = (e) => e && typeof e.word === "string" && e.word.trim() && e.word.length <= 100 && typeof e.say === "string" && e.say.trim() && e.say.length <= 200 && (e.lang === undefined || (typeof e.lang === "string" && e.lang.length <= 8));
+      out.dictionary = v.filter(ok).slice(0, 500).map((e) => ({ word: e.word.trim(), say: e.say.trim(), lang: e.lang || "" }));
     } else if (k === "highlight") {
       if (v in NV.HIGHLIGHTS) out[k] = v;
     } else out[k] = v;
@@ -326,6 +329,96 @@ async function renderShortcuts() {
   $("shortcuts").replaceChildren(list, how);
 }
 
+// ---------------------------------------------------------------- pronunciation
+
+const DICT_MAX = 500;
+let editing = null; // the entry being edited: replaced when you press Add
+const dictKey = (e) => `${e.word.trim().toLowerCase().replace(/\s+/g, " ")}|${e.lang}`;
+const langName = (code) => voices.find((v) => v.lang === code)?.langName || code;
+
+// The voice for that language from your list (every language: the English default).
+function dictVoice(lang) {
+  return NV.voiceFor(lang || "en", settings, voices);
+}
+
+// Read the word aloud: as written, or with your spelling. Uses the same engine as reading.
+async function sayWord(word, say, lang) {
+  stopSample();
+  render();
+  const voice = dictVoice(lang);
+  $("dictNote").textContent = `Playing with ${voices.find((v) => v.id === voice)?.label || voice}…`;
+  try {
+    const req = { type: "tts", text: word, voice, speed: settings.speed };
+    if (say != null && say !== word) req.say = say;
+    const res = await chrome.runtime.sendMessage(req);
+    if (!res || res.error) throw new Error(res?.error || "The voice couldn't read it.");
+    const bytes = Uint8Array.from(atob(res.audio), (c) => c.charCodeAt(0));
+    audio.src = URL.createObjectURL(new Blob([bytes], { type: "audio/wav" }));
+    await audio.play();
+    $("dictNote").textContent = "";
+  } catch (e) {
+    $("dictNote").textContent = e.message;
+  }
+}
+
+function dictForm() {
+  return { word: $("dictWord").value.trim().replace(/\s+/g, " "), say: $("dictSay").value.trim(), lang: $("dictLang").value };
+}
+
+function addDict() {
+  const e = dictForm();
+  if (!e.word || !e.say) return ($("dictNote").textContent = "Write the word and how to say it.");
+  const list = settings.dictionary.filter((x) => x !== editing && dictKey(x) !== dictKey(e)); // same word and language: replaced
+  if (list.length >= DICT_MAX) return ($("dictNote").textContent = `At most ${DICT_MAX} words.`);
+  $("dictWord").value = $("dictSay").value = "";
+  $("dictNote").textContent = "";
+  editing = null;
+  save({ dictionary: [e, ...list] });
+}
+
+function renderDict() {
+  const select = $("dictLang");
+  const langs = NV.listLangs(voices, settings);
+  const want = [["", "All voices"], ...langs.map(([code, name]) => [code, `${name} voices`])];
+  for (const e of settings.dictionary) if (e.lang && !want.some(([c]) => c === e.lang)) want.push([e.lang, `${langName(e.lang)} voices`]);
+  const keep = select.value;
+  if (select.options.length !== want.length) select.replaceChildren(...want.map(([value, textContent]) => el("option", { value, textContent })));
+  select.value = want.some(([c]) => c === keep) ? keep : "";
+  $("dict").replaceChildren(
+    ...settings.dictionary.map((e) =>
+      el(
+        "div",
+        { className: "voice" },
+        el("div", { className: "info" }, el("b", { textContent: e.word }), el("span", { className: "say", textContent: ` → ${e.say}` }), el("div", { className: "meta", textContent: e.lang ? `${langName(e.lang)} voices` : "All voices" })),
+        el(
+          "div",
+          { className: "side" },
+          button("▶ Try", () => sayWord(e.word, e.say, e.lang)),
+          button("Edit", () => {
+            editing = e;
+            $("dictWord").value = e.word;
+            $("dictSay").value = e.say;
+            $("dictLang").value = e.lang;
+            $("dictSay").focus();
+          }),
+          button("Remove", () => save({ dictionary: settings.dictionary.filter((x) => x !== e) })),
+        ),
+      ),
+    ),
+  );
+}
+
+$("dictAdd").onclick = addDict;
+for (const id of ["dictWord", "dictSay"]) $(id).onkeydown = (ev) => ev.key === "Enter" && addDict();
+$("dictBefore").onclick = () => dictForm().word && sayWord(dictForm().word, null, dictForm().lang);
+$("dictAfter").onclick = () => dictForm().word && dictForm().say && sayWord(dictForm().word, dictForm().say, dictForm().lang);
+// From the right-click menu: options.html?word=…#pronunciation
+const fromMenu = new URLSearchParams(location.search).get("word");
+if (fromMenu) {
+  $("dictWord").value = fromMenu.trim().slice(0, 100);
+  setTimeout(() => ($("pronunciation").scrollIntoView(), $("dictSay").focus()), 0);
+}
+
 // ---------------------------------------------------------------- page
 
 function render() {
@@ -333,6 +426,7 @@ function render() {
   renderAdd();
   renderDefaults();
   renderStorage();
+  renderDict();
   $("speed").value = settings.speed;
   $("speedOut").textContent = `${settings.speed}×`;
   $("volume").value = settings.volume;

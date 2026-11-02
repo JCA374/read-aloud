@@ -32,12 +32,14 @@ about 63 MB).
 | Toolbar icon → *Read page* | reads the article |
 | Toolbar icon → *Click-to-read*, then click a sentence | reads from there (Esc to leave) |
 | Right-click → *Read aloud from here* / *Read PDF aloud* on a PDF link | reads from that spot / opens the PDF |
+| Select a word → right-click → *Fix pronunciation* | tell the voice how to say it |
 | `Alt+Shift+R` | read, pause or resume |
 | `Alt+Shift+X` or `Esc` | stop |
 
 The player has previous/next sentence, speed, voice and ⚙ Settings. In Settings: your voice list
 (▶ Try a voice before downloading it), a default voice for each language, speed, volume, the highlight
-style, scrolling, skip code blocks, a pause after each sentence, storage use, and export/import.
+style, scrolling, skip code blocks, a pause after each sentence, **your own pronunciations** for words a
+voice says wrong, storage use, and export/import.
 
 ## Privacy
 
@@ -57,6 +59,8 @@ docs/             project page and documentation
 - **Run from source.** Firefox: `about:debugging#/runtime/this-firefox` → *Load Temporary Add-on…* →
   `extension/manifest.json`. Chromium: *Load unpacked* → `extension/`.
 - **Test.** `tests/run.sh` (about 1.5 min; skips tests whose files didn't change). See [tests/README.md](tests/README.md).
+- **Try it by hand.** `tools/try.sh` opens a separate Firefox (`tools/try.sh chromium` for Chromium) with the
+  development version and its own profile, so the installed add-on isn't touched.
 - **Build.** `./build.sh` → `dist/neural-voices-<version>-firefox.zip` and `-chromium.zip`, and runs
   Mozilla's checker.
 - **Release.** `tools/sign.sh` signs a new version with Mozilla. See [docs/RELEASING.md](docs/RELEASING.md).

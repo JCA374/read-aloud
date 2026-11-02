@@ -2,7 +2,8 @@
 // espeak-ng (in piper_phonemize) turns text into phoneme ids; ONNX Runtime runs the voice model.
 // All code ships in vendor/; only the voice model files are downloaded (and cached).
 //
-// Requests:  {id, type: "tts", voice: "piper:sv_SE-alma-medium", text, speed}
+// Requests:  {id, type: "tts", voice: "piper:sv_SE-alma-medium", text, speed, say?}
+//              (say: what the voice reads, with your pronunciations; the word times follow text)
 //              -> {id, audio: <base64 WAV>, words: [[text, start, end], ...], duration, timing}
 //            {id, type: "download", voice} -> {id, ok: true}   (download only, e.g. from settings)
 //            {id, type: "unload", voice}   -> {id, ok: true}   (free its memory, e.g. after deleting it)
@@ -222,20 +223,20 @@ function wavBase64(samples, sampleRate) {
   return btoa(bin);
 }
 
-async function speak(voice, text, speed = 1) {
+async function speak(voice, text, speed = 1, say = text) {
   speaking = voice;
   try {
-    return await render(voice, text, speed);
+    return await render(voice, text, speed, say);
   } finally {
     speaking = null;
   }
 }
 
-async function render(voice, text, speed) {
+async function render(voice, text, speed, say) {
   const t0 = performance.now();
   const { session, config } = await loadVoice(voice);
   const t1 = performance.now();
-  const ids = await phonemize(text, config.espeak.voice);
+  const ids = await phonemize(say, config.espeak.voice);
   const t2 = performance.now();
   const inf = config.inference;
   const feeds = {
@@ -283,5 +284,5 @@ self.onmessage = ({ data }) => {
       return { ok: true };
     });
   }
-  queue = queue.then(() => reply(data.id, () => speak(data.voice, data.text, data.speed)));
+  queue = queue.then(() => reply(data.id, () => speak(data.voice, data.text, data.speed, data.say || data.text)));
 };

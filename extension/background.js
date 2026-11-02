@@ -45,6 +45,7 @@ function piperTts(msg, tabId) {
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({ id: "read-selection", title: "Read aloud", contexts: ["selection"] });
   chrome.contextMenus.create({ id: "read-from-here", title: "Read aloud from here", contexts: ["page", "link", "image"] });
+  chrome.contextMenus.create({ id: "fix-pronunciation", title: "Fix pronunciation of “%s”", contexts: ["selection"] });
   chrome.contextMenus.create({ id: "read-pdf", title: "Read PDF aloud", contexts: ["link"], targetUrlPatterns: ["*://*/*.pdf", "*://*/*.pdf?*", "*://*/*.PDF"] });
 });
 
@@ -61,6 +62,10 @@ function openPdf(url, tab, { read = true, newTab = false } = {}) {
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "read-pdf") return openPdf(info.linkUrl, tab, { newTab: true });
+  if (info.menuItemId === "fix-pronunciation") {
+    const word = (info.selectionText || "").trim().replace(/\s+/g, " ").slice(0, 100);
+    return chrome.tabs.create({ url: chrome.runtime.getURL(`options.html?word=${encodeURIComponent(word)}#pronunciation`), index: tab ? tab.index + 1 : undefined });
+  }
   if (!tab?.id) return;
   // Firefox's own PDF viewer runs no content scripts: "Read aloud from here" there opens the PDF in ours.
   if (NV.looksLikePdf(tab.url) && info.menuItemId === "read-from-here") return NV.sendToTab(tab.id, { cmd: "status" }).catch(() => openPdf(tab.url, tab));

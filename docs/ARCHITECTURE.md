@@ -23,7 +23,7 @@ WebAssembly, no server. There's no build step: `extension/` is loaded as it is, 
 ## The way a sentence becomes sound
 
 ```
-content.js ──{type:"tts", voice, text, speed}──▶ background.js ──▶ engine/host.js ──▶ piper-worker.js
+content.js ──{type:"tts", voice, text, speed, say?}──▶ background.js ──▶ engine/host.js ──▶ piper-worker.js
      ▲                                             (Firefox: direct call;          espeak-ng → ids
      │                                              Chromium: via offscreen.html)  ONNX Runtime → audio
      └──────────── {audio: base64 WAV, words: [[text, start, end]], duration} ◀───────────────┘
@@ -32,6 +32,11 @@ content.js ──{type:"tts", voice, text, speed}──▶ background.js ──�
 - **Pieces.** Where reading starts, the text is cut into growing pieces of at most 45, 80, 140, then 220
   characters (`STAGES` in `content.js`), so the first sound comes quickly and each piece renders while the
   one before plays. After that it keeps about 60 s of audio ready (`AHEAD_SECONDS`, at most 30 pieces).
+- **Your pronunciations.** `ttsRequest` in `content.js` applies `NV.applyDictionary` (in `common.js`) with
+  the voice's language and adds the result as `say` when it differs. The worker phonemizes `say` but
+  estimates word times from `text`, so the highlight keeps the page's words. Pieces are keyed with a
+  dictionary revision, so a change re-renders what isn't playing yet. espeak-ng in piper-wasm doesn't take
+  phonemes as input, so entries are respellings, not IPA.
 - **Language.** Each paragraph gets a language: English or Swedish from its words (`detectLang`), otherwise the
   page's `lang` attribute. `NV.voiceFor` then picks a voice from your list.
 - **Speed** is set in the model (Piper's length scale), so the pitch stays natural. The model shortens pauses
@@ -59,7 +64,7 @@ runtime message with `toTab: <tab id>`.
 
 | Where | What |
 |---|---|
-| `chrome.storage.local` | Settings: the keys of `NV.DEFAULTS` in `common.js` (`voice`, `voiceSv`, `langVoices`, `autoDetect`, `fixedVoice`, `shown`, `speed`, `volume`, `highlight`, `autoScroll`, `pause`, `skipCode`). |
+| `chrome.storage.local` | Settings: the keys of `NV.DEFAULTS` in `common.js` (`voice`, `voiceSv`, `langVoices`, `autoDetect`, `fixedVoice`, `shown`, `speed`, `volume`, `highlight`, `autoScroll`, `pause`, `skipCode`, and `dictionary`: `[{word, say, lang}]`, `lang` "" for every voice). |
 | `chrome.storage.session` | `readingTab`: the tab that's reading (the background can be unloaded between events). |
 | Cache API, cache `piper-voices` | Voice files (`.onnx`, `.onnx.json`), keyed by their pinned URL. Settings shows the size and deletes them. |
 

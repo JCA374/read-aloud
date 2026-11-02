@@ -5,7 +5,12 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
 
 ## Unreleased
 
-- Nothing yet.
+- **Pronunciation dictionary.** In Settings → *Pronunciation*, write how a word should sound, spelled the way
+  the voice would read it (for example *Nguyen* → *win*). For all voices or only one language's voices.
+  *▶ Now* and *▶ With fix* let you compare before saving. Whole words and phrases, any case. Only the voice
+  hears the change: the page and the word highlight keep the original words.
+- Right-click selected text → *Fix pronunciation of "…"* opens Settings with the word filled in.
+- The dictionary is included in *Export* / *Import* settings.
 
 ## 0.4.0 (2026-10-26), signed by Mozilla (unlisted)
 

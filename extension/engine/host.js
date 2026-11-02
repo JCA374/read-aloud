@@ -50,14 +50,14 @@ const piperHost = (() => {
   }
 
   function tts(req) {
-    const key = `${req.voice}|${Math.round(req.speed * 100)}|${req.text}`;
+    const key = `${req.voice}|${Math.round(req.speed * 100)}|${req.text}|${req.say ?? ""}`;
     if (cache.has(key)) {
       const p = cache.get(key);
       cache.delete(key); // move to the newest end
       cache.set(key, p);
       return p;
     }
-    const p = call({ type: "tts", voice: req.voice, text: req.text, speed: req.speed }).then((res) => {
+    const p = call({ type: "tts", voice: req.voice, text: req.text, say: req.say, speed: req.speed }).then((res) => {
       if (res.error) cache.delete(key); // don't keep failures
       return res;
     });

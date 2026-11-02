@@ -268,29 +268,31 @@
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 2 November 2026, after the clean-up: old files removed, new documentation, signing with API keys, and version 0.4.0 on GitHub Releases.</p>
+    <p class="meta">Updated 2 November 2026, after adding the pronunciation dictionary (not released yet) and <code>tools/try.sh</code> for trying changes before a release.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
-      <div class="tile ok"><span class="n">12</span><span class="l">Working and tested</span><span class="d">Reading, controls, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the release</span></div>
-      <div class="tile warn"><span class="n">7</span><span class="l">Built, not tested yet</span><span class="d">A slow computer, Firefox by hand, listening by ear, word timing, shortcuts, the pause after sentences, PDFs in Firefox's own viewer</span></div>
+      <div class="tile ok"><span class="n">13</span><span class="l">Working and tested</span><span class="d">Reading, controls, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the release, and the new pronunciation dictionary</span></div>
+      <div class="tile warn"><span class="n">8</span><span class="l">Built, not tested yet</span><span class="d">A slow computer, Firefox by hand, listening by ear, word timing, shortcuts, the pause after sentences, PDFs in Firefox's own viewer, and one test to fix</span></div>
       <div class="tile todo"><span class="n">1</span><span class="l">Left to do</span><span class="d">A public listing in the store, when you decide (checklist in <code>docs/LISTING.md</code>)</span></div>
     </div>
   </section>
 
   <section class="next" aria-labelledby="next-h">
-    <h2 id="next-h">Do this next: install the signed add-on</h2>
+    <h2 id="next-h">Do this next: try the pronunciation dictionary</h2>
+    <p>It's built and tested automatically, but not released yet. Your installed add-on stays as it is.</p>
     <ol class="steps">
-      <li><span>In Firefox, remove the temporary copy: open <span class="copy"><code id="u1">about:debugging#/runtime/this-firefox</code><button class="cp" data-copy="u1" type="button">Copy</button></span> and click <b>Remove</b> under Neural Voices.</span></li>
-      <li><span>Download <code>neural-voices-0.4.0-signed.xpi</code> from the <a href="https://github.com/JCA374/read-aloud/releases/latest">latest release</a> (it's also in <code>dist/</code>) and drag it into a Firefox window. Click <b>Add</b>. Voices may download once more.</span></li>
-      <li><span>Open a PDF on the web, click the toolbar button and press <b>Read this PDF</b>. This is the one PDF path not tested yet.</span></li>
-      <li><span>Tell me what to change next. When you want people to get the change, say "make a release".</span></li>
+      <li><span>In the project folder, run <span class="copy"><code id="u1">tools/try.sh</code><button class="cp" data-copy="u1" type="button">Copy</button></span>. A separate Firefox window opens with the new version and its own profile. The first voice downloads once there.</span></li>
+      <li><span>On a page, select a word the voice says wrong, right-click and choose <b>Fix pronunciation</b>. Type how it should sound, press <b>▶ With fix</b> to hear it, then <b>Add</b>.</span></li>
+      <li><span>Read the page again: the voice uses your spelling, and the highlight still shows the page's word.</span></li>
+      <li><span>If it's good, say "make a release". I'll sign 0.5.0 and put it on GitHub, and you install it over 0.4.0 (settings and voices stay).</span></li>
     </ol>
   </section>
 
   <section aria-labelledby="works-h">
     <h2 id="works-h">What works</h2>
     <ul class="status">
+      <li><span class="chip ok">Tested</span><span class="item"><b>Pronunciation dictionary</b> (new, not released yet). Settings → <b>Pronunciation</b>: a word or phrase, how to say it, and for all voices or one language's voices. <b>▶ Now</b> and <b>▶ With fix</b> to compare. Right-click a selected word → <b>Fix pronunciation</b>. Only the voice hears the change; the page and the highlight keep the original word. Included in export and import.<span class="how">New automatic test, 15 checks, all pass: add, replace, edit, remove and ▶ Try work; with "NASA" → the long form, the audio went from 0.65 s to 3.33 s while the highlight words stayed "NASA"; reading the test page sent "The Keeper of sherry light" to the voice; a Swedish-only entry wasn't used by the English voice; a bad import file kept only its 2 good entries. Plus 7 quick checks of the matching rules (any case, whole words, phrases, per language).</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Reads web pages, with no server.</b> Piper runs as WebAssembly inside the add-on. Selection, the whole article (menus and footers skipped), or from a clicked sentence.<span class="how">Automated in Firefox 158 and Chromium: English and Swedish read with words highlighted, no errors. First sound 3–4 s from cold, 0.75 s after the popup's warm-up.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Controls and highlights.</b> Pause, next, previous, speed, Stop and Escape; five highlight styles; one tab reads at a time.<span class="how">On a 400-paragraph page each control did what it says. Switching style changed the highlight at once. Starting a second tab stopped the first.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Languages.</b> Each paragraph gets the voice for its language.<span class="how">A page mixing English and Swedish switched voice every paragraph; a German page was read with Thorsten.</span></span></li>
@@ -300,7 +302,7 @@
       <li><span class="chip ok">Tested</span><span class="item"><b>Natural speed.</b> 0.75× to 2× without the voice going high.<span class="how">Pitch measured: Alma 176–181 Hz at every speed. 2× measured at 1.9×.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Memory, and nothing left running.</b><span class="how">300–550 MB more while reading, flat over 6 minutes. After Stop: CPU 0, memory freed after 5 idle minutes.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Mozilla's checks and signing.</b> Version 0.4.0 signed by Mozilla (unlisted) on 26 October.<span class="how">Mozilla's checker: 0 errors. <code>tools/check-vendor.sh</code>: all 204 library files identical to npm. The signed file matches Mozilla's checksum and holds the same code as the upload.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Build and tests.</b> <code>./build.sh</code> and <code>tests/run.sh</code>.<span class="how">After the clean-up, the build is byte for byte the same as the file sent to Mozilla (same SHA-256), so the add-on didn't change. Quick tests: instant checks pass (syntax, manifest, licences, Mozilla's checker); the browser tests were skipped because nothing they cover changed.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Build and tests.</b> <code>./build.sh</code> and <code>tests/run.sh</code>.<span class="how">After the clean-up, the build was byte for byte the file sent to Mozilla. With the dictionary: the instant checks and 7 browser tests pass in both browsers. One older Settings test fails a timing check (see below). <code>tools/try.sh</code> was checked: Firefox started with its own profile and loaded the add-on.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Signing tools.</b> <code>tools/sign.sh</code> signs a new version with your API keys (kept in <code>.amo-keys</code>, which git ignores). <code>tools/amo.py</code> lists versions and downloads signed files.<span class="how">The keys log in. <code>amo.py</code> downloaded 0.4.0 and checked Mozilla's checksum. <code>sign.sh</code> refused version 0.4.0 ("must be higher") before uploading anything. The full upload runs at the next version.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>GitHub Release v0.4.0.</b> The signed Firefox file and the Chromium zip, for anyone with the link.<span class="how">The file downloaded from the release link has the same SHA-256 as Mozilla's signed file (32dd2f43…), and GitHub serves it as a Firefox add-on, so clicking it in Firefox offers to install.</span></span></li>
     </ul>
@@ -315,6 +317,7 @@
       <li><span class="chip warn">Not tested</span><span class="item"><b>Word timing.</b> Piper doesn't say when each word starts, so the highlight is estimated and may run a little ahead or behind.</span></li>
       <li><span class="chip warn">Not tested</span><span class="item"><b>PDFs in Firefox's own viewer and from real websites.</b> Not yet tried: <b>Read this PDF</b> from Firefox's viewer, the right-click menu, the "allow this site" prompt, long or two-column PDFs.</span></li>
       <li><span class="chip warn">Not tested</span><span class="item"><b>Pause after each sentence.</b> Saved and used, but no test measures the silence.</span></li>
+      <li><span class="chip warn">Test to fix</span><span class="item"><b>One Settings test fails.</b> The auto-scroll check: scrolling works (the page moved 287 px with it on, 0 with it off), but the test's wait for the player's "N / M" text runs out. It fails the same way on the code from before the dictionary, so the dictionary didn't cause it. To fix next.</span></li>
       <li><span class="chip warn">Not tested</span><span class="item"><b>Keyboard shortcuts.</b> Test browsers can't press add-on shortcuts. They use the same code as the popup buttons, which are tested.</span></li>
     </ul>
   </section>
@@ -334,11 +337,12 @@
   <section class="review" aria-labelledby="review-h">
     <h2 id="review-h">How the session went</h2>
     <div class="verdict">
-      <p><b>This session (2 November):</b> Claude Opus 5.5, planned first (plan approved by you), then built. Checked that your API keys work, downloaded and verified the signed file, removed the old video tools and speed samples, wrote the new documents, a signing script and the release. The add-on code wasn't touched.</p>
+      <p><b>This session (2 November):</b> Claude Opus 5.5, planned first (plan approved by you), then built. Checked that your API keys work, downloaded and verified the signed file, removed the old video tools and speed samples, wrote the new documents, a signing script and the release. Then, at your request, the pronunciation dictionary and <code>tools/try.sh</code>, with a new automatic test.</p>
     </div>
     <h3>Slips</h3>
     <div class="slips">
       <div class="slip"><span class="what">The page was published without first reading the live version.</span><span class="cost">The publish was refused once; it cost one extra round. Nothing was lost.</span></div>
+      <div class="slip"><span class="what">The new test opened Settings with a "#" in the address.</span><span class="cost">The test browser drops that part, so the test couldn't find the tab. One failed run, about 1 minute to fix and re-run. Not a fault in the add-on.</span></div>
       <div class="slip"><span class="what">Two wrong details in the first draft of <code>docs/ARCHITECTURE.md</code>.</span><span class="cost">It said word times come from phonemes (they're spread by word length) and described pdf.js settings loosely. Caught by checking the code before committing.</span></div>
     </div>
     <div class="verdict">
@@ -351,6 +355,7 @@
     <div class="tbl">
       <table>
         <tbody>
+          <tr><td>Try the development version in a separate Firefox (your installed add-on isn't touched)</td><td><code>tools/try.sh</code> (Chromium: <code>tools/try.sh chromium</code>)</td></tr>
           <tr><td>Check a change (about 1.5 min; 4 s if the add-on didn't change)</td><td><code>tests/run.sh</code></td></tr>
           <tr><td>Every test, before a release</td><td><code>tests/run.sh all</code></td></tr>
           <tr><td>Build the Firefox and Chromium files (and check them)</td><td><code>./build.sh</code></td></tr>

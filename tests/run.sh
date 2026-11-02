@@ -23,6 +23,7 @@ chromium/download-failure|PROFILE=nv-fresh-profile;EXTRA=--host-resolver-rules=M
 chromium/settings-voice-switch|KEEP=1|extension|150
 chromium/settings-extras|KEEP=1|extension/options.* extension/common.js extension/content.js extension/background.js tests/site/code.html|200
 chromium/pdf|KEEP=1|extension/pdf* extension/content.js extension/common.js extension/background.js tests/site/doc.pdf|150
+chromium/pronunciation|KEEP=1|extension/options.* extension/common.js extension/content.js extension/background.js extension/engine/host.js extension/engine/piper-worker.js tests/site/long.html|200
 chromium/older-revision|KEEP=1;EXTRA=--host-resolver-rules=MAP huggingface.co ~NOTFOUND|extension/engine/piper-worker.js extension/options.js|150
 chromium/mixed-and-controls|KEEP=1|extension|200
 chromium/warm-up|KEEP=1|extension/engine extension/offscreen.* extension/background.js|150
@@ -31,7 +32,7 @@ chromium/memory|KEEP=1;TIMEOUT=1000|extension/engine extension/offscreen.* exten
 firefox/memory|TIMEOUT=700|extension/engine extension/offscreen.* extension/background.js|760
 "
 QUICK="chromium/smoke firefox/smoke"
-AFFECTED="chromium/voice-management chromium/download-failure chromium/older-revision chromium/settings-extras chromium/pdf"   # added to quick when their files changed
+AFFECTED="chromium/voice-management chromium/download-failure chromium/older-revision chromium/settings-extras chromium/pdf chromium/pronunciation"   # added to quick when their files changed
 ALL="chromium/smoke firefox/smoke $AFFECTED chromium/settings-voice-switch chromium/mixed-and-controls"
 TIMING="chromium/warm-up chromium/long-page-cpu chromium/memory firefox/memory"
 
@@ -77,6 +78,16 @@ instant_checks() {
     const notFree = NV_CATALOG.voices.filter((v) => NV.DEFAULTS.shown.includes(v.id) && !["free", "share-alike"].includes(v.kind));
     if (bad.length || notFree.length) { console.log(bad.concat(notFree).map((v) => v.id).join(" ")); process.exit(1); }' ||
     { echo "FAIL voices without a known licence kind, or a starter voice that is not free to use"; bad=1; }
+  # Pronunciations: whole words, any case, phrases, longer first, per language
+  node -e 'eval(require("fs").readFileSync("extension/common.js", "utf8").replace(/^var /m, "globalThis."));
+    const d = [{ word: "NASA", say: "nassa", lang: "" }, { word: "New  York", say: "noo york", lang: "en" }, { word: "York", say: "yawk", lang: "" },
+      { word: "Göteborg", say: "jöteborj", lang: "sv" }, { word: "C++", say: "C plus plus", lang: "" }, { word: " ", say: "x", lang: "" }];
+    const cases = [["NASA, nasa and NASAs.", "en", "nassa, nassa and NASAs."], ["New\nYork and York", "en", "noo york and yawk"],
+      ["I Göteborg.", "sv", "I jöteborj."], ["I Göteborg.", "en", "I Göteborg."], ["learn C++ now", "en", "learn C plus plus now"],
+      ["new york", "sv", "new yawk"], ["nothing", "en", "nothing"]];
+    const bad = cases.filter(([t, l, want]) => NV.applyDictionary(t, l, d) !== want);
+    if (bad.length || NV.applyDictionary("x", "en", []) !== "x") { console.log(JSON.stringify(bad)); process.exit(1); }' ||
+    { echo "FAIL pronunciation rules (NV.applyDictionary)"; bad=1; }
   # Mozilla's checker: no errors, and no warnings beyond the known ones (Chromium-only parts, ONNX Runtime, pdf.js)
   local lint; lint=$(npx -y web-ext lint --source-dir extension --output json 2>/dev/null)
   local summary; summary=$(echo "$lint" | python3 -c '
