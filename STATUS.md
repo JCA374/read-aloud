@@ -1,27 +1,30 @@
 # Development status
 
-Updated 3 November 2026, after making the add-on recognise any language, not just English and Swedish.
-Next: your 20-minute test by hand, then the public listing.
+Updated 3 November 2026, after submitting 0.5.0 to the public store. It is waiting for Mozilla's review.
 
 ## At a glance
 
 | ✅ Working and tested | 🟡 Built, not tested yet | 🔵 Left to do |
 |---|---|---|
-| **19**: reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the release, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **2**: your test by hand, then the public listing on addons.mozilla.org (Firefox only, no Android for now) |
+| **19**: reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the release, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **2**: paste the privacy policy on Mozilla's site, then Mozilla's review of the listing |
 
 Since the 0.4.0 release (not released yet): the pronunciation dictionary, Settings in a new order, volume in
 the page player, any language recognised from the words, and a Firefox fix for long sentences on slow
 computers. See [CHANGELOG.md](CHANGELOG.md).
 
-## Do this next: test it by hand (about 20 minutes)
+## Do this next: one step on Mozilla's site, then wait
 
-Every automatic test passes (see below). Some things only a person can judge.
+0.5.0 is submitted as a public (listed) add-on, Firefox desktop only. The store texts, the category
+(Language Support), the licence (GPL-3.0) and 4 screenshots are on Mozilla's site. Mozilla's API can't set
+the privacy policy, so:
 
-1. Open [docs/MANUAL-TEST.md](docs/MANUAL-TEST.md) and go through it in the window `tools/try.sh` opens.
-   It covers first use, listening, shortcuts, right-click, and real PDFs.
-2. Tell me "manual test passed", or what went wrong.
-3. Then I prepare the listing: remove Android from the manifest, write the store texts, take screenshots,
-   and sign 0.5.0 for the store (`tools/sign.sh --listed`). Mozilla then reviews it, which can take days.
+1. Open <https://addons.mozilla.org/developers/addon/a9f96c5f57e94f0c8762/edit>, find **Privacy Policy**,
+   tick that the add-on has one, and paste the text of [PRIVACY.md](PRIVACY.md). Save.
+2. While you're there, look over the description and screenshots.
+3. Wait for the review (often a day or two; can be longer). Check with
+   `python3 tools/amo.py status neural-voices@jca374.github.io` (keys loaded), or ask me.
+4. When it's approved, tell me: I download the signed file, make the GitHub release, and publish the info page
+   (already updated for 0.5.0, held back until then) with install instructions pointing at the store. Your installed 0.4.0 should then update by itself.
 
 ## What works
 
@@ -64,7 +67,7 @@ Every automatic test passes (see below). Some things only a person can judge.
 |---|---|
 | Signed by Mozilla | ✅ 0.4.0, unlisted. New versions: `tools/sign.sh`. |
 | On GitHub Releases | ✅ Anyone with the link can install it. |
-| Listed in the store | 🔵 Next, after your test by hand. Firefox only. Found by anyone, updates itself, needs a review by Mozilla. [Checklist](docs/LISTING.md). Installs of 0.4.0 should then update from the store by themselves (same add-on id). |
+| Listed in the store | 🟡 0.5.0 submitted on 3 November, waiting for Mozilla's review. Firefox desktop only. Then found by anyone and updated automatically; 0.4.0 installs should update by themselves (same add-on id). [How it was done](docs/LISTING.md). |
 
 In Chromium, "Load unpacked" is already permanent.
 
@@ -107,6 +110,16 @@ Slips:
 stopped on an apostrophe; it changed nothing, and was redone as a file (under a minute).
 
 **3 November (late):** you said *Fix pronunciation* didn't scroll to the Pronunciation section. I couldn't make it fail in the test browsers; the scroll now waits until everything above it is drawn, and a test checks it.
+
+**3 November (night):** you said everything was ready; I prepared and submitted the listing (you confirmed
+before it was sent). Slips:
+- **Removing the Android block from the manifest made Mozilla's checker warn**: put back; Android is left out
+  in the upload instead. Caught by the tests before anything was sent.
+- **The first submission was refused**: the reviewer notes were 3,422 characters, over Mozilla's 3,000 limit
+  (my two new lines pushed it over). Only the store texts had been saved. Shortened; `tools/sign.sh` now
+  checks the length first. About 3 minutes.
+- **Screenshot upload hit Mozilla's rate limit** after the first image; the rest went up a minute apart, and
+  `amo.py previews` now waits between uploads.
 
 **Suggestion:** for each change, say whether it should go out as a new version, so every change lands in
 the changelog and the release notes write themselves.
