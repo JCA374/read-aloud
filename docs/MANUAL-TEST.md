@@ -31,6 +31,8 @@ Use `tools/try.sh` (your usual test profile).
 - [ ] Speed 1.5× still sounds clear and not high-pitched. 0.75× sounds natural.
 - [ ] The volume slider in the player changes the loudness. The speaker button mutes and unmutes.
 - [ ] A Swedish page (for example <https://sv.wikipedia.org/wiki/Fyr>) is read with a Swedish voice.
+- [ ] Add a voice for another language in Settings (for example German). A page in that language (for
+      example <https://de.wikipedia.org/wiki/Leuchtturm>) is read with it.
 - [ ] Settings → Reading → *Pause after each sentence*: set 1 s and hear the longer pause.
 
 ## 3. Keyboard and right-click (5 min)

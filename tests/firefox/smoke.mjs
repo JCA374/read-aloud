@@ -48,4 +48,14 @@ const pdfWord = await waitFor(() => b.word(viewer), 30000, 100);
 check("PDF viewer: reads with words highlighted", !!pdfWord, JSON.stringify(pdfWord));
 await b.ev(b.ext, `chrome.tabs.query({}).then(ts => Promise.allSettled(ts.map(t => NV.sendToTab(t.id, {cmd: 'stop'})))).then(() => true)`);
 
+// 4. Any language: a page marked lang="en" with paragraphs in 8 languages; each is recognised from its words
+const langs = await b.open("langs.html");
+const since4 = Date.now();
+await b.readPage("langs.html");
+const found = await waitFor(() => b.logs.find((l) => l.at >= since4 && /language by paragraph: /.test(l.text)), 10000);
+const found8 = (found?.text.split("paragraph: ")[1] || "").split(" ").slice(1).join(" ");
+check("every paragraph's language recognised from its words", found8 === "de fr no fi es pl sv en", found8 || "nothing logged");
+await waitFor(async () => (await b.status()).state === "playing", 30000);
+await b.stopAll();
+
 finish(b.errors());

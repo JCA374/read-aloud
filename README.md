@@ -9,7 +9,8 @@ read never leaves your computer. Firefox (also on Android), Chrome, Edge and Bra
 - Reads the main article (skipping menus and footers), a selection, or from any sentence you click.
 - Highlights the sentence and the word being spoken, and scrolls along.
 - Reads PDFs in its own viewer, from the web or from your computer.
-- English and Swedish are detected paragraph by paragraph. 170 voices in 49 languages can be added.
+- The language is detected paragraph by paragraph, in any language, and each gets its own voice. 170 voices
+  in 49 languages can be added.
 - Natural pitch at every speed from 0.75× to 2×. Works offline once a voice is downloaded.
 
 ## Install

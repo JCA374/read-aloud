@@ -5,7 +5,8 @@ Neural Voices server, no account and no analytics.
 
 ## What stays on your computer
 
-- **The text you listen to.** It is turned into speech inside the browser and is never sent anywhere.
+- **The text you listen to.** It is turned into speech inside the browser and is never sent anywhere. Its
+  language is recognised by the browser's built-in language detector, which also runs on your computer.
 - **Your settings** (voices, speed, highlight style, and so on), kept in the browser's add-on storage.
   *Export* saves them to a file on your computer, and only when you ask.
 - **Downloaded voices**, kept in the browser's cache for the add-on. Delete them in Settings

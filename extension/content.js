@@ -584,13 +584,29 @@
   const SV_WORDS = new Set("och att det är som på för med inte av till den har jag de om ett men var så vi kan när från också eller vid hon han sig efter mycket där här ska skulle vara blir finns".split(" "));
   const EN_WORDS = new Set("the and to of is that it in for with on was as are this be by not you he she they have from or but at an his her which were would there".split(" "));
 
-  function pageLang(el = document.documentElement) {
-    const attr = (el.closest?.("[lang]")?.lang || document.documentElement.lang || "").toLowerCase().slice(0, 2);
-    return { nb: "no", nn: "no" }[attr] || attr || "en";
+  // "nb-NO" → "no", "zh-Hant" → "zh": the language part, as the voice catalogue names it.
+  function normLang(code) {
+    const l = (code || "").toLowerCase().split(/[-_]/)[0];
+    return { nb: "no", nn: "no" }[l] || l;
   }
 
-  // The words decide; the page's lang attribute only breaks ties (many sites leave lang="en" in their template).
-  function detectLang(text, el) {
+  function pageLang(el = document.documentElement) {
+    return normLang(el.closest?.("[lang]")?.lang || document.documentElement.lang) || "en";
+  }
+
+  // The text decides, in any language: the browser's own language detector (offline, built into Firefox and
+  // Chromium). The page's lang attribute is only a fallback, since many sites leave lang="en" in their
+  // template. When the detector isn't sure (very short text), English and Swedish are still told apart by
+  // their common words.
+  async function detectLang(text, el) {
+    try {
+      const r = await chrome.i18n.detectLanguage(text.slice(0, 5000));
+      if (r?.isReliable && r.languages?.[0]) return normLang(r.languages[0].language);
+    } catch {}
+    return guessByWords(text, el);
+  }
+
+  function guessByWords(text, el) {
     const words = text.toLowerCase().match(/\p{L}+/gu) || [];
     let sv = 0;
     let en = 0;
@@ -606,39 +622,56 @@
     return attr;
   }
 
-  function readRange(range, root, skipBoilerplate, startAt) {
-    const { segs, lang, i } = plan(range, root, skipBoilerplate, startAt);
+  async function readRange(range, root, skipBoilerplate, startAt) {
+    const { segs, lang, i } = await plan(range, root, skipBoilerplate, startAt);
     player.start(segs, i, lang);
+  }
+
+  // The language of the page's main text, for the voice shown before reading starts (player, popup).
+  let guessed = { url: "", lang: null, promise: null };
+  function pageGuess() {
+    if (guessed.url !== location.href) {
+      let text = "";
+      try {
+        text = (pickRoot().textContent || "").replace(/\s+/g, " ").slice(0, 5000);
+      } catch {}
+      guessed = { url: location.href, lang: null, promise: null };
+      const g = guessed;
+      g.promise = (text.trim() ? detectLang(text, document.documentElement) : Promise.resolve(pageLang())).then((l) => (g.lang = l));
+    }
+    return guessed.promise;
   }
 
   // Start rendering the first words of a selection before the speaker button is clicked.
   // The engine keeps the result, so the click plays it almost at once.
-  function prewarmSelection() {
+  async function prewarmSelection() {
     const sel = getSelection();
     if (!sel.rangeCount || sel.isCollapsed || player.state !== "idle") return;
-    const { segs, lang } = plan(sel.getRangeAt(0), document.body, false);
-    if (!segs.length) return;
+    const { segs, lang } = await plan(sel.getRangeAt(0), document.body, false);
+    if (!segs.length || player.state !== "idle") return;
     const voice = NV.voiceFor(segs[0].lang || lang, settings, voices);
     const first = stageStart(segs, 0)[0];
     askEngine(ttsRequest(first.text, voice)).catch(() => {});
   }
 
-  function plan(range, root, skipBoilerplate, startAt) {
+  async function plan(range, root, skipBoilerplate, startAt) {
     const segs = toSentences(collectChunks(range, root, skipBoilerplate));
     const container = range.commonAncestorContainer;
     const el = container.nodeType === 1 ? container : container.parentElement;
-    const lang = detectLang(segs.slice(0, 40).map((s) => s.text).join(" "), el);
     // Mixed pages: each paragraph gets its own language when it has enough words to tell;
-    // short ones (headings, captions) keep the language of the paragraph before.
-    let cur = lang;
-    const langOf = new Map();
-    for (const s of segs) {
-      if (!langOf.has(s.chunk)) {
-        if ((s.chunk.text.match(/\p{L}+/gu) || []).length >= 8) cur = detectLang(s.chunk.text, s.chunk.pieces[0]?.node.parentElement || el);
-        langOf.set(s.chunk, cur);
-      }
-      s.lang = langOf.get(s.chunk);
-    }
+    // short ones (headings, captions) keep the language of the paragraph before, and those before the first
+    // long paragraph (a title) take its language.
+    // All paragraphs are checked at once (400 paragraphs take about 0.2 s).
+    const chunks = [...new Set(segs.map((s) => s.chunk))];
+    const [lang, ...found] = await Promise.all([
+      detectLang(segs.slice(0, 40).map((s) => s.text).join(" "), el),
+      ...chunks.map((c) => ((c.text.match(/\p{L}+/gu) || []).length >= 8 ? detectLang(c.text, c.pieces[0]?.node.parentElement || el) : null)),
+    ]);
+    let cur = found.find(Boolean) || lang;
+    const langOf = new Map(chunks.map((c, k) => [c, (cur = found[k] || cur)]));
+    for (const s of segs) s.lang = langOf.get(s.chunk);
+    const byPara = chunks.map((c) => langOf.get(c));
+    console.debug(`[Neural Voices] language by paragraph: ${byPara.slice(0, 40).join(" ")}${byPara.length > 40 ? " …" : ""}`);
     let i = 0;
     if (startAt) {
       for (const [k, s] of segs.entries()) {
@@ -959,7 +992,8 @@
       if (this.muteIcon !== muteIcon) this.els.mute.replaceChildren(icon((this.muteIcon = muteIcon)));
       this.els.mute.title = vol > 0 ? `Mute (volume ${Math.round(vol * 100)}%)` : "Unmute";
       this.els.volume.title = `Volume ${Math.round(vol * 100)}%`;
-      const current = player.state === "idle" ? NV.voiceFor(pageLang(), settings, voices) : player.voice();
+      if (player.state === "idle" && guessed.url !== location.href) pageGuess().then(() => this.sync());
+      const current = player.state === "idle" ? NV.voiceFor(guessed.lang || pageLang(), settings, voices) : player.voice();
       const list = NV.shownVoices(voices, settings);
       if (!list.some((v) => v.id === current)) list.push(voices.find((v) => v.id === current) || { id: current, label: current, lang: "" });
       const key = list.map((v) => `${v.langName || v.lang}|${v.id}|${v.label}`).join("\n");
@@ -1041,7 +1075,9 @@
         return; // no reply needed
       }
     }
-    const voice = player.state === "idle" ? NV.voiceFor(pageLang(), settings, voices) : player.voice();
-    sendResponse({ state: player.state, clickMode, hasSelection: !getSelection().isCollapsed, voice });
+    const reply = (lang) => sendResponse({ state: player.state, clickMode, hasSelection: !getSelection().isCollapsed, voice: player.state === "idle" ? NV.voiceFor(lang, settings, voices) : player.voice() });
+    if (player.state !== "idle") return reply();
+    pageGuess().then(reply, () => reply(pageLang()));
+    return true; // answered once the page's language is known (a few milliseconds)
   });
 })();

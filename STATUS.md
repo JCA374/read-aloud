@@ -1,6 +1,6 @@
 # Development status
 
-Updated 3 November 2026, after the release test plan: every automatic test passes, two bugs found and fixed.
+Updated 3 November 2026, after making the add-on recognise any language, not just English and Swedish.
 Next: your 20-minute test by hand, then the public listing.
 
 ## At a glance
@@ -10,7 +10,8 @@ Next: your 20-minute test by hand, then the public listing.
 | **19**: reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the release, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **2**: your test by hand, then the public listing on addons.mozilla.org (Firefox only, no Android for now) |
 
 Since the 0.4.0 release (not released yet): the pronunciation dictionary, Settings in a new order, volume in
-the page player, and a Firefox fix for long sentences on slow computers. See [CHANGELOG.md](CHANGELOG.md).
+the page player, any language recognised from the words, and a Firefox fix for long sentences on slow
+computers. See [CHANGELOG.md](CHANGELOG.md).
 
 ## Do this next: test it by hand (about 20 minutes)
 
@@ -35,7 +36,7 @@ Every automatic test passes (see below). Some things only a person can judge.
 | ✅ Tested | **Pronunciation dictionary** (not released yet). Settings → *Pronunciation*: a word or phrase, how to say it, for all voices or one language's voices. *▶ Now* and *▶ With fix* to compare. Right-click a selected word → *Fix pronunciation*. Only the voice hears the change; the page and the highlight keep the original word. In export and import. | Automatic test, 17 checks, including typing with real key presses. With "NASA" → the long form, the audio went from 0.65 s to 3.33 s while the highlight words stayed "NASA". Reading the test page sent "The Keeper of sherry light" to the voice. A Swedish-only entry wasn't used by the English voice. A bad import file kept only its 2 good entries. Plus 7 quick checks of the matching rules. |
 | ✅ Tested | **Reads web pages, with no server.** Selection, the whole article (menus and footers skipped), or from a clicked sentence. | Firefox 158 and Chromium, automated: English and Swedish read with words highlighted, no errors. First sound 3–4 s from cold, 0.75 s after the popup's warm-up. |
 | ✅ Tested | **Controls and highlights.** Pause, next, previous, speed, Stop and Escape; five highlight styles; one tab reads at a time. | On a 400-paragraph page each control did what it says. Switching style changed the highlight at once. Starting a second tab stopped the first. |
-| ✅ Tested | **Languages.** Each paragraph gets the voice for its language. | A page mixing English and Swedish switched voice every paragraph; a German page was read with Thorsten. |
+| ✅ Tested | **Languages.** Each paragraph gets the voice for its language, recognised from its words in any language by the browser's built-in detector (offline). Before, only English and Swedish were recognised from the words (not released yet). | A page marked as English with paragraphs in 8 languages: both browsers recognised German, French, Norwegian, Finnish, Spanish, Polish, Swedish and English. A page mixing English and Swedish switched voice every paragraph; a German page was read with Thorsten. 400 paragraphs checked in about 0.2 s. |
 | ✅ Tested | **Voices.** 170 voices in 49 languages; downloads with progress and size check; a clear message when offline; kept when the voice list updates; changes apply at once. | Download site blocked: stopped after 6.6 s with a clear message. A voice stored under an older address was kept and read without downloading. |
 | ✅ Tested | **Settings page**, in the order a new user needs it (Reading first, Credits last). | Automatic test, 18 checks. All 170 online samples exist. |
 | ✅ Tested | **Reads PDFs** in the add-on's own viewer. | Chromium test, 15 checks: paragraphs, hyphen joining, highlights, zoom, hand-over from Chromium's viewer. Firefox read the same PDF. Screenshots checked for the highlight. |
@@ -101,6 +102,9 @@ Slips:
   header. A test mistake, not the add-on.
 - **The sentence-pause check hung once**: it looked for the player before reading had started. One timed-out
   run (3 minutes).
+
+**3 November (evening):** any language is now recognised from the words. Slip: an inline edit script
+stopped on an apostrophe; it changed nothing, and was redone as a file (under a minute).
 
 **Suggestion:** for each change, say whether it should go out as a new version, so every change lands in
 the changelog and the release notes write themselves.

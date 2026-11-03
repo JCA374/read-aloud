@@ -38,8 +38,8 @@ A kept Chromium profile is started fresh automatically when `background.js` or `
 
 | Test | What it checks | Takes |
 |---|---|---|
-| `chromium/smoke.mjs` | Settings and popup lists; English and Swedish reading, English again (must start within 2 s); player icons, voice list, voice switch, pause, next, prev, speed, Stop; mixed page | 30 s |
-| `firefox/smoke.mjs` | Settings and popup lists; English and Swedish reading with the right voice; Stop | 30 s |
+| `chromium/smoke.mjs` | Settings and popup lists; English and Swedish reading, English again (must start within 2 s); player icons, voice list, voice switch, pause, next, prev, speed, Stop; mixed page; every paragraph's language on `langs.html` | 30 s |
+| `firefox/smoke.mjs` | Settings and popup lists; English and Swedish reading with the right voice; Stop; a PDF; every paragraph's language on `langs.html` | 30 s |
 | `firefox/features.mjs` | Firefox versions of the Chromium-only checks: a pronunciation typed with real keys (and Enter) is used when reading; pause, resume, next, prev, speed; volume (4 × ← → 80%, mute, unmute); Escape; a render longer than Firefox's idle limit survives with the keep-alive messages and is lost without them; the engine starts again after Firefox stops the background page. Runs with `IDLE_MS=8000` | 3 min |
 | `firefox/real-sites.mjs` | Real websites (Wikipedia EN and SV, MDN, a GitHub README, an old table-layout essay, Mozilla's manifesto): reading starts within 10 s, with the title or the article first (not a menu), the right voice, at least 10 sentences. Only in `release` (needs the internet; live pages change) | 1 min |
 | `chromium/settings-voice-switch.mjs` | One picker per language; with no Swedish voice the page says so; detection off gives one picker; changing voice in the popup while reading restarts the sentence | 10 s |
@@ -65,7 +65,7 @@ Engine measurements (not browser tests):
 
 Test pages: `site/long.html` (English article with menus and footer), `sv.html` (Swedish, marked
 `lang="en"` on purpose), `de.html`, `mixed.html` (alternating English and Swedish paragraphs),
-`huge.html` (400 generated paragraphs), `index.html`.
+`huge.html` (400 generated paragraphs), `langs.html` (paragraphs in 8 languages, all marked `lang="en"`), `index.html`.
 
 ## Before a release
 

@@ -1,5 +1,6 @@
 // Quick check of the whole add-on in one Chromium session: settings and popup voice lists, reading English
-// and Swedish, the player (icons, voice list, switching voice, controls), a mixed-language page, no errors.
+// and Swedish, the player (icons, voice list, switching voice, controls), a mixed-language page, a page in 8
+// languages, no errors.
 // Waits for events instead of fixed times. Prints one line per check; exits 1 if any check fails.
 import { browser, waitFor, sleep, check, finish, hl, player, CORI, NORTHERN, ALMA } from "./lib.mjs";
 
@@ -114,6 +115,16 @@ for (let k = 0; k < 6 && voices.size < 2; k++) {
   await waitFor(async () => { voices.add(await pm.voice()); return voices.size >= 2; }, 3000);
 }
 check("mixed page switches between English and Swedish voices", voices.has(CORI) && voices.has(ALMA), [...voices].join(", "));
+await b.stopAll();
+
+// 8. Any language: a page marked lang="en" with paragraphs in 8 languages; each is recognised from its words
+await b.open("langs.html");
+const since8 = Date.now();
+await b.readPage();
+const found = await b.waitLog(/language by paragraph: /, since8, 10000);
+const paras = (found?.text.split("paragraph: ")[1] || "").split(" ").slice(1).join(" ");
+check("every paragraph's language recognised from its words", paras === "de fr no fi es pl sv en", paras || "nothing logged");
+await waitFor(async () => (await b.state()) === "playing", 30000);
 await b.stopAll();
 
 finish(b.errors);

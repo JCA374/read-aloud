@@ -15,6 +15,10 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
   pronunciation, storage, and credits last.
 - Volume in the player on the page: a slider next to the speed, and a speaker button to mute and unmute.
   The Settings volume slider now goes down to 0.
+- **Recognises any language.** Every paragraph's language now comes from its words, in any language, using
+  the browser's built-in language detector (offline). Before, only English and Swedish were recognised, and
+  other languages depended on what the web page said it was written in (often wrong). The player and popup
+  also show the right voice for the page before reading starts.
 - Fixed (Firefox): a long sentence on a slow computer could be skipped, because Firefox closed the add-on's
   background page after 30 s while the voice was still rendering. The page now keeps it awake while waiting.
 

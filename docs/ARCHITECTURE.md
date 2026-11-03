@@ -37,8 +37,11 @@ content.js ──{type:"tts", voice, text, speed, say?}──▶ background.js �
   estimates word times from `text`, so the highlight keeps the page's words. Pieces are keyed with a
   dictionary revision, so a change re-renders what isn't playing yet. espeak-ng in piper-wasm doesn't take
   phonemes as input, so entries are respellings, not IPA.
-- **Language.** Each paragraph gets a language: English or Swedish from its words (`detectLang`), otherwise the
-  page's `lang` attribute. `NV.voiceFor` then picks a voice from your list.
+- **Language.** Each paragraph with 8 or more words gets a language from the browser's built-in detector
+  (`chrome.i18n.detectLanguage`, offline, any language; `detectLang`). When it isn't sure, English and
+  Swedish are told apart by common words, and otherwise the page's `lang` attribute is used. Shorter
+  paragraphs keep the language before them. The voice shown before reading (player, popup) uses the page's
+  main text the same way (`pageGuess`). `NV.voiceFor` then picks a voice from your list.
 - **Speed** is set in the model (Piper's length scale), so the pitch stays natural. The model shortens pauses
   less than sounds, so `lengthFor(speed)` in `piper-worker.js` follows a measured curve to make 2× really
   about 2× (measured with `tests/engine/speed-calibration.py`).
