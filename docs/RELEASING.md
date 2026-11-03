@@ -17,8 +17,9 @@ To check the keys: `set -a; . ./.amo-keys; set +a; python3 tools/amo.py versions
 
 ## Each release
 
-1. **Tests.** `tests/run.sh all`. Everything changed since the last release must pass and be logged in
-   `tests/RESULTS.md`.
+1. **Tests.** `tests/run.sh all`, then `tests/run.sh release` (tests the built Firefox package and real
+   websites), and `tests/run.sh timing` if the engine or audio code changed. Then the owner's test by hand,
+   [MANUAL-TEST.md](MANUAL-TEST.md). Everything must pass and be logged in `tests/RESULTS.md`.
 2. **Bundled libraries.** If anything in `extension/engine/vendor/` or `extension/pdf/` changed, run
    `tools/check-vendor.sh` and update `THIRD-PARTY-NOTICES`, `licenses/` and
    `extension/engine/vendor/README.md`.
@@ -48,7 +49,7 @@ one. Once the add-on is listed in the store, Firefox updates it automatically (s
 1. `./build.sh` and `git archive -o dist/neural-voices-<version>-source.zip HEAD`.
 2. <https://addons.mozilla.org/developers/> → **My Add-ons → Neural Voices → Upload New Version**.
 3. Pick `dist/neural-voices-<version>-firefox.zip`, and leave Firefox and Firefox for Android ticked.
-   The automatic check shows 0 errors and 4 warnings, which are expected (explained in the reviewer notes).
+   The automatic check shows 0 errors and 6 warnings, which are expected (explained in the reviewer notes).
 4. Source code: **Yes**, and upload the source zip.
 5. Release notes: the changelog section. Notes to reviewer: paste `docs/reviewer-notes.txt`.
 6. When signed: **Manage Status & Versions** → the version → download the `.xpi` into `dist/`, or run

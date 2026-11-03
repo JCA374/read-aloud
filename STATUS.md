@@ -1,34 +1,37 @@
 # Development status
 
-Updated 3 November 2026, after adding volume to the player on the page and moving this status off the
-project page into the repo.
+Updated 3 November 2026, after the release test plan: every automatic test passes, two bugs found and fixed.
+Next: your 20-minute test by hand, then the public listing.
 
 ## At a glance
 
 | ✅ Working and tested | 🟡 Built, not tested yet | 🔵 Left to do |
 |---|---|---|
-| **14**: reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the release, the pronunciation dictionary | **8**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, the pause after sentences, PDFs in Firefox's own viewer, one unreliable test | **1**: a public listing in the store, when you decide ([checklist](docs/LISTING.md)) |
+| **19**: reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the release, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **2**: your test by hand, then the public listing on addons.mozilla.org (Firefox only, no Android for now) |
 
-Since the 0.4.0 release (not released yet): the pronunciation dictionary, Settings in a new order, and
-volume in the page player. See [CHANGELOG.md](CHANGELOG.md).
+Since the 0.4.0 release (not released yet): the pronunciation dictionary, Settings in a new order, volume in
+the page player, and a Firefox fix for long sentences on slow computers. See [CHANGELOG.md](CHANGELOG.md).
 
-## Do this next: try the new version
+## Do this next: test it by hand (about 20 minutes)
 
-Your installed add-on stays as it is.
+Every automatic test passes (see below). Some things only a person can judge.
 
-1. In the project folder, run `tools/try.sh`. A separate Firefox window opens with the new version and its
-   own profile.
-2. Start reading a page. In the player, drag the volume slider or click the speaker to mute.
-3. Select a word the voice says wrong, right-click **Fix pronunciation**, type how it should sound, press
-   **▶ With fix**, then **Add**. Read the page again.
-4. If it's good, say "make a release". I'll sign 0.5.0 and put it on GitHub, and you install it over 0.4.0
-   (settings and voices stay).
+1. Open [docs/MANUAL-TEST.md](docs/MANUAL-TEST.md) and go through it in the window `tools/try.sh` opens.
+   It covers first use, listening, shortcuts, right-click, and real PDFs.
+2. Tell me "manual test passed", or what went wrong.
+3. Then I prepare the listing: remove Android from the manifest, write the store texts, take screenshots,
+   and sign 0.5.0 for the store (`tools/sign.sh --listed`). Mozilla then reviews it, which can take days.
 
 ## What works
 
 | | What | How it was checked |
 |---|---|---|
-| ✅ Tested | **Volume in the page player** (not released yet). A speaker button mutes and unmutes; a slider next to the speed sets the volume. Same setting as in Settings, saved for every page. | Chromium smoke test, 4 new checks with real arrow keys: 4 × ← lowered 100% to 80% and saved it; mute set 0 and the button then says "Unmute"; unmute brought back 80%; a change made elsewhere (as from Settings) moved the slider. All 9 quick tests pass in both browsers. |
+| ✅ Tested | **Everything in Firefox**, the store we're listing in. Until now some features were only tested in Chromium. | New Firefox test, 18 checks: a pronunciation typed with real key presses and used when reading; pause, resume, next, previous, speed; volume with arrow keys, mute, unmute; Escape; the engine starting again after Firefox closes the idle background page. Also run against the built package that goes to Mozilla, not just the source folder. |
+| ✅ Tested | **Fixed: long sentences on a slow computer in Firefox** (not released yet). Firefox closes the add-on's background after 30 s without activity, even in the middle of making speech, and that sentence was lost. The page now sends a small "still waiting" message every 5 s. | With Firefox's limit set to 8 s: a 33 s render finished with the messages; without them it was lost at 8 s. A check in the Firefox test keeps watching this. |
+| ✅ Tested | **Real websites.** | Firefox, 6 live sites: Wikipedia in English and Swedish, MDN, a GitHub page, an essay in an old table layout, Mozilla's manifesto. Each started reading within 4 s, at the title or the article (not a menu), with the right voice. |
+| ✅ Tested | **Pause after each sentence.** | Measured: with 1 s pause set, the time between two sentences grew by 1.01 s. |
+| ✅ Tested | **Upgrading from 0.4.0.** Settings, voices and preferences stay. | Settings saved the way 0.4.0 saves them (no dictionary yet): Settings opened, reading worked, speed, volume, highlight and the voice list were kept. |
+| ✅ Tested | **Volume in the page player** (not released yet). A speaker button mutes and unmutes; a slider next to the speed sets the volume. Same setting as in Settings, saved for every page. | Chromium and Firefox, with real arrow keys: 4 × ← lowered 100% to 80% and saved it; mute set 0 and the button then says "Unmute"; unmute brought back 80%; a change made elsewhere (as from Settings) moved the slider. Firefox found that quick key presses could lose a step; fixed. |
 | ✅ Tested | **Pronunciation dictionary** (not released yet). Settings → *Pronunciation*: a word or phrase, how to say it, for all voices or one language's voices. *▶ Now* and *▶ With fix* to compare. Right-click a selected word → *Fix pronunciation*. Only the voice hears the change; the page and the highlight keep the original word. In export and import. | Automatic test, 17 checks, including typing with real key presses. With "NASA" → the long form, the audio went from 0.65 s to 3.33 s while the highlight words stayed "NASA". Reading the test page sent "The Keeper of sherry light" to the voice. A Swedish-only entry wasn't used by the English voice. A bad import file kept only its 2 good entries. Plus 7 quick checks of the matching rules. |
 | ✅ Tested | **Reads web pages, with no server.** Selection, the whole article (menus and footers skipped), or from a clicked sentence. | Firefox 158 and Chromium, automated: English and Swedish read with words highlighted, no errors. First sound 3–4 s from cold, 0.75 s after the popup's warm-up. |
 | ✅ Tested | **Controls and highlights.** Pause, next, previous, speed, Stop and Escape; five highlight styles; one tab reads at a time. | On a 400-paragraph page each control did what it says. Switching style changed the highlight at once. Starting a second tab stopped the first. |
@@ -37,9 +40,9 @@ Your installed add-on stays as it is.
 | ✅ Tested | **Settings page**, in the order a new user needs it (Reading first, Credits last). | Automatic test, 18 checks. All 170 online samples exist. |
 | ✅ Tested | **Reads PDFs** in the add-on's own viewer. | Chromium test, 15 checks: paragraphs, hyphen joining, highlights, zoom, hand-over from Chromium's viewer. Firefox read the same PDF. Screenshots checked for the highlight. |
 | ✅ Tested | **Natural speed**, 0.75× to 2× without the voice going high. | Pitch measured: Alma 176–181 Hz at every speed. 2× measured at 1.9×. |
-| ✅ Tested | **Memory, and nothing left running.** | 300–550 MB more while reading, flat over 6 minutes. After Stop: CPU 0, memory freed after 5 idle minutes. |
+| ✅ Tested | **Memory, and nothing left running.** | Measured again on 3 November: 290–575 MB more while reading, flat over 6 minutes. After Stop: CPU 0, memory freed (Firefox at once, Chromium after 5 idle minutes). First sound 3.3 s from cold. |
 | ✅ Tested | **Mozilla's checks and signing.** 0.4.0 signed (unlisted) on 26 October. | Mozilla's checker: 0 errors. `tools/check-vendor.sh`: all 204 library files identical to npm. The signed file matches Mozilla's checksum and holds the same code as the upload. |
-| ✅ Tested | **Build and tests.** `./build.sh`, `tests/run.sh`, `tools/try.sh`. | After the clean-up the build was byte for byte the file sent to Mozilla. `tools/try.sh` checked: Firefox started with its own profile and loaded the add-on. Latest results: [tests/RESULTS.md](tests/RESULTS.md). |
+| ✅ Tested | **Build and tests.** `./build.sh`, `tests/run.sh` (now with a `release` group: builds, then tests the built Firefox package and real websites), `tools/try.sh`. | 3 November: `tests/run.sh all` 12 of 12 pass, `release` 4 of 4, timing and memory as before, Mozilla's checker 0 errors, all 204 library files identical to npm. Latest results: [tests/RESULTS.md](tests/RESULTS.md). |
 | ✅ Tested | **Signing tools.** `tools/sign.sh` signs a new version with the API keys in `.amo-keys` (git ignores it); `tools/amo.py` lists versions and downloads signed files. | The keys log in. `amo.py` downloaded 0.4.0 and checked Mozilla's checksum. `sign.sh` refused 0.4.0 ("must be higher") before uploading anything. The full upload runs at the next version. |
 | ✅ Tested | **GitHub Release v0.4.0**: the signed Firefox file and the Chromium zip. | The download has the same SHA-256 as Mozilla's signed file (32dd2f43…), and GitHub serves it as a Firefox add-on, so clicking it in Firefox offers to install. |
 
@@ -52,9 +55,7 @@ Your installed add-on stays as it is.
 | 🟡 Not tested | **Listening by ear** | Speed and pitch were measured; nobody has judged the voices or the volume by ear. |
 | 🟡 Not tested | **Word timing** | Piper doesn't say when each word starts, so the highlight is estimated and may run a little ahead or behind. |
 | 🟡 Not tested | **PDFs in Firefox's own viewer and from real websites** | *Read this PDF* from Firefox's viewer, the right-click menu, the "allow this site" prompt, long or two-column PDFs. |
-| 🟡 Not tested | **Pause after each sentence** | Saved and used, but no test measures the silence. |
 | 🟡 Not tested | **Keyboard shortcuts** | Test browsers can't press add-on shortcuts. They use the same code as the popup buttons, which are tested. |
-| 🟡 Unreliable test | **One Settings check is timing-sensitive** | The auto-scroll check failed twice on 2 November and passed on 3 November with no change to that code. The scrolling itself was right every time (287 px on, 0 off); the test's wait for the player's "N / M" text sometimes runs out. |
 
 ## How it becomes permanent
 
@@ -62,7 +63,7 @@ Your installed add-on stays as it is.
 |---|---|
 | Signed by Mozilla | ✅ 0.4.0, unlisted. New versions: `tools/sign.sh`. |
 | On GitHub Releases | ✅ Anyone with the link can install it. |
-| Listed in the store | 🔵 When you decide. Found by anyone, updates itself, needs a human review. [Checklist](docs/LISTING.md). |
+| Listed in the store | 🔵 Next, after your test by hand. Firefox only. Found by anyone, updates itself, needs a review by Mozilla. [Checklist](docs/LISTING.md). Installs of 0.4.0 should then update from the store by themselves (same add-on id). |
 
 In Chromium, "Load unpacked" is already permanent.
 
@@ -85,6 +86,22 @@ Slips:
 - **Two wrong details in the first draft of `docs/ARCHITECTURE.md`** (word timing, pdf.js settings). Caught
   by checking the code before committing.
 
+**3 November (later):** Claude Opus 5.5. Planned a release test plan (approved; you chose Firefox only and
+no Android for now), then built it: a Firefox test for everything that was only tested in Chromium, a
+real-websites test, a test of the built package, checks for the sentence pause and upgrading from 0.4.0, and
+the timing-sensitive Settings check made steady (5 passes in a row). The new Firefox test found two real
+bugs, both fixed: lost volume steps, and long sentences lost when Firefox closed the background.
+
+Slips:
+- **A probe looked at the wrong tab** and showed no player, which looked like a bug. Cause: the add-on's tab
+  wasn't on an add-on page yet. About 2 minutes.
+- **The first long-page check passed even with the fix removed**, so it proved nothing. Replaced with a
+  direct check that fails without the fix. About 5 minutes.
+- **The real-websites check first failed 3 sites** because it didn't allow the article's title inside a page
+  header. A test mistake, not the add-on.
+- **The sentence-pause check hung once**: it looked for the player before reading had started. One timed-out
+  run (3 minutes).
+
 **Suggestion:** for each change, say whether it should go out as a new version, so every change lands in
 the changelog and the release notes write themselves.
 
@@ -94,7 +111,8 @@ the changelog and the release notes write themselves.
 |---|---|
 | Try the development version in a separate Firefox | `tools/try.sh` (Chromium: `tools/try.sh chromium`) |
 | Check a change (about 1.5 min; seconds if nothing changed) | `tests/run.sh` |
-| Every test, before a release | `tests/run.sh all` |
+| Every test, before a release | `tests/run.sh all`, then `tests/run.sh release` |
+| Test by hand before a release | [docs/MANUAL-TEST.md](docs/MANUAL-TEST.md) |
 | Build the Firefox and Chromium files (and check them) | `./build.sh` |
 | Sign a new version with Mozilla | `tools/sign.sh` |
 | Versions on Mozilla (keys loaded) | `python3 tools/amo.py versions neural-voices@jca374.github.io` |

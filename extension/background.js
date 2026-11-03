@@ -117,6 +117,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     relayProgress(msg); // Chromium: from the offscreen page
     return;
   }
+  if (msg.type === "keepAlive") return; // a content script waiting for speech: keeps Firefox's background page running
   if (msg.type === "tts") {
     piperTts(msg, sender.tab?.id)
       .catch((e) => ({ error: String(e?.message || e) }))

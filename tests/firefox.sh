@@ -3,7 +3,8 @@
 #
 # Starts headless Firefox with WebDriver BiDi on port 9334 (the test installs the add-on itself and
 # opens its pages at moz-extension://11111111-2222-3333-4444-555555555555/), serves tests/site on 8799.
-# Options: FRESH=1 starts from an empty profile (voices download again); TIMEOUT=s (default 200).
+# Options: FRESH=1 starts from an empty profile (voices download again); TIMEOUT=s (default 200);
+# IDLE_MS=n stops the background page after n ms idle.
 # Firefox caches the add-on's file list in the profile; it's cleared on every run.
 here=$(cd "$(dirname "$0")" && pwd)
 test=$(realpath "$1"); ext=$(realpath "${2:-$here/../extension}")
@@ -22,6 +23,8 @@ user_pref("media.autoplay.default", 0);
 user_pref("media.autoplay.blocking_policy", 0);
 user_pref("browser.shell.checkDefaultBrowser", false);
 PREFS
+# IDLE_MS=n: Firefox stops the add-on's background page after n ms without events (default 30 s)
+echo "user_pref(\"extensions.background.idle.timeout\", ${IDLE_MS:-30000});" >>"$profile/user.js"   # always set: prefs stay in the profile
 (firefox --headless --no-remote --profile "$profile" --remote-debugging-port 9334 --remote-allow-system-access >/dev/null 2>&1 &)
 timeout "${TIMEOUT:-200}" node "$test" "$ext"
 status=$?

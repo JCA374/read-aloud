@@ -23,7 +23,7 @@ Firefox snaps, node 22+ and python3.
 | One test | `tests/run.sh chromium/pronunciation` (names in `tests/run.sh` / `tests/README.md`) |
 | Every functional test, before a release | `tests/run.sh all` |
 | Speed and memory measurements (15–25 min, alone) | `tests/run.sh timing` |
-| Mozilla's checker | `npx web-ext lint --source-dir extension` (6 known warnings; 4 on the Firefox build) |
+| Mozilla's checker | `npx web-ext lint --source-dir extension` (6 known warnings, also on the Firefox build: 3 for Chromium-only APIs in `background.js`, 3 in the bundled libraries) |
 | Build the zips (and lint the Firefox build) | `./build.sh` → `dist/` |
 | Try by hand in a separate profile | `tools/try.sh` (Firefox) or `tools/try.sh chromium` |
 | Sign a new version (needs `.amo-keys`) | `tools/sign.sh` |

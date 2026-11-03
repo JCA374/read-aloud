@@ -12,6 +12,7 @@ covers (`tests/out/.passed/`), so `quick` adds a longer test by itself when its 
 
 | Date | Commit | Run | Result |
 |---|---|---|---|
+| 2026-11-03 | release test plan (uncommitted) | `run.sh all` (12 tests), `run.sh release`, settings-extras ×3 | **Pass.** all: instant checks, firefox/smoke 16, firefox/features 18 (new), chromium/smoke 28, voice-management 13, download-failure 3, older-revision 5, settings-extras 20, pdf 15, pronunciation 17, settings-voice-switch 7, mixed-and-controls 13. release (new group): `./build.sh` (lint of the Firefox build 0 errors, the 6 known warnings, same as the last commit), then against `dist/firefox`: firefox/smoke 16, firefox/features 18, firefox/real-sites 7. settings-extras auto-scroll fix: 5 passes in a row (scroll 287 px on, 0 off). `tools/check-vendor.sh`: all 204 files identical to npm |
 | 2026-11-03 | volume in the page player | `run.sh` (quick) | Pass, all 9: instant checks, firefox/smoke 16, chromium/smoke 28 (new: 9 icons; arrow keys on the volume slider 1 → 0.8 saved; mute → 0 with "Unmute"; unmute → 0.8; storage change moves the slider), voice-management 13, download-failure 3, older-revision 5, settings-extras 18, pdf 15, pronunciation 17 |
 | 2026-11-03 | Settings sections reordered (Reading first, Credits last) | `run.sh` (quick) | Pass: instant checks, firefox/smoke 16, chromium/smoke 24, voice-management 13, older-revision 5, settings-extras 18 (auto-scroll passed this time, after failing twice on 2026-11-02: a timing-sensitive check), pronunciation 17 |
 | 2026-11-02 | pronunciation dictionary (uncommitted) | `run.sh` (quick) | Instant checks pass, including new pronunciation rule checks (7 cases). firefox/smoke 16, chromium/smoke 24, voice-management 13, download-failure 3, older-revision 5, pdf 15: pass. settings-extras: fail (see above). `tools/try.sh` checked headless: Firefox started with its own profile and installed extension/ as a temporary add-on |
@@ -32,6 +33,7 @@ Re-run when: `extension/content.js`, `background.js`, `engine/`, `offscreen.*`, 
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-11-03 | release test plan (uncommitted) | chromium/warm-up (KEEP, cold only) | First sound 3.25 s cold, no waits after (before: 3.37 s) |
 | 2026-10-25 | clean-up (after f8298dc) | chromium/smoke, firefox/smoke | Pass, 24 and 12 checks. Chromium loads 3 voices (Cori, Alma, then a switch), so the new 2-voice limit unloaded one mid-test: no errors |
 | 2026-10-25 | clean-up (after f8298dc) | chromium/warm-up (KEEP, cold only) | First sound 3.37 s cold (before: 3.4–3.8 s) |
 | 2026-10-25 | 03ce74e | chromium/read-en-sv, firefox/read-en-sv (new checks) | Pass. Chromium first word 5.9 s EN, 3.7 s SV, 0.1 s already rendered. Firefox 12.5 s EN when run beside Chromium, about 4–7 s alone. No errors |
@@ -49,6 +51,7 @@ Re-run when: `extension/options.*`, `popup.*`, `common.js`, `catalog.js`, `engin
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-11-03 | release test plan (uncommitted) | chromium/settings-extras | Pass, 20 checks. Auto-scroll check now waits up to 45 s for the piece 14 ahead to play, then for the scroll (was the timing-sensitive one). New: upgrade from 0.4.0 (storage without `dictionary`): Settings opens with speed 1.25 and an empty dictionary; reading works; speed, volume, highlight, auto-scroll and the voice list are kept |
 | 2026-11-02 | typing fix | chromium/pronunciation | Pass, 17 checks. New: typing with real key presses in both boxes, and Enter adds. Owner found that nothing could be typed in "Say it as" (the Enter handler returned false for other keys, which cancels them). The same test on the broken version fails both new checks |
 | 2026-11-02 | pronunciation dictionary (uncommitted) | chromium/pronunciation (new) | Pass, 15 checks: add, replace (any case), edit, remove, ▶ Try plays; engine reads the replacement ("NASA." 0.65 s → 3.33 s with the long form) while word times keep "NASA"; reading long.html sent "The Keeper of sherry light"; the Swedish-only entry wasn't used by the English voice; import kept 2 of 6 entries; ?word= prefills Settings. First run failed on a test mistake (a # in the address is dropped when the test opens a tab) |
 | 2026-11-02 | pronunciation dictionary (uncommitted) | chromium/settings-extras | **Fail**, 1 check: auto-scroll. Scrolling is right (287 px on, 0 off), but the player's "N / M" status never showed within 15 s after 14 × next. Fails the same way on the code before this change (4e88d08), so not caused by this change; test still to fix |
@@ -76,6 +79,10 @@ Re-run when: `extension/content.js`
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-11-03 | release test plan (uncommitted) | chromium/long-page-cpu (KEEP, full CPU) | Page blocked 123 ms, first sound 3.26 s, 1 wait of 0.2 s (before: 132 ms, 3.2 s, none) |
+| 2026-11-03 | release test plan (uncommitted) | firefox/real-sites (new) | Pass, 7 checks: Wikipedia EN (3.6 s to sound, 475 sentences, starts at the title) and SV (Alma, 300), MDN (97), GitHub README (92), Paul Graham essay in a table layout (444), Mozilla manifesto (83). A first draft failed 3 sites only because the check didn't allow the article title inside a `<header>` |
+| 2026-11-03 | release test plan (uncommitted) | firefox/features (new, `IDLE_MS=8000`) | Pass, 18 checks: pronunciation typed with real keys + Enter, used when reading ("The Keeper of sherry Light"); pause, resume, next, prev, speed 1.5; volume 4 × ← → 0.8, mute, unmute; Escape. **Found two bugs:** (1) quick arrow presses lost a volume step (0.85 instead of 0.8, twice): the player's own earlier saves came back and moved the slider; fixed. (2) Firefox closes the background page after its idle limit even mid-render: a 2 s limit lost every request ("Receiving end does not exist"); with the normal 30 s, any render over 30 s (a cold start or long sentence on a slow computer) would be lost. Fixed with keep-alive messages every 5 s while waiting: a 33 s render finished under an 8 s limit, and the control without them failed at 8 s. Engine restarted after 20 s idle (3.4 s render vs 5 ms from memory), reading again in 0.7 s |
+| 2026-11-03 | release test plan (uncommitted) | chromium/mixed-and-controls | Pass, 13 checks. New: pause after each sentence: sentence 2 → 3 took 2451 ms without and 3463 ms with a 1 s pause (+1.01 s) |
 | 2026-10-25 | clean-up (after f8298dc) | chromium/mixed-and-controls (KEEP) | Pass, 12 checks |
 | 2026-10-25 | clean-up (after f8298dc) | chromium/long-page-cpu (KEEP, full CPU) | Page blocked 132 ms, first sound 3.2 s, no waits |
 | 2026-10-25 | 03ce74e | chromium/mixed-and-controls (new checks) | Pass, 12 checks. Mixed page: all 9 sentences with the right voice. Pause holds the word, next/prev ±1, speed 1.5, Escape stops and clears, Stop |
@@ -90,6 +97,8 @@ Re-run when: `extension/engine/`, `offscreen.*`, `background.js`, the audio part
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-11-03 | release test plan (uncommitted) | firefox/memory, READ 180 AFTER 390 | +290–320 MB while reading, flat; back near the start 30 s after Stop (1272 → 1226 MB); CPU 0–1 s per 30 s after. Same as 2026-10-25 |
+| 2026-11-03 | release test plan (uncommitted) | chromium/memory, READN 12 | +390–575 MB while reading at 2×, flat after 3 min; CPU 0 after Stop; engine page closed at 5 min idle, 240 MB freed. Same as 2026-10-25 |
 | 2026-10-25 | clean-up (after f8298dc) | chromium/memory, READN 12 | +390–575 MB while reading at 2×, flat; CPU 0 after Stop; engine page closed at 5 min idle, 240 MB freed |
 | 2026-10-25 | clean-up (after f8298dc) | firefox/memory, READ 180 AFTER 390 | +300–320 MB while reading; back near the start 30 s after Stop; CPU 0–3 s per 30 s after |
 | 2026-10-22 | 1ca18cf (fresh profile) | engine page close | Pass. Background log "engine idle: closing the engine page" and the offscreen page closes |

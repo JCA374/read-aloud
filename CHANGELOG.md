@@ -15,6 +15,8 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
   pronunciation, storage, and credits last.
 - Volume in the player on the page: a slider next to the speed, and a speaker button to mute and unmute.
   The Settings volume slider now goes down to 0.
+- Fixed (Firefox): a long sentence on a slow computer could be skipped, because Firefox closed the add-on's
+  background page after 30 s while the voice was still rendering. The page now keeps it awake while waiting.
 
 ## 0.4.0 (2026-10-26), signed by Mozilla (unlisted)
 

@@ -5,6 +5,8 @@
 #                    longer test whose files changed since it last passed. Tests whose files (and own
 #                    script) haven't changed since they passed are skipped. About 1.5 min, 5 s if nothing changed.
 #   all              instant checks and every functional test (both browsers side by side)
+#   release          builds dist/ (./build.sh), then the Firefox tests against the built package, plus real
+#                    websites (needs the internet). Run after "all", before signing.
 #   timing           start-up, CPU and memory measurements, one at a time (15-25 min: run in the background)
 #   <test>           one or more tests by name, e.g. chromium/voice-management
 #
@@ -18,6 +20,8 @@ out=tests/out; mkdir -p "$out/.passed"
 TESTS="
 chromium/smoke|KEEP=1|extension|150
 firefox/smoke||extension|150
+firefox/features|IDLE_MS=8000;TIMEOUT=300|extension|330
+firefox/real-sites|TIMEOUT=250|extension/content.js extension/common.js|280
 chromium/voice-management|PROFILE=nv-fresh-profile|extension/options.* extension/catalog.js extension/common.js extension/engine/piper-worker.js|240
 chromium/download-failure|PROFILE=nv-fresh-profile;EXTRA=--host-resolver-rules=MAP huggingface.co ~NOTFOUND|extension/engine extension/background.js extension/offscreen.*|150
 chromium/settings-voice-switch|KEEP=1|extension|150
@@ -32,8 +36,9 @@ chromium/memory|KEEP=1;TIMEOUT=1000|extension/engine extension/offscreen.* exten
 firefox/memory|TIMEOUT=700|extension/engine extension/offscreen.* extension/background.js|760
 "
 QUICK="chromium/smoke firefox/smoke"
-AFFECTED="chromium/voice-management chromium/download-failure chromium/older-revision chromium/settings-extras chromium/pdf chromium/pronunciation"   # added to quick when their files changed
+AFFECTED="firefox/features chromium/voice-management chromium/download-failure chromium/older-revision chromium/settings-extras chromium/pdf chromium/pronunciation"   # added to quick when their files changed
 ALL="chromium/smoke firefox/smoke $AFFECTED chromium/settings-voice-switch chromium/mixed-and-controls"
+RELEASE="firefox/smoke firefox/features firefox/real-sites"   # against the built Firefox package (dist/firefox)
 TIMING="chromium/warm-up chromium/long-page-cpu chromium/memory firefox/memory"
 
 field() { echo "$TESTS" | awk -F'|' -v n="$1" -v f="$2" '$1 == n { print $f }'; }
@@ -49,7 +54,7 @@ run_one() { # run one test, print one line
   [ -z "$(field "$name" 1)" ] && { echo "?    $name: unknown test"; return 1; }
   IFS=';' read -ra settings <<<"$(field "$name" 2)"
   (for a in "${settings[@]}"; do export "${a?}"; done
-   exec timeout "$(field "$name" 4)" "tests/$browser.sh" "tests/$name.mjs") </dev/null >"$log" 2>&1
+   exec timeout "$(field "$name" 4)" "tests/$browser.sh" "tests/$name.mjs" $EXT_DIR) </dev/null >"$log" 2>&1
   status=$?
   local secs=$((SECONDS - start)) oks fails
   oks=$(grep -c '^ok ' "$log"); fails=$(grep '^FAIL' "$log" | head -2 | cut -c6- | paste -sd';')
@@ -58,7 +63,8 @@ run_one() { # run one test, print one line
   elif grep -q '^RESULT: pass' "$log"; then echo "ok   $name (${secs} s): $oks checks"
   else echo "done $name (${secs} s): no automatic checks, read $log"
   fi
-  fingerprint "$name" >"$out/.passed/${1//\//-}"
+  [ -z "$EXT_DIR" ] && fingerprint "$name" >"$out/.passed/${1//\//-}"   # a pass on the built package isn't one on extension/
+  return 0
 }
 
 run_queue() { local failed=0; for t in "$@"; do run_one "$t" || failed=1; done; return $failed; }
@@ -110,6 +116,9 @@ case $mode in
          done ;;
   all) list="$ALL" ;;
   timing) list="$TIMING" ;;
+  release) ./build.sh >"$out/build.log" 2>&1 || { echo "FAIL ./build.sh, see $out/build.log"; exit 1; }
+           echo "ok   ./build.sh: $(grep -c . "$out/build.log") lines in $out/build.log"
+           export EXT_DIR=$PWD/dist/firefox; list="$RELEASE" ;;
   *) list="$*" ;;
 esac
 

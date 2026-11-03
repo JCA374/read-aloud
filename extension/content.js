@@ -18,11 +18,15 @@
     });
   }
 
+  let ownVolumeSaves = 0; // volume changes saved by this page's player and not yet reported back
   chrome.storage.local.get(NV.DEFAULTS).then((s) => {
     settings = s;
     loadVoices();
   });
   chrome.storage.onChanged.addListener((changes) => {
+    // The player's own volume saves come back here one by one; while some are still on their way, an older
+    // one must not move the slider back (quick arrow key presses would lose steps).
+    if ("volume" in changes && ownVolumeSaves > 0 && ownVolumeSaves--) delete changes.volume;
     for (const [k, { newValue }] of Object.entries(changes)) if (k in NV.DEFAULTS) settings[k] = newValue ?? NV.DEFAULTS[k];
     // A voice picked in the popup or settings replaces one picked in the player.
     const picked = (k) => (k === "langVoices" ? Object.values(changes[k].newValue || {}) : [changes[k].newValue]);
@@ -286,6 +290,14 @@
     return req;
   }
 
+  // Send a speech request. Firefox stops an idle background page (after 30 s without events) even while it
+  // is still rendering, which would lose the answer for a long piece on a slow computer: a small message
+  // every 5 s while waiting counts as activity.
+  function askEngine(req) {
+    const keepAlive = setInterval(() => chrome.runtime.sendMessage({ type: "keepAlive" }).catch(() => {}), 5000);
+    return chrome.runtime.sendMessage(req).finally(() => clearInterval(keepAlive));
+  }
+
   function b64ToBytes(b64) {
     if (Uint8Array.fromBase64) return Uint8Array.fromBase64(b64).buffer; // newer browsers; the loop below otherwise
     const bin = atob(b64);
@@ -328,8 +340,7 @@
       const key = this.key(i);
       if (!this.cache.has(key)) {
         const seg = this.segs[i];
-        const p = chrome.runtime
-          .sendMessage(ttsRequest(seg.text, this.voice(i)))
+        const p = askEngine(ttsRequest(seg.text, this.voice(i)))
           .then(async (res) => {
             if (!res || res.error) return { error: res?.error || "offline", fatal: !!res?.fatal };
             this.download = null;
@@ -609,7 +620,7 @@
     if (!segs.length) return;
     const voice = NV.voiceFor(segs[0].lang || lang, settings, voices);
     const first = stageStart(segs, 0)[0];
-    chrome.runtime.sendMessage(ttsRequest(first.text, voice)).catch(() => {});
+    askEngine(ttsRequest(first.text, voice)).catch(() => {});
   }
 
   function plan(range, root, skipBoilerplate, startAt) {
@@ -873,6 +884,7 @@
         settings.volume = Math.round(v * 100) / 100;
         player.setVolume();
         this.sync();
+        ownVolumeSaves++;
         chrome.storage.local.set({ volume: settings.volume });
       };
       this.els.volume.oninput = () => setVolume(parseFloat(this.els.volume.value));

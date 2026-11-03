@@ -50,6 +50,26 @@ export async function browser(extPath, { quiet = false } = {}) {
     stopAll: () => ev(ext, `chrome.tabs.query({}).then(ts => Promise.allSettled(ts.map(t => chrome.tabs.sendMessage(t.id, {cmd: 'stop'})))).then(() => true)`),
     // status of the tab that is reading, as JSON text ("idle" when none is)
     status: async () => JSON.parse(await ev(ext, `chrome.tabs.query({}).then(ts => Promise.any(ts.map(t => chrome.tabs.sendMessage(t.id, {cmd: 'status'}).then(s => s.state === 'idle' ? Promise.reject() : s)))).catch(() => ({state: 'idle'})).then(s => JSON.stringify(s))`)),
+    // the player in its closed shadow root (WebDriver BiDi serialises closed shadow roots too)
+    async player(tab) {
+      const r = await send("script.evaluate", { expression: `document.querySelector('neural-voices-player')`, target: { context: tab }, awaitPromise: false, serializationOptions: { maxDomDepth: 0, includeShadowTree: "all" }, resultOwnership: "none" });
+      const root = r.result?.result?.value?.shadowRoot?.sharedId;
+      if (!root) return null;
+      const call = async (f) => (await send("script.callFunction", { functionDeclaration: `function(){ ${f} }`, this: { sharedId: root }, target: { context: tab }, awaitPromise: true })).result?.result?.value;
+      const el = (cls) => `this.querySelector('.${cls}')`;
+      return {
+        status: () => call(`return ${el("status")}.textContent`),
+        click: (b) => call(`${el(b)}.click()`),
+        volume: () => call(`return ${el("volume")}.value`),
+        focusVolume: () => call(`${el("volume")}.focus()`),
+        muteTitle: () => call(`return ${el("mute")}.title`),
+      };
+    },
+    // press keys in a tab like a user ("\uE007" is Enter, "\uE012" arrow left, "\uE00C" Escape)
+    async keys(tab, text) {
+      const actions = [...text].flatMap((value) => [{ type: "keyDown", value }, { type: "keyUp", value }]);
+      await send("input.performActions", { context: tab, actions: [{ type: "key", id: "keyboard", actions }] });
+    },
     word: (tab) => ev(tab, `(() => { const h = CSS.highlights.get('nv-classic-word'); const r = h && [...h][0]; return r ? r.toString() : ''; })()`),
   };
 }

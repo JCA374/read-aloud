@@ -91,14 +91,28 @@ const scrolled = async (autoScroll) => { // read, skip ahead 14 pieces, and see 
   const lp = await waitFor(() => player(long), 5000);
   await waitFor(async () => /^\d+ \//.test(await lp.status()), 30000, 100);
   for (let i = 0; i < 14; i++) { await lp.click("next"); await sleep(200); }
-  const at = await waitFor(async () => { const t = await lp.status(); return /^\d+ \//.test(t) && t; }, 15000, 100);
-  await sleep(1500);
-  const y = await long.ev(`scrollY`);
+  // Rendering the piece 14 ahead can take a while on a busy machine: wait for it to play, then for the scroll
+  const at = await waitFor(async () => { const t = await lp.status(); return /^\d+ \//.test(t) && t; }, 45000, 100);
+  const y = autoScroll ? (await waitFor(() => long.ev(`scrollY`), 5000, 100)) || 0 : (await sleep(1500), await long.ev(`scrollY`));
   await b.stopAll();
   return [y, at];
 };
 const [yOn, atOn] = await scrolled(true);
 const [yOff, atOff] = await scrolled(false);
 check("auto-scroll: the page follows when on, stays put when off", yOn > 0 && yOff === 0 && parseInt(atOff) > 10, `on: scrollY ${yOn} at ${atOn}; off: scrollY ${yOff} at ${atOff}`);
+
+// 7. Upgrading from 0.4.0: its storage has no dictionary key. Settings and reading must work, and the old
+// settings stay.
+await b.sw.ev(`chrome.storage.local.clear().then(() => chrome.storage.local.set({ speed: 1.25, volume: 0.7, highlight: 'blue', autoScroll: false, shown: ${JSON.stringify([CORI])} }))`);
+await opt.ev(`location.reload()`);
+const upgraded = await waitFor(() => opt.ev(`document.querySelectorAll('#mine .voice').length === 1 && $('dictAdd') && !document.querySelector('#dict .voice') && $('speed').value`), 8000);
+check("upgrade from 0.4.0: Settings opens with the old settings and an empty dictionary", upgraded === "1.25", String(upgraded));
+await long.send("Page.bringToFront");
+await sleep(300);
+await b.readPage();
+await waitFor(async () => (await b.state()) === "playing", 30000);
+const kept = await b.sw.ev(`chrome.storage.local.get(null).then(s => [s.speed, s.volume, s.highlight, s.autoScroll, (s.shown || []).length].join(' '))`);
+check("upgrade from 0.4.0: reads, and the old settings are kept", (await b.state()) === "playing" && kept === "1.25 0.7 blue false 1", `${await b.state()}; ${kept}`);
+await b.stopAll();
 await b.sw.ev(`chrome.storage.local.clear()`);
 finish(b.errors);

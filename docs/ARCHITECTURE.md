@@ -52,8 +52,9 @@ content.js ──{type:"tts", voice, text, speed, say?}──▶ background.js �
 
 To the background (`chrome.runtime.sendMessage`, field `type`):
 `tts`, `voices` (the list without download details), `download`, `unload`, `warm`, `reading` (a tab's
-state, for "one tab at a time"), `openPdf`, `openOptions`. Internal: `voiceProgress`, `engineIdle`, and
-messages with `target: "offscreen"` (Chromium).
+state, for "one tab at a time"), `openPdf`, `openOptions`, `keepAlive` (sent every 5 s while a `tts` request
+waits: Firefox closes a background page after 30 s without events, even mid-render). Internal:
+`voiceProgress`, `engineIdle`, and messages with `target: "offscreen"` (Chromium).
 
 To a tab (`NV.sendToTab`, field `cmd`): `readSelection`, `readFromHere`, `readPage`, `toggle`, `stop`,
 `clickMode`, `voiceProgress`, `status`. Every command except `voiceProgress` replies with the tab's state.
@@ -94,6 +95,7 @@ The browsers' own PDF viewers don't run add-on scripts, so PDFs open in `pdf.htm
 |---|---|---|
 | Background | event page (`background.scripts`) | service worker |
 | Engine host | the background page itself | `offscreen.html` |
+| Idle background | closed after 30 s without events, even mid-render: `content.js` sends `keepAlive` while it waits | — |
 | Build | `dist/firefox/` without the offscreen page, its permission and the service worker entry | the full `extension/` |
 | PDF in the browser's viewer | popup → *Read this PDF* | *Read page* hands over by itself |
 

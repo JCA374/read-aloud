@@ -8,7 +8,8 @@ description: Release a new version of the Neural Voices add-on: tests, licences,
 The owner decides when to release, and whether to list it publicly; don't push towards a listing. The
 full steps, for people: `docs/RELEASING.md`. This is the checklist.
 
-1. **Ready?** `tests/run.sh all` passes, logged in `tests/RESULTS.md` (`addon-tests` skill). No open "Built,
+1. **Ready?** `tests/run.sh all` and `tests/run.sh release` pass, logged in `tests/RESULTS.md` (`addon-tests`
+   skill), and the owner has done `docs/MANUAL-TEST.md` for this version. No open "Built,
    not tested" item that would embarrass a user.
 2. **Licences.** If a bundled library changed: `tools/check-vendor.sh`, and update `THIRD-PARTY-NOTICES`,
    `licenses/`, `extension/engine/vendor/README.md` and the list in `tools/check-vendor.sh`. If the voice

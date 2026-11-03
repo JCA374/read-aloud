@@ -1,5 +1,5 @@
 // The whole mixed-language page (every sentence gets the voice for its language) and the controls on a
-// 400-paragraph page, including Escape, which the smoke test doesn't press.
+// 400-paragraph page, including Escape, which the smoke test doesn't press; the pause after each sentence.
 import { browser, waitFor, sleep, check, finish, hl, player, CORI, ALMA } from "./lib.mjs";
 
 const b = await browser({ quiet: true });
@@ -49,4 +49,25 @@ await b.readPage();
 await waitFor(async () => (await b.state()) === "playing", 10000);
 await p.click("stop");
 check("Stop button stops", (await waitFor(async () => (await b.state()) === "idle", 3000)) !== null);
+
+// 3. The pause after each sentence (Settings → Reading): the time from sentence 2 starting to sentence 3
+// starting is that sentence's length plus the pause, so 1 s of pause should add about 1 s. The audio is
+// the same both times (the engine keeps recent pieces).
+const long = await b.open("long.html");
+let pl;
+const startOf = async (n) => waitFor(async () => +((await pl.status()).match(/^(\d+) \//) || [])[1] >= n && Date.now(), 30000, 20);
+const span = async (pause) => {
+  await b.sw.ev(`chrome.storage.local.set({pause: ${pause}})`);
+  await sleep(200);
+  await b.readPage();
+  pl = await waitFor(() => player(long), 5000); // the player exists once reading starts
+  const t2 = await startOf(2), t3 = await startOf(3);
+  await b.stopAll();
+  await waitFor(async () => (await b.state()) === "idle", 3000);
+  return t3 - t2;
+};
+await span(0); // warm up: render the first pieces once
+const s0 = await span(0), s1 = await span(1);
+check("pause after each sentence adds about 1 s", Math.abs(s1 - s0 - 1000) <= 300, `${s0} ms without, ${s1} ms with 1 s`);
+await b.sw.ev(`chrome.storage.local.set({pause: 0})`);
 finish(b.errors);
