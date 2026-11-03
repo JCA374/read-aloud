@@ -311,12 +311,12 @@
   <section class="devhead" aria-labelledby="dev-h">
     <span class="eyebrow">Development</span>
     <h2 id="dev-h">Where the project stands</h2>
-    <p class="meta">Updated 2 November 2026, after the About tab was rewritten as the add-on's info page for new users (what it does, how it works, install, questions).</p>
+    <p class="meta">Updated 3 November 2026, after reordering Settings (Reading first, Credits last) and a passing test run.</p>
   </section>
   <section aria-label="At a glance">
     <div class="glance">
       <div class="tile ok"><span class="n">13</span><span class="l">Working and tested</span><span class="d">Reading, controls, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the release, and the new pronunciation dictionary</span></div>
-      <div class="tile warn"><span class="n">8</span><span class="l">Built, not tested yet</span><span class="d">A slow computer, Firefox by hand, listening by ear, word timing, shortcuts, the pause after sentences, PDFs in Firefox's own viewer, and one test to fix</span></div>
+      <div class="tile warn"><span class="n">8</span><span class="l">Built, not tested yet</span><span class="d">A slow computer, Firefox by hand, listening by ear, word timing, shortcuts, the pause after sentences, PDFs in Firefox's own viewer, and one unreliable test</span></div>
       <div class="tile todo"><span class="n">1</span><span class="l">Left to do</span><span class="d">A public listing in the store, when you decide (checklist in <code>docs/LISTING.md</code>)</span></div>
     </div>
   </section>
@@ -345,7 +345,7 @@
       <li><span class="chip ok">Tested</span><span class="item"><b>Natural speed.</b> 0.75× to 2× without the voice going high.<span class="how">Pitch measured: Alma 176–181 Hz at every speed. 2× measured at 1.9×.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Memory, and nothing left running.</b><span class="how">300–550 MB more while reading, flat over 6 minutes. After Stop: CPU 0, memory freed after 5 idle minutes.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Mozilla's checks and signing.</b> Version 0.4.0 signed by Mozilla (unlisted) on 26 October.<span class="how">Mozilla's checker: 0 errors. <code>tools/check-vendor.sh</code>: all 204 library files identical to npm. The signed file matches Mozilla's checksum and holds the same code as the upload.</span></span></li>
-      <li><span class="chip ok">Tested</span><span class="item"><b>Build and tests.</b> <code>./build.sh</code> and <code>tests/run.sh</code>.<span class="how">After the clean-up, the build was byte for byte the file sent to Mozilla. With the dictionary: the instant checks and 7 browser tests pass in both browsers. One older Settings test fails a timing check (see below). <code>tools/try.sh</code> was checked: Firefox started with its own profile and loaded the add-on.</span></span></li>
+      <li><span class="chip ok">Tested</span><span class="item"><b>Build and tests.</b> <code>./build.sh</code> and <code>tests/run.sh</code>.<span class="how">After the clean-up, the build was byte for byte the file sent to Mozilla. With the dictionary: the instant checks and 7 browser tests pass in both browsers. All quick tests passed after the Settings reorder (one timing-sensitive check, see below). <code>tools/try.sh</code> was checked: Firefox started with its own profile and loaded the add-on.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>Signing tools.</b> <code>tools/sign.sh</code> signs a new version with your API keys (kept in <code>.amo-keys</code>, which git ignores). <code>tools/amo.py</code> lists versions and downloads signed files.<span class="how">The keys log in. <code>amo.py</code> downloaded 0.4.0 and checked Mozilla's checksum. <code>sign.sh</code> refused version 0.4.0 ("must be higher") before uploading anything. The full upload runs at the next version.</span></span></li>
       <li><span class="chip ok">Tested</span><span class="item"><b>GitHub Release v0.4.0.</b> The signed Firefox file and the Chromium zip, for anyone with the link.<span class="how">The file downloaded from the release link has the same SHA-256 as Mozilla's signed file (32dd2f43…), and GitHub serves it as a Firefox add-on, so clicking it in Firefox offers to install.</span></span></li>
     </ul>
@@ -360,7 +360,7 @@
       <li><span class="chip warn">Not tested</span><span class="item"><b>Word timing.</b> Piper doesn't say when each word starts, so the highlight is estimated and may run a little ahead or behind.</span></li>
       <li><span class="chip warn">Not tested</span><span class="item"><b>PDFs in Firefox's own viewer and from real websites.</b> Not yet tried: <b>Read this PDF</b> from Firefox's viewer, the right-click menu, the "allow this site" prompt, long or two-column PDFs.</span></li>
       <li><span class="chip warn">Not tested</span><span class="item"><b>Pause after each sentence.</b> Saved and used, but no test measures the silence.</span></li>
-      <li><span class="chip warn">Test to fix</span><span class="item"><b>One Settings test fails.</b> The auto-scroll check: scrolling works (the page moved 287 px with it on, 0 with it off), but the test's wait for the player's "N / M" text runs out. It fails the same way on the code from before the dictionary, so the dictionary didn't cause it. To fix next.</span></li>
+      <li><span class="chip warn">Unreliable test</span><span class="item"><b>One Settings check is timing-sensitive.</b> The auto-scroll check failed twice on 2 November and passed on 3 November with no change to that code. The scrolling itself was right every time (287 px with it on, 0 with it off); the test's wait for the player's "N / M" text sometimes runs out. To make it steadier later.</span></li>
       <li><span class="chip warn">Not tested</span><span class="item"><b>Keyboard shortcuts.</b> Test browsers can't press add-on shortcuts. They use the same code as the popup buttons, which are tested.</span></li>
     </ul>
   </section>
@@ -385,6 +385,7 @@
     <h3>Slips</h3>
     <div class="slips">
       <div class="slip"><span class="what">The page was published without first reading the live version.</span><span class="cost">The publish was refused once; it cost one extra round. Nothing was lost.</span></div>
+      <div class="slip"><span class="what">A page update was published before its edit had run.</span><span class="cost">The edit script stopped on an apostrophe, but the publish and commit ran anyway, so the page went out unchanged once. Caught right after and redone.</span></div>
       <div class="slip"><span class="what">You couldn't type in "Say it as".</span><span class="cost">You found it in the test window. The Enter-key shortcut cancelled every other key. The test had filled the boxes directly instead of typing, so it missed this. Fixed in a few minutes, and the test now types real keys (it fails on the broken version).</span></div>
       <div class="slip"><span class="what">The new test opened Settings with a "#" in the address.</span><span class="cost">The test browser drops that part, so the test couldn't find the tab. One failed run, about 1 minute to fix and re-run. Not a fault in the add-on.</span></div>
       <div class="slip"><span class="what">Two wrong details in the first draft of <code>docs/ARCHITECTURE.md</code>.</span><span class="cost">It said word times come from phonemes (they're spread by word length) and described pdf.js settings loosely. Caught by checking the code before committing.</span></div>

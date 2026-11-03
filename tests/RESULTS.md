@@ -12,6 +12,7 @@ covers (`tests/out/.passed/`), so `quick` adds a longer test by itself when its 
 
 | Date | Commit | Run | Result |
 |---|---|---|---|
+| 2026-11-03 | Settings sections reordered (Reading first, Credits last) | `run.sh` (quick) | Pass: instant checks, firefox/smoke 16, chromium/smoke 24, voice-management 13, older-revision 5, settings-extras 18 (auto-scroll passed this time, after failing twice on 2026-11-02: a timing-sensitive check), pronunciation 17 |
 | 2026-11-02 | pronunciation dictionary (uncommitted) | `run.sh` (quick) | Instant checks pass, including new pronunciation rule checks (7 cases). firefox/smoke 16, chromium/smoke 24, voice-management 13, download-failure 3, older-revision 5, pdf 15: pass. settings-extras: fail (see above). `tools/try.sh` checked headless: Firefox started with its own profile and installed extension/ as a temporary add-on |
 | 2026-11-02 | clean-up (docs, tools; extension unchanged) | `run.sh` (quick) and `./build.sh` | Pass: instant checks 27 s, all 7 browser tests skipped (nothing they cover changed). Build byte-identical to the 0.4.0 upload (Firefox zip SHA-256 d675cefc…, Chromium 0d30e1cf…), lint 0 errors, 4 warnings. Runner notes timing tests are due from earlier engine changes; not run |
 | 2026-10-26 | PDF viewer (0.4.0) | `run.sh all` (9 tests) and `./build.sh` | Pass, 112 checks. Build 15 MB (235 files, 169 of them pdf.js character maps); lint 0 errors, 6 warnings (2 new, inside pdf.js) |

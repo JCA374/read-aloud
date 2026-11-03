@@ -11,6 +11,8 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
   hears the change: the page and the word highlight keep the original words.
 - Right-click selected text → *Fix pronunciation of "…"* opens Settings with the word filled in.
 - The dictionary is included in *Export* / *Import* settings.
+- Settings are in the order a new user needs them: Reading first, then your voices, language, adding voices,
+  pronunciation, storage, and credits last.
 
 ## 0.4.0 (2026-10-26), signed by Mozilla (unlisted)
 
