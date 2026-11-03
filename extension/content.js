@@ -740,6 +740,10 @@
       ["circle", { cx: 12, cy: 12, r: 5.6, fill: "none", stroke: "currentColor", "stroke-width": 2.6 }],
     ],
     close: [["path", { d: "M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4z" }]],
+    muted: [
+      ["path", { d: "M4 9.5v5h3.5L12 19V5L7.5 9.5z" }],
+      ["path", { d: "M15.5 9.5l5 5M20.5 9.5l-5 5", stroke: "currentColor", "stroke-width": 1.8, fill: "none", "stroke-linecap": "round" }],
+    ],
     speaker: [
       ["path", { d: "M4 9.5v5h3.5L12 19V5L7.5 9.5zM15 8.5a5 5 0 0 1 0 7M17.5 6a8.5 8.5 0 0 1 0 12", stroke: "currentColor", "stroke-width": 1.8, fill: "none", "stroke-linecap": "round" }],
       ["path", { d: "M4 9.5v5h3.5L12 19V5L7.5 9.5z" }],
@@ -799,6 +803,9 @@
     select { all: unset; cursor: pointer; padding: 6px 8px; border-radius: 8px; color: var(--fg); font-size: 13px; }
     select:hover { background: var(--hover); }
     select option { color: #1f2328; background: #fff; }
+    .vol { display: flex; align-items: center; }
+    input.volume { width: 64px; margin: 0 6px 0 0; accent-color: var(--accent); cursor: pointer; }
+    input.volume:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
     select.voice { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .status { color: var(--muted); font-size: 12px; padding: 0 6px; white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
     .status:empty { display: none; }
@@ -834,6 +841,10 @@
           button("stop", "Stop (Alt+Shift+X)", "stop"),
           h("span", { class: "sep" }),
           h("select", { class: "speed", title: "Speed" }, ...SPEEDS.map((s) => new Option(`${s}×`, String(s)))),
+          h("span", { class: "vol" },
+            button("mute small", "Mute", "speaker"),
+            h("input", { class: "volume", type: "range", min: "0", max: "1", step: "0.05", "aria-label": "Volume" }),
+          ),
           h("select", { class: "voice", title: "Voice" }),
           button("click", "Click-to-read: click any paragraph to start reading there (Esc to leave)", "click"),
           h("span", { class: "status" }),
@@ -844,7 +855,7 @@
       );
       const $ = (s) => root.querySelector(s);
       this.bar = $(".bar");
-      this.els = { play: $(".play"), speed: $(".speed"), voice: $(".voice"), click: $(".click"), status: $(".status"), bubble: $(".bubble") };
+      this.els = { play: $(".play"), speed: $(".speed"), mute: $(".mute"), volume: $(".volume"), voice: $(".voice"), click: $(".click"), status: $(".status"), bubble: $(".bubble") };
       $(".prev").onclick = () => player.skip(-1);
       $(".next").onclick = () => player.skip(1);
       $(".stop").onclick = () => player.stop();
@@ -857,6 +868,20 @@
         this.bar.classList.remove("open");
       };
       this.els.speed.onchange = () => chrome.storage.local.set({ speed: parseFloat(this.els.speed.value) });
+      // Volume: heard at once while dragging, and saved for every page (the same setting as in Settings).
+      const setVolume = (v) => {
+        settings.volume = Math.round(v * 100) / 100;
+        player.setVolume();
+        this.sync();
+        chrome.storage.local.set({ volume: settings.volume });
+      };
+      this.els.volume.oninput = () => setVolume(parseFloat(this.els.volume.value));
+      this.els.mute.onclick = () => {
+        if (settings.volume > 0) {
+          this.unmuteTo = settings.volume;
+          setVolume(0);
+        } else setVolume(this.unmuteTo || 1);
+      };
       this.els.voice.onchange = () => {
         const id = this.els.voice.value;
         chrome.storage.local.set(NV.pick(id, settings, voices)); // remembered for next time
@@ -916,6 +941,12 @@
         speed.add(new Option(`${settings.speed}×`, String(settings.speed)));
       }
       speed.value = String(settings.speed);
+      const vol = settings.volume ?? 1;
+      this.els.volume.value = String(vol);
+      const muteIcon = vol > 0 ? "speaker" : "muted";
+      if (this.muteIcon !== muteIcon) this.els.mute.replaceChildren(icon((this.muteIcon = muteIcon)));
+      this.els.mute.title = vol > 0 ? `Mute (volume ${Math.round(vol * 100)}%)` : "Unmute";
+      this.els.volume.title = `Volume ${Math.round(vol * 100)}%`;
       const current = player.state === "idle" ? NV.voiceFor(pageLang(), settings, voices) : player.voice();
       const list = NV.shownVoices(voices, settings);
       if (!list.some((v) => v.id === current)) list.push(voices.find((v) => v.id === current) || { id: current, label: current, lang: "" });

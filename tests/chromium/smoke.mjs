@@ -28,7 +28,7 @@ check("English page: highlight moves word by word", words.size >= 9, `${words.si
 
 // 3. The player: icons, voice list, controls
 const p = await player(page);
-check("player has its 8 icons", p.count("svg") === 8, `${p.count("svg")} icons`);
+check("player has its 9 icons", p.count("svg") === 9, `${p.count("svg")} icons`);
 const opts = await p.voiceOptions();
 check("player voice list is filled", opts.length >= 5, opts.join(" / "));
 check("player shows Cori for English", (await p.voice()) === CORI, await p.voice());
@@ -38,6 +38,24 @@ const held = await hl(page, "word"); await sleep(1000);
 check("pause holds the word highlight", (await hl(page, "word")) === held, JSON.stringify(held));
 await p.click("play");
 check("resume", (await waitFor(async () => (await b.state()) === "playing", 5000)) !== null);
+// Volume in the player: real arrow keys on the slider, the mute button, and a change made in Settings.
+const vol = async () => (await b.sw.ev(`chrome.storage.local.get('volume')`)).volume;
+await b.sw.ev(`chrome.storage.local.set({ volume: 1 })`);
+await waitFor(async () => (await p.volume()) === "1", 3000);
+await p.focusVolume();
+for (let k = 0; k < 4; k++) {
+  await page.send("Input.dispatchKeyEvent", { type: "keyDown", key: "ArrowLeft", code: "ArrowLeft", windowsVirtualKeyCode: 37 });
+  await page.send("Input.dispatchKeyEvent", { type: "keyUp", key: "ArrowLeft", code: "ArrowLeft", windowsVirtualKeyCode: 37 });
+}
+const lowered = await waitFor(async () => { const v = await vol(); return v < 1 && v; }, 3000);
+check("volume slider: arrow keys lower the volume and save it", lowered === 0.8, `volume ${lowered}`);
+await p.click("mute");
+check("mute button sets the volume to 0", (await waitFor(async () => (await vol()) === 0, 3000)) !== null && /Unmute/.test(await p.muteTitle()), `${await vol()} / ${await p.muteTitle()}`);
+await p.click("mute");
+check("unmute brings the volume back", (await waitFor(async () => (await vol()) === 0.8, 3000)) !== null, `${await vol()}`);
+await b.sw.ev(`chrome.storage.local.set({ volume: 0.5 })`);
+check("a change in Settings shows on the slider", (await waitFor(async () => (await p.volume()) === "0.5", 3000)) !== null, await p.volume());
+await b.sw.ev(`chrome.storage.local.set({ volume: 1 })`);
 const pos = async () => +((await p.status()).match(/^(\d+) \//) || [])[1];
 const n0 = await waitFor(pos, 5000);
 await p.click("next");

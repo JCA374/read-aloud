@@ -71,6 +71,7 @@ docs/             project page and documentation
 | [docs/RELEASING.md](docs/RELEASING.md) | Version, sign, GitHub Release, install the signed file |
 | [docs/LISTING.md](docs/LISTING.md) | Checklist for a public listing on addons.mozilla.org |
 | [CHANGELOG.md](CHANGELOG.md) | What changed in each version |
+| [STATUS.md](STATUS.md) | Development status: what works, what's tested, what's next |
 | [PRIVACY.md](PRIVACY.md) | Privacy policy |
 | [tests/README.md](tests/README.md) | The tests and how to run them |
 

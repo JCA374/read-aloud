@@ -91,7 +91,8 @@ export async function player(page) {
   const call = async (o, f) => (await page.send("Runtime.callFunctionOn", { objectId: o, functionDeclaration: f, returnByValue: true })).result.result.value;
   const status = await obj((n) => cls(n, "status")), voice = await obj((n) => n.nodeName === "SELECT" && cls(n, "voice"));
   const btn = {};
-  for (const b of ["prev", "play", "next", "stop", "settings"]) btn[b] = await obj((n) => n.nodeName === "BUTTON" && cls(n, b));
+  const volume = await obj((n) => n.nodeName === "INPUT" && cls(n, "volume"));
+  for (const b of ["prev", "play", "next", "stop", "settings", "mute"]) btn[b] = await obj((n) => n.nodeName === "BUTTON" && cls(n, b));
   return {
     count: (name) => all.filter((n) => n.nodeName === name).length,
     status: () => call(status, "function(){return this.textContent}"),
@@ -99,5 +100,8 @@ export async function player(page) {
     voiceOptions: () => call(voice, "function(){return [...this.options].map(o => o.textContent)}"),
     setVoice: (id) => call(voice, `function(){ this.value = ${JSON.stringify(id)}; this.dispatchEvent(new Event('change')); }`),
     click: (b) => call(btn[b], "function(){this.click()}"),
+    volume: () => call(volume, "function(){return this.value}"),
+    focusVolume: () => call(volume, "function(){this.focus()}"),
+    muteTitle: () => call(btn.mute, "function(){return this.title}"),
   };
 }

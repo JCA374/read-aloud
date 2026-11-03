@@ -13,6 +13,8 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
 - The dictionary is included in *Export* / *Import* settings.
 - Settings are in the order a new user needs them: Reading first, then your voices, language, adding voices,
   pronunciation, storage, and credits last.
+- Volume in the player on the page: a slider next to the speed, and a speaker button to mute and unmute.
+  The Settings volume slider now goes down to 0.
 
 ## 0.4.0 (2026-10-26), signed by Mozilla (unlisted)
 

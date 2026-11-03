@@ -74,45 +74,41 @@ Details: `docs/ARCHITECTURE.md`. The parts that span several files:
 1. Edit `extension/`. Update `docs/ARCHITECTURE.md` if the structure or messages change.
 2. Run the tests (`addon-tests` skill) and log them.
 3. Add the change to `CHANGELOG.md` under **Unreleased**.
-4. Update the project page (`status-page` skill), commit and push.
+4. Update `STATUS.md`, and the info page if what users see changed (`status-page` skill); commit and push.
 5. A new version for people to install: the `release` skill (only when the owner asks).
 
-## The project page: About tab + Development tab
+## Project page and status
 
-The user finds long terminal replies hard to read. Report progress on the project page, not in the terminal.
+The user finds long terminal replies hard to read. Report progress in `STATUS.md`, not in the terminal.
 
-- Source: `docs/page.html`. It has two tabs:
-  - **About** (default): information about the add-on for anyone who finds it: features, voices, install,
-    shortcuts, privacy. Keep it accurate whenever a feature, voice or install step changes.
-  - **In development** (small tab, opens with `#development`): the status for the user, described below.
-- It is published in two places, which must always match:
-  - private Artifact: https://claude.ai/artifact/DzigF14FjENFe38iWR56Bm (republish **to that same URL**)
-  - public GitHub Pages: https://jca374.github.io/read-aloud/ (built from `docs/index.html`)
-- Update the Development tab when a test run is done, and after every meaningful change
-  (feature done, bug fixed, setup step finished). Report the measured results, not plans.
-  1. update `docs/page.html`
-  2. republish the Artifact to the URL above (never create a second page)
-  3. run `docs/make-index.sh`, commit all project changes, and push to `origin main`
-     (the user asked on 2026-10-21 for the code and page to be public on GitHub and kept up to date)
-- Then reply in the terminal with 2–4 short lines max: what changed, plus the link
-  (use `https://jca374.github.io/read-aloud/#development` for status news).
-- The page is public: it must not contain personal details about the user's machine: no home-folder paths,
-  no other programs or ports they use, no notes about their other work. Write paths relative to the repo.
-- Development tab sections, in this order:
+- **`STATUS.md`** (repo root, shown by GitHub): the development status for the owner. Update it when a
+  test run is done and after every meaningful change (feature done, bug fixed, setup step finished).
+  Report measured results, not plans. Sections, in this order:
   1. **At a glance**: counts for working/tested, built but not tested, and left to do
-  2. **Do this next**: numbered steps for the user, with copy buttons for anything to type
-  3. **What works**: each item with a chip ("Tested") and *how* it was verified
+  2. **Do this next**: numbered steps for the owner, with commands in code
+  3. **What works**: each item marked tested, with *how* it was verified
   4. **Built, not tested yet**: be honest; never mark something tested that wasn't
-  5. **How it becomes permanent**: which parts are done, and which need the user
-  6. **How the session went**: the model/effort level used, the real slips made and what each cost,
-     and a suggestion. Facts from the session only; no invented comparisons.
+  5. **How it becomes permanent**: which parts are done, and which need the owner
+  6. **How the sessions went**: model used, the real slips and what each cost, and a suggestion. Facts
+     from the session only; no invented comparisons.
   7. **Handy commands**
-- Update the "Updated <date>, after <what>" line every time.
+  Update the "Updated <date>, after <what>" line every time.
+- **`docs/page.html`**: the public info page for new users (what the add-on does, how it works, install,
+  using it, privacy, questions). It is also the homepage for a future store listing. No development status
+  on it. Keep it accurate whenever a feature, voice or install step changes; mark unreleased features as
+  "Next version" until they're released. It's published in two places, which must match:
+  - private Artifact: https://claude.ai/artifact/DzigF14FjENFe38iWR56Bm (republish **to that same URL**)
+  - public GitHub Pages: https://jca374.github.io/read-aloud/ (run `docs/make-index.sh` to build `docs/index.html`)
+- Then commit all project changes and push to `origin main` (the owner asked on 2026-10-21 for the code to
+  be public on GitHub and kept up to date), and reply in the terminal with 2–4 short lines max: what
+  changed, plus the link `https://github.com/JCA374/read-aloud/blob/main/STATUS.md`.
+- Both are public: no personal details about the owner's machine (no home-folder paths, no other programs
+  or ports they use, no notes about their other work). Write paths relative to the repo.
 - Writing: short, plain sentences, no jargon without explanation.
 
 ## Skills and tests
 
-- `status-page`: the steps to update and publish the page (above).
+- `status-page`: the steps to update `STATUS.md` and, when the add-on changed, the info page (above).
 - `addon-tests`: which browser tests to run, how, and logging them in `tests/RESULTS.md`.
   Check that log first: don't re-run a test when nothing it covers has changed.
 - `release`: version, build, signing with the API keys (`tools/sign.sh`) and the GitHub Release.
