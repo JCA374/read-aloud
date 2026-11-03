@@ -106,6 +106,8 @@ Slips:
 **3 November (evening):** any language is now recognised from the words. Slip: an inline edit script
 stopped on an apostrophe; it changed nothing, and was redone as a file (under a minute).
 
+**3 November (late):** you said *Fix pronunciation* didn't scroll to the Pronunciation section. I couldn't make it fail in the test browsers; the scroll now waits until everything above it is drawn, and a test checks it.
+
 **Suggestion:** for each change, say whether it should go out as a new version, so every change lands in
 the changelog and the release notes write themselves.
 

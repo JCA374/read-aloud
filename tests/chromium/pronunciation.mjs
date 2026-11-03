@@ -2,7 +2,7 @@
 // replacement while the word times keep the page's words, reading a page with an entry, the
 // right-click shortcut (options.html?word=…), and cleaning an imported dictionary.
 // Needs Cori downloaded (KEEP=1; it downloads otherwise).
-import { browser, waitFor, check, finish, CORI } from "./lib.mjs";
+import { browser, waitFor, sleep, check, finish, CORI } from "./lib.mjs";
 
 const b = await browser();
 await b.sw.ev(`chrome.storage.local.clear()`);
@@ -79,6 +79,9 @@ check("import keeps only good entries", JSON.stringify(cleaned) === JSON.stringi
 const menu = await b.open(b.extUrl("options.html?word=Skerry"), "menu");
 const prefilled = await waitFor(() => menu.ev(`$('dictWord').value === 'Skerry' && document.activeElement === $('dictSay')`), 5000);
 check("Fix pronunciation opens Settings with the word filled in", !!prefilled, await menu.ev(`$('dictWord').value`));
+await sleep(1000); // the voice lists above are drawn by now; the section must still be in view
+const top = await menu.ev(`Math.round($('pronunciation').getBoundingClientRect().top) + ' of ' + innerHeight`);
+check("...scrolled to the Pronunciation section", parseInt(top) >= -2 && parseInt(top) < 80, `section top at ${top} px`);
 
 await b.sw.ev(`chrome.storage.local.remove('dictionary')`);
 finish(b.errors);

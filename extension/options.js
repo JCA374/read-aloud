@@ -418,9 +418,11 @@ $("dictBefore").onclick = () => dictForm().word && sayWord(dictForm().word, null
 $("dictAfter").onclick = () => dictForm().word && dictForm().say && sayWord(dictForm().word, dictForm().say, dictForm().lang);
 // From the right-click menu: options.html?word=…#pronunciation
 const fromMenu = new URLSearchParams(location.search).get("word");
-if (fromMenu) {
-  $("dictWord").value = fromMenu.trim().slice(0, 100);
-  setTimeout(() => ($("pronunciation").scrollIntoView(), $("dictSay").focus()), 0);
+if (fromMenu) $("dictWord").value = fromMenu.trim().slice(0, 100);
+// Scrolled to once the voice lists above it are drawn (they would push it down again)
+function showPronunciation() {
+  $("pronunciation").scrollIntoView({ block: "start" });
+  $("dictSay").focus({ preventScroll: true });
 }
 
 // ---------------------------------------------------------------- page
@@ -505,5 +507,6 @@ chrome.storage.onChanged.addListener((changes) => {
   voices = await NV.allVoices();
   await refreshDownloaded();
   render();
-  renderShortcuts();
+  await renderShortcuts();
+  if (fromMenu) showPronunciation();
 })();
