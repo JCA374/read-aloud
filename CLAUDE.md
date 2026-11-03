@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Browser add-on (`extension/`, Firefox + Chromium, MV3) that reads web pages aloud with Piper voices running
 inside the browser (WebAssembly, `extension/engine/`). No server. See README.md.
 
-The last release is 0.4.0 (signed by Mozilla, unlisted, on GitHub Releases). Changes since then are listed
+The last release is 0.5.0, the first listed on addons.mozilla.org (Firefox desktop only; 0.4.0 was unlisted). Releases are also on GitHub. Changes since then are listed
 under **Unreleased** in `CHANGELOG.md`.
 The owner will keep asking for changes; listing it publicly in the store is the eventual goal, when the
 owner decides (`docs/LISTING.md`).

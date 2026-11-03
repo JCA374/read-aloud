@@ -5,6 +5,8 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
 
 ## Unreleased
 
+## 0.5.0 (2026-11-03), the first version listed on addons.mozilla.org
+
 - **Pronunciation dictionary.** In Settings → *Pronunciation*, write how a word should sound, spelled the way
   the voice would read it (for example *Nguyen* → *win*). For all voices or only one language's voices.
   *▶ Now* and *▶ With fix* let you compare before saving. Whole words and phrases, any case. Only the voice
@@ -21,6 +23,8 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
   also show the right voice for the page before reading starts.
 - Fixed (Firefox): a long sentence on a slow computer could be skipped, because Firefox closed the add-on's
   background page after 30 s while the voice was still rendering. The page now keeps it awake while waiting.
+- Desktop Firefox only for now: Firefox for Android is no longer marked as supported, since it hasn't been
+  tested there.
 
 ## 0.4.0 (2026-10-26), signed by Mozilla (unlisted)
 

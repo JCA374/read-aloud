@@ -24,7 +24,8 @@ running as WebAssembly; there is no server and no data collection.
   that site in the viewer. The Firefox build has no "offscreen" permission (Chromium only).
 - Data: declared "none" (data_collection_permissions). Page text is turned into speech inside the
   browser and never sent anywhere. Settings stay in browser storage; Export saves a local file only.
-- Privacy: https://jca374.github.io/read-aloud/ (section "Privacy").
+- Language detection uses browser.i18n.detectLanguage (local, no network).
+- Privacy policy: https://github.com/JCA374/read-aloud/blob/main/PRIVACY.md
 - Source: https://github.com/JCA374/read-aloud (GPL-3.0). Build: ./build.sh (makes
   dist/neural-voices-<version>-firefox.zip from extension/, adding LICENSE and notices; no
   transpiling or bundling).

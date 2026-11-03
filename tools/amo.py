@@ -4,10 +4,13 @@
   python3 tools/amo.py latest   <add-on id>             newest version number, any channel
   python3 tools/amo.py versions <add-on id>             every version: number, channel, status
   python3 tools/amo.py download <add-on id> <version>   saves dist/neural-voices-<version>-signed.xpi
+  python3 tools/amo.py listing  <add-on id> [--dry-run] sends the store texts in docs/listing/listing.json
+  python3 tools/amo.py previews <add-on id> <png>...    uploads screenshots (in this order)
+  python3 tools/amo.py status   <add-on id>             the add-on's store status and each version's review
 
 Run with the keys loaded:  set -a; . ./.amo-keys; set +a; python3 tools/amo.py versions <id>
 """
-import base64, hashlib, hmac, json, os, sys, time, urllib.request, uuid
+import base64, hashlib, hmac, json, os, sys, time, urllib.error, urllib.request, uuid
 
 API = "https://addons.mozilla.org/api/v5/addons/addon/"
 
@@ -30,6 +33,26 @@ def get(url, raw=False):
         return res.read() if raw else json.load(res)
 
 
+def send(method, url, body, content_type="application/json"):
+    req = urllib.request.Request(url, data=body, method=method, headers={"Authorization": "JWT " + token(), "Content-Type": content_type})
+    try:
+        with urllib.request.urlopen(req) as res:
+            return json.load(res)
+    except urllib.error.HTTPError as e:
+        sys.exit(f"{method} {url}: {e.code} {e.read().decode()[:500]}")
+
+
+def multipart(fields, files):
+    """fields: {name: value}; files: {name: (filename, bytes, type)} -> (body, content type)"""
+    b = uuid.uuid4().hex
+    out = b""
+    for k, v in fields.items():
+        out += f'--{b}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode()
+    for k, (name, data, typ) in files.items():
+        out += f'--{b}\r\nContent-Disposition: form-data; name="{k}"; filename="{name}"\r\nContent-Type: {typ}\r\n\r\n'.encode() + data + b"\r\n"
+    return out + f"--{b}--\r\n".encode(), f"multipart/form-data; boundary={b}"
+
+
 def versions(addon):
     return get(f"{API}{addon}/versions/?filter=all_with_unlisted")["results"]  # newest first
 
@@ -50,6 +73,24 @@ def main(cmd, addon, *rest):
             sys.exit("downloaded file doesn't match Mozilla's checksum")
         open(out, "wb").write(data)
         print(out, want)
+    elif cmd == "listing":
+        meta = json.load(open("docs/listing/listing.json"))
+        meta.pop("license")  # set on the version (tools/sign.sh --listed)
+        if "--dry-run" in rest:
+            print(json.dumps(meta, indent=1, ensure_ascii=False)[:3000])
+            return
+        r = send("PATCH", f"{API}{addon}/", json.dumps(meta).encode())
+        print("listing saved:", r["name"], "|", r["summary"], "|", r["categories"], "|", r["url"])
+    elif cmd == "previews":
+        for pos, path in enumerate(rest):
+            body, typ = multipart({"position": pos}, {"image": (os.path.basename(path), open(path, "rb").read(), "image/png")})
+            r = send("POST", f"{API}{addon}/previews/", body, typ)
+            print("uploaded", path, "->", r.get("image_url", r))
+    elif cmd == "status":
+        a = get(f"{API}{addon}/")
+        print("add-on:", a["status"], "| listed:", a.get("current_version", {}) and a["current_version"].get("version"), "|", a["url"])
+        for v in versions(addon)[:6]:
+            print(" ", v["version"], v["channel"], v["file"]["status"])
     else:
         sys.exit(__doc__)
 

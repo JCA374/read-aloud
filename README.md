@@ -2,7 +2,7 @@
 
 A browser add-on that reads web pages and PDFs aloud with natural-sounding [Piper](https://github.com/rhasspy/piper)
 voices. The voices run **inside the browser** (WebAssembly): no server, no account, and the text you
-read never leaves your computer. Firefox (also on Android), Chrome, Edge and Brave.
+read never leaves your computer. Firefox (desktop), Chrome, Edge and Brave.
 
 **Project page:** <https://jca374.github.io/read-aloud/>
 

@@ -48,7 +48,7 @@ one. Once the add-on is listed in the store, Firefox updates it automatically (s
 
 1. `./build.sh` and `git archive -o dist/neural-voices-<version>-source.zip HEAD`.
 2. <https://addons.mozilla.org/developers/> → **My Add-ons → Neural Voices → Upload New Version**.
-3. Pick `dist/neural-voices-<version>-firefox.zip`, and leave Firefox and Firefox for Android ticked.
+3. Pick `dist/neural-voices-<version>-firefox.zip`, with only Firefox ticked (not Android, untested).
    The automatic check shows 0 errors and 6 warnings, which are expected (explained in the reviewer notes).
 4. Source code: **Yes**, and upload the source zip.
 5. Release notes: the changelog section. Notes to reviewer: paste `docs/reviewer-notes.txt`.
@@ -59,7 +59,5 @@ one. Once the add-on is listed in the store, Firefox updates it automatically (s
 
 - **Firefox:** open the `.xpi` (drag it into a Firefox window), or `about:addons` → ⚙ →
   **Install Add-on From File…**. A copy loaded as a temporary add-on in `about:debugging` should be removed first.
-- **Firefox for Android:** copy the `.xpi` to the phone. In Firefox, open **Settings → About Firefox** and tap
-  the logo five times to turn on the debug menu, then **Settings → Install add-on from file**.
 - **Chrome, Edge, Brave:** unzip the Chromium zip, then `chrome://extensions` → **Developer mode** →
   **Load unpacked**.

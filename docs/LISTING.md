@@ -4,33 +4,25 @@ Today Neural Voices is **unlisted**: Mozilla signs it, but it isn't in the add-o
 on addons.mozilla.org, where anyone can find it, and Firefox then updates it automatically. Listing is free.
 This is the checklist for that day.
 
-## Before submitting
+## How it's done (0.5.0 was the first listed version)
 
-- [ ] **Ready for strangers.** No open item under "Built, not tested" on the project page that would
-      embarrass a user. In particular: tried by hand in Firefox, and tried on a slower computer.
-- [ ] **Version.** A new version number (see `RELEASING.md`). The first listed version can't reuse an
-      unlisted number.
-- [ ] **Name and summary.** Name: *Neural Voices*. Summary (at most 250 characters), for example the
-      manifest's description: "Reads web pages and PDFs aloud with natural Piper voices that run inside
-      your browser. Your text never leaves your computer."
-- [ ] **Description.** The About tab of the project page, shortened: what it does, voices, privacy.
-- [ ] **Screenshots.** 3–5 at 1280×800: reading with the highlight, the player, Settings, a PDF.
-      (`docs/media/settings.png` is one.)
-- [ ] **Icon.** `extension/icons/icon128.png` (already in the add-on).
-- [ ] **Categories.** "Accessibility" and "Language Support".
-- [ ] **Support.** Website <https://jca374.github.io/read-aloud/>; support site
-      <https://github.com/JCA374/read-aloud/issues>.
-- [ ] **Privacy policy.** Paste `PRIVACY.md`. The store asks for one because the add-on reads page content.
-- [ ] **Licence.** GPL-3.0 (choose "GNU General Public License v3.0").
-- [ ] **Source code.** Uploaded with every version (`tools/sign.sh` does this).
+The texts live in `docs/listing/listing.json` (name, summary, description, category, homepage, support
+link, licence). The screenshots are `docs/media/store-*.png`, made by
+`KEEP=1 tests/chromium.sh tests/chromium/screenshots.mjs` (needs the internet).
 
-## Submitting
+1. Tests: `tests/run.sh all`, `tests/run.sh release`, and the owner's [MANUAL-TEST.md](MANUAL-TEST.md).
+2. `tools/sign.sh --listed --dry-run` shows what will be sent. Then `tools/sign.sh --listed` sends the texts
+   (`amo.py listing`), then uploads the version with its licence (`GPL-3.0-only`), source code, reviewer
+   notes and release notes, for desktop Firefox only.
+3. Screenshots: `python3 tools/amo.py previews <id> docs/media/store-*.png` (keys loaded).
+4. **By hand on the developer page** (the API can't set it): *Edit Product Page* → **Privacy Policy**: paste
+   `PRIVACY.md`.
+5. Wait for the review: `python3 tools/amo.py status <id>`. When approved, download the signed file
+   (`amo.py download`), make the GitHub Release, and point the install instructions at the store page.
 
-- With the script: change `--channel=unlisted` to `--channel=listed` in `tools/sign.sh` for that run. The
-  first listed version also needs the listing text: add `name`, `summary`, `description`, `categories`,
-  `homepage`, `support_url` and `license` to the metadata JSON it builds (see the `web-ext` skill).
-- Or by hand: <https://addons.mozilla.org/developers/> → **My Add-ons → Neural Voices** → change the
-  distribution to "On this site", then fill in the listing.
+Category: *Language Support* (Firefox has no accessibility category for extensions). Android is left out
+until it's tested there: `tools/sign.sh` uploads with `compatibility: ["firefox"]`. The manifest keeps its
+`gecko_android` block (without it Mozilla's checker warns); add `"android"` to the compatibility to include it.
 
 ## What to expect
 
