@@ -18,51 +18,6 @@
     </header>
 
     <section>
-      <h2>Your voices</h2>
-      <p class="hint">These show in the player and popup, in this order. A voice downloads once, the first time it's used, or now with <b>Download</b>. It's then kept in the browser and works offline. <b>▶ Try</b> plays a short sample.</p>
-      <div id="mine" class="rows"></div>
-    </section>
-
-    <section>
-      <h2>Add voices</h2>
-      <input id="search" type="search" placeholder="Search all voices: name, language or country" aria-label="Search voices">
-      <div class="filters">
-        <label class="row">Language <select id="addLang"></select></label>
-        <label class="row">Quality <select id="quality">
-          <option value="">Any</option><option value="x_low">Extra low</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option>
-        </select></label>
-      </div>
-      <label class="check"><input type="checkbox" id="downloadedOnly"> Only voices already downloaded</label>
-      <p id="addCount" class="note"></p>
-      <div id="add" class="rows"></div>
-      <button id="showAll" type="button" hidden>Show all</button>
-    </section>
-
-    <section>
-      <h2>Language</h2>
-      <label class="check"><input type="checkbox" id="autoDetect"> Detect the language of the text and pick the voice for it</label>
-      <p class="hint">English and Swedish are recognised from the words. Other languages come from what the web page says it's written in.</p>
-      <div id="defaults"></div>
-    </section>
-
-    <section id="pronunciation">
-      <h2>Pronunciation</h2>
-      <p class="hint">If a voice says a word wrong, write how it should sound, spelled the way the voice would read it. For example <b>Nguyen</b> → <b>win</b>, or <b>Göteborg</b> → <b>jöteborj</b> for Swedish voices. Only the voice hears it; the page stays the same. Tip: select a word on a page, right-click, and choose <b>Fix pronunciation</b>.</p>
-      <div class="dict-form">
-        <input id="dictWord" type="text" placeholder="Word or phrase" aria-label="Word or phrase" maxlength="100">
-        <input id="dictSay" type="text" placeholder="Say it as" aria-label="Say it as" maxlength="200">
-        <select id="dictLang" aria-label="For voices in"></select>
-        <span class="buttons">
-          <button id="dictBefore" type="button" title="Hear the word as the voice says it now">▶ Now</button>
-          <button id="dictAfter" type="button" title="Hear it with your spelling">▶ With fix</button>
-          <button id="dictAdd" type="button">Add</button>
-        </span>
-      </div>
-      <p id="dictNote" class="note" aria-live="polite"></p>
-      <div id="dict" class="rows"></div>
-    </section>
-
-    <section>
       <h2>Reading</h2>
       <label class="row">Speed <output id="speedOut"></output>
         <input id="speed" type="range" min="0.75" max="2" step="0.05">
@@ -80,6 +35,51 @@
       <label class="check"><input type="checkbox" id="skipCode"> Skip code blocks</label>
       <h3>Keyboard shortcuts</h3>
       <div id="shortcuts"></div>
+    </section>
+
+    <section>
+      <h2>Your voices</h2>
+      <p class="hint">These show in the player and popup, in this order. A voice downloads once, the first time it's used, or now with <b>Download</b>. It's then kept in the browser and works offline. <b>▶ Try</b> plays a short sample.</p>
+      <div id="mine" class="rows"></div>
+    </section>
+
+    <section>
+      <h2>Language</h2>
+      <label class="check"><input type="checkbox" id="autoDetect"> Detect the language of the text and pick the voice for it</label>
+      <p class="hint">English and Swedish are recognised from the words. Other languages come from what the web page says it's written in.</p>
+      <div id="defaults"></div>
+    </section>
+
+    <section>
+      <h2>Add voices</h2>
+      <input id="search" type="search" placeholder="Search all voices: name, language or country" aria-label="Search voices">
+      <div class="filters">
+        <label class="row">Language <select id="addLang"></select></label>
+        <label class="row">Quality <select id="quality">
+          <option value="">Any</option><option value="x_low">Extra low</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option>
+        </select></label>
+      </div>
+      <label class="check"><input type="checkbox" id="downloadedOnly"> Only voices already downloaded</label>
+      <p id="addCount" class="note"></p>
+      <div id="add" class="rows"></div>
+      <button id="showAll" type="button" hidden>Show all</button>
+    </section>
+
+    <section id="pronunciation">
+      <h2>Pronunciation</h2>
+      <p class="hint">If a voice says a word wrong, write how it should sound, spelled the way the voice would read it. For example <b>Nguyen</b> → <b>win</b>, or <b>Göteborg</b> → <b>jöteborj</b> for Swedish voices. Only the voice hears it; the page stays the same. Tip: select a word on a page, right-click, and choose <b>Fix pronunciation</b>.</p>
+      <div class="dict-form">
+        <input id="dictWord" type="text" placeholder="Word or phrase" aria-label="Word or phrase" maxlength="100">
+        <input id="dictSay" type="text" placeholder="Say it as" aria-label="Say it as" maxlength="200">
+        <select id="dictLang" aria-label="For voices in"></select>
+        <span class="buttons">
+          <button id="dictBefore" type="button" title="Hear the word as the voice says it now">▶ Now</button>
+          <button id="dictAfter" type="button" title="Hear it with your spelling">▶ With fix</button>
+          <button id="dictAdd" type="button">Add</button>
+        </span>
+      </div>
+      <p id="dictNote" class="note" aria-live="polite"></p>
+      <div id="dict" class="rows"></div>
     </section>
 
     <section>
