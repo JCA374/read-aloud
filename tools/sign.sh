@@ -28,6 +28,7 @@ if [ "$(printf '%s\n%s\n' "$latest" "$version" | sort -V | tail -1)" = "$latest"
   echo "Version must be higher than $latest: raise \"version\" in extension/manifest.json." >&2
   exit 1
 fi
+[ "$(wc -c <docs/reviewer-notes.txt)" -le 3000 ] || { echo "docs/reviewer-notes.txt is over Mozilla's 3000 character limit." >&2; exit 1; }
 grep -q "^## $version" CHANGELOG.md || { echo "CHANGELOG.md has no \"## $version\" section." >&2; exit 1; }
 [ -z "$(git status --porcelain -- extension)" ] || { echo "extension/ has uncommitted changes: commit them first." >&2; exit 1; }
 
@@ -57,7 +58,7 @@ timeout=3600000; [ $channel = listed ] && timeout=900000
 before=$(ls dist/*.xpi 2>/dev/null || true)
 npx -y web-ext sign --channel=$channel --source-dir dist/firefox --artifacts-dir dist \
   --amo-metadata "$meta" --upload-source-code "$src" --approval-timeout $timeout || {
-  [ $channel = listed ] && echo "Submitted, but not signed within 15 min (it may be waiting for a human review). Check: python3 tools/amo.py status $id; then: python3 tools/amo.py download $id $version" >&2
+  echo "web-ext sign stopped (see its message above). If it was uploaded but not signed in time (a human review), check: python3 tools/amo.py status $id; then: python3 tools/amo.py download $id $version" >&2
   exit 1; }
 new=$(comm -13 <(echo "$before" | sort) <(ls dist/*.xpi | sort) | head -1)
 [ -n "$new" ] || { echo "web-ext finished but no new .xpi appeared in dist/." >&2; exit 1; }

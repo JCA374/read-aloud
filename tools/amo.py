@@ -83,6 +83,8 @@ def main(cmd, addon, *rest):
         print("listing saved:", r["name"], "|", r["summary"], "|", r["categories"], "|", r["url"])
     elif cmd == "previews":
         for pos, path in enumerate(rest):
+            if pos:
+                time.sleep(45)  # Mozilla allows about one upload a minute
             body, typ = multipart({"position": pos}, {"image": (os.path.basename(path), open(path, "rb").read(), "image/png")})
             r = send("POST", f"{API}{addon}/previews/", body, typ)
             print("uploaded", path, "->", r.get("image_url", r))
