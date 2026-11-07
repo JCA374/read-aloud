@@ -20,9 +20,8 @@ link, licence). The screenshots are `docs/media/store-*.png`, made by
 5. Wait for the review: `python3 tools/amo.py status <id>`. When approved, download the signed file
    (`amo.py download`), make the GitHub Release, and point the install instructions at the store page.
 
-Category: *Language Support* (Firefox has no accessibility category for extensions). Android is left out
-until it's tested there: `tools/sign.sh` uploads with `compatibility: ["firefox"]`. The manifest keeps its
-`gecko_android` block (without it Mozilla's checker warns); add `"android"` to the compatibility to include it.
+Category: *Language Support* (Firefox has no accessibility category for extensions). Computers only: the add-on
+isn't made for Firefox for Android, and `tools/sign.sh` uploads with `compatibility: ["firefox"]`.
 
 ## What to expect
 

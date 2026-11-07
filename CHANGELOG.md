@@ -5,9 +5,8 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
 
 ## Unreleased
 
-- Fixed (Firefox for Android): nothing worked, and *Download* showed "Could not establish connection.
-  Receiving end does not exist". The add-on's background stopped at the right-click menu and keyboard
-  shortcut set-up, which Firefox for Android doesn't have. Settings no longer lists shortcuts there.
+- Made for computers only: Firefox on Android is not supported (it can't be tested there). Firefox needs
+  version 142 or newer (from August 2025).
 
 ## 0.5.0 (2026-11-03), the first version listed on addons.mozilla.org
 

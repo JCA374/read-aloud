@@ -1,12 +1,12 @@
 # Development status
 
-Updated 7 November 2026: **0.5.0 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
+Updated 7 November 2026, after making the add-on computers only (no Android). **0.5.0 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
 
 ## At a glance
 
 | ✅ Working and tested | 🟡 Built, not tested yet | 🔵 Left to do |
 |---|---|---|
-| **19**: reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **3**: test the Android fix on your phone; decide which name the project shows publicly; then the GitHub release of 0.5.0 (the Chromium zip) |
+| **19**: reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **2**: decide which name the project shows publicly; then the GitHub release of 0.5.0 (the Chromium zip) |
 
 ## What's deployed
 
@@ -18,20 +18,7 @@ Updated 7 November 2026: **0.5.0 is live in Firefox's add-on store** ([Neural Vo
 | GitHub Releases | v0.4.0 (Firefox file + Chromium zip) | 🟡 No v0.5.0 release yet, held back while you decide about the public name (below). Chrome, Edge and Brave users get 0.4.0 from there for now. |
 | Project page | <https://jca374.github.io/read-aloud/> | ✅ Updated: install from the store, all 0.5.0 features shown. |
 
-## Do this next: test the Android fix on your phone
-
-Your screenshot (`fix1.jpg`): on Firefox for Android, Download failed with "Could not establish connection.
-Receiving end does not exist". **Cause found and fixed** (not released yet): the add-on's background set up
-the right-click menu and keyboard shortcuts first, which Firefox for Android doesn't have, so it stopped
-there and nothing answered. A new quick check runs the background the way Android does; it fails on the old
-code and passes now.
-
-To try it on the phone (set-up once, steps in [docs/MANUAL-TEST.md](docs/MANUAL-TEST.md) section 5):
-1. `sudo apt install adb`, turn on USB debugging on the phone and *Remote debugging via USB* in Firefox.
-2. `tools/try.sh android` puts the development version on the phone.
-3. If it works, I can release 0.5.1 and, if you want, offer it for Android in the store.
-
-## Then: decide which name the project shows
+## Do this next: decide which name the project shows
 
 0.5.0 is public. Two things show who made it:
 
@@ -140,6 +127,13 @@ before it was sent). Slips:
   checks the length first. About 3 minutes.
 - **Screenshot upload hit Mozilla's rate limit** after the first image; the rest went up a minute apart, and
   `amo.py previews` now waits between uploads.
+
+**7 November:** your phone showed an error in Settings (`fix1.jpg`). Cause found: the add-on's background
+stopped at the right-click menu and shortcut set-up, which Firefox for Android doesn't have. Since you can't
+test on a phone, the add-on is now for computers only: the manifest no longer mentions Android, and the store
+already offers it for desktop Firefox only. The small fix that stops the background from failing when menus
+or shortcuts are missing is kept (it costs nothing), with its quick check. Slip: I tried to download Google's
+`adb` tool myself; that was blocked, and you decided against phone testing anyway.
 
 **Suggestion:** for each change, say whether it should go out as a new version, so every change lands in
 the changelog and the release notes write themselves.
