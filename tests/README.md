@@ -19,7 +19,8 @@ the files they cover (and their own script), so `quick` skips any test, smoke te
 to [RESULTS.md](RESULTS.md).
 
 - **Instant checks** (4 s): syntax of every script, the manifest, the licence files, a licence kind for every
-  voice (and only free-to-use starter voices), and Mozilla's checker (`web-ext lint`),
+  voice (and only free-to-use starter voices), `background.js` starting without menus and shortcuts as on
+  Firefox for Android (`android-background.cjs`), and Mozilla's checker (`web-ext lint`),
   which must show no errors and no warnings beyond the 6 known ones.
 - **Smoke tests** (`chromium/smoke.mjs`, `firefox/smoke.mjs`): one browser session each, waiting for events
   (first word, a logged restart) instead of fixed times. Each check prints `ok` or `FAIL`.

@@ -56,7 +56,24 @@ Use `tools/try.sh` (your usual test profile).
 - [ ] Paragraphs are read in the right order, also in a PDF with two columns.
 - [ ] Right-click a link to a PDF → **Read PDF aloud** works.
 
-## 5. Done
+## 5. Firefox for Android (optional, 10 min)
+
+Only needed before the store offers the add-on for Android. One-time set-up:
+
+1. On the phone: *Settings → About phone → Software information*, tap **Build number** 7 times. Then
+   *Settings → Developer options* → turn on **USB debugging**.
+2. In Firefox on the phone: *Settings → Remote debugging via USB* → on.
+3. On the computer: `sudo apt install adb`. Connect the phone by USB and allow the prompt on the phone.
+   `adb devices` should list it.
+
+Then `tools/try.sh android` installs the development version in Firefox on the phone.
+
+- [ ] Settings opens (⋮ menu → Add-ons → Neural Voices → Settings) and **Download** on a voice works.
+- [ ] *Read page* from the add-on's menu reads a Wikipedia page, with the highlight.
+- [ ] The player fits the screen and its buttons can be tapped.
+- [ ] Selecting text shows the speaker button, and it reads the selection.
+
+## 6. Done
 
 - [ ] Nothing above felt broken or confusing.
 

@@ -320,6 +320,7 @@ async function importSettings(file) {
 }
 
 async function renderShortcuts() {
+  if (!chrome.commands) return ($("shortcuts").hidden = $("shortcuts").previousElementSibling.hidden = true); // Firefox for Android: no keyboard shortcuts
   const commands = await chrome.commands.getAll();
   const firefox = typeof browser !== "undefined" && !!browser.runtime.getBrowserInfo;
   const list = el("ul", { className: "keys" }, ...commands.filter((c) => c.description).map((c) => el("li", {}, c.shortcut ? el("kbd", { textContent: c.shortcut }) : el("i", { textContent: "no key set" }), ` ${c.description}`)));

@@ -42,7 +42,11 @@ function piperTts(msg, tabId) {
   });
 }
 
+// Firefox for Android has no right-click menus and no keyboard shortcuts (chrome.contextMenus and
+// chrome.commands are missing): without these checks the script would stop here, and nothing else in
+// it (speech, downloads) would answer.
 chrome.runtime.onInstalled.addListener(() => {
+  if (!chrome.contextMenus) return;
   chrome.contextMenus.create({ id: "read-selection", title: "Read aloud", contexts: ["selection"] });
   chrome.contextMenus.create({ id: "read-from-here", title: "Read aloud from here", contexts: ["page", "link", "image"] });
   chrome.contextMenus.create({ id: "fix-pronunciation", title: "Fix pronunciation of “%s”", contexts: ["selection"] });
@@ -60,7 +64,7 @@ function openPdf(url, tab, { read = true, newTab = false } = {}) {
   return chrome.tabs.update(tab.id, { url: viewer }).catch((e) => console.warn("[Neural Voices] couldn't open the PDF viewer:", e));
 }
 
-chrome.contextMenus.onClicked.addListener((info, tab) => {
+chrome.contextMenus?.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "read-pdf") return openPdf(info.linkUrl, tab, { newTab: true });
   if (info.menuItemId === "fix-pronunciation") {
     const word = (info.selectionText || "").trim().replace(/\s+/g, " ").slice(0, 100);
@@ -94,7 +98,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
 });
 
 // Shortcuts act on the tab that's reading, even from another tab; otherwise on the tab you're in.
-chrome.commands.onCommand.addListener(async (command) => {
+chrome.commands?.onCommand.addListener(async (command) => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const target = (await readingTab()) ?? tab?.id;
   if (!target) return;

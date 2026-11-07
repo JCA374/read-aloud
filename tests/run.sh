@@ -94,6 +94,8 @@ instant_checks() {
     const bad = cases.filter(([t, l, want]) => NV.applyDictionary(t, l, d) !== want);
     if (bad.length || NV.applyDictionary("x", "en", []) !== "x") { console.log(JSON.stringify(bad)); process.exit(1); }' ||
     { echo "FAIL pronunciation rules (NV.applyDictionary)"; bad=1; }
+  # Firefox for Android: background.js must still register its message handler without menus and shortcuts
+  node tests/android-background.cjs || { echo "FAIL background.js breaks without chrome.contextMenus / chrome.commands (Firefox for Android)"; bad=1; }
   # Mozilla's checker: no errors, and no warnings beyond the known ones (Chromium-only parts, ONNX Runtime, pdf.js)
   local lint; lint=$(npx -y web-ext lint --source-dir extension --output json 2>/dev/null)
   local summary; summary=$(echo "$lint" | python3 -c '
