@@ -5,6 +5,9 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
 
 ## Unreleased
 
+## 0.5.1 (2026-11-07)
+
+- The add-on's background no longer stops when the browser has no right-click menus or keyboard shortcuts.
 - Made for computers only: Firefox on Android is not supported (it can't be tested there). Firefox needs
   version 142 or newer (from August 2025).
 

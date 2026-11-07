@@ -12,6 +12,7 @@ covers (`tests/out/.passed/`), so `quick` adds a longer test by itself when its 
 
 | Date | Commit | Run | Result |
 |---|---|---|---|
+| 2026-11-07 | 0.5.1 before signing | `run.sh all`, `release`, `timing` | All pass: instant checks, 11 browser tests (firefox/smoke 17, firefox/features 18, chromium/smoke 29, voice-management 13, download-failure 3, older-revision 5, settings-extras 20, pdf 15, pronunciation 18, settings-voice-switch 7, mixed-and-controls 13); release group against `dist/firefox` (smoke 17, features 18, real-sites 7) |
 | 2026-11-07 | computers only (uncommitted) | quick | Manifest without `gecko_android`, Firefox 142 or newer: Mozilla's checker 0 errors, no Android warning (the earlier one came from Firefox 140 as the minimum). Instant checks, firefox/smoke 17, chromium/smoke 29, firefox/features 18 pass |
 | 2026-11-07 | Android fix (uncommitted) | new instant check `tests/android-background.cjs`, then quick | The owner's phone showed "Could not establish connection. Receiving end does not exist" on Download. The new check (background.js with no `chrome.contextMenus` / `chrome.commands`) fails on the old code with "Cannot read properties of undefined (reading 'onClicked')" and passes on the fix. Quick run: all 10 pass. Not yet tried on a real phone (adb not installed) |
 | 2026-11-03 | 0.5.0 before signing | `run.sh all`, `run.sh release`, then quick | All 11 browser tests and the release group (firefox/smoke 17, features 18, real-sites 7 against `dist/firefox`) pass. Mozilla's checker first warned KEY_FIREFOX_ANDROID_UNSUPPORTED_BY_MIN_VERSION after `gecko_android` was removed from the manifest; put back, and Android is left out by the upload's compatibility instead. Quick run after: instant checks, firefox/smoke 17, chromium/smoke 29, firefox/features 18 pass |
@@ -37,6 +38,7 @@ Re-run when: `extension/content.js`, `background.js`, `engine/`, `offscreen.*`, 
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-11-07 | 0.5.1 before signing | chromium/warm-up (KEEP, cold only) | First sound 3.29 s. (In the timing run: 4.99 s, right after the profile was started fresh because background.js changed) |
 | 2026-11-03 | any-language detection (uncommitted) | chromium/smoke, firefox/smoke (new check) | `langs.html`, marked `lang="en"`, paragraphs in German, French, Norwegian, Finnish, Spanish, Polish, Swedish, English: both browsers logged "de fr no fi es pl sv en". Probe of the browsers' detector on 21 samples: Firefox all right (Norwegian as "nb", mapped to "no"); Chromium all right except one Portuguese sentence as Galician, marked unreliable (then the old rules decide). 400 checks at once: 166 ms Chromium, 185 ms Firefox |
 | 2026-11-03 | release test plan (uncommitted) | chromium/warm-up (KEEP, cold only) | First sound 3.25 s cold, no waits after (before: 3.37 s) |
 | 2026-10-25 | clean-up (after f8298dc) | chromium/smoke, firefox/smoke | Pass, 24 and 12 checks. Chromium loads 3 voices (Cori, Alma, then a switch), so the new 2-voice limit unloaded one mid-test: no errors |
@@ -85,6 +87,7 @@ Re-run when: `extension/content.js`
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-11-07 | 0.5.1 before signing | chromium/long-page-cpu (KEEP, full CPU) | Set-up 188 ms, first sound 3.17 s, no waits. The first run in the timing group took 16.41 s: the profile had just been started fresh (background.js changed), so the voice downloaded again (10.5 s) |
 | 2026-11-03 | any-language detection (uncommitted) | chromium/long-page-cpu (KEEP, full CPU) | 400 paragraphs all checked for language before starting: set-up 183 ms (was 123 ms; includes waiting for the detector), first sound 3.08 s, no waits |
 | 2026-11-03 | release test plan (uncommitted) | chromium/long-page-cpu (KEEP, full CPU) | Page blocked 123 ms, first sound 3.26 s, 1 wait of 0.2 s (before: 132 ms, 3.2 s, none) |
 | 2026-11-03 | release test plan (uncommitted) | firefox/real-sites (new) | Pass, 7 checks: Wikipedia EN (3.6 s to sound, 475 sentences, starts at the title) and SV (Alma, 300), MDN (97), GitHub README (92), Paul Graham essay in a table layout (444), Mozilla manifesto (83). A first draft failed 3 sites only because the check didn't allow the article title inside a `<header>` |
@@ -104,6 +107,8 @@ Re-run when: `extension/engine/`, `offscreen.*`, `background.js`, the audio part
 
 | Date | Commit | Test | Result |
 |---|---|---|---|
+| 2026-11-07 | 0.5.1 before signing | firefox/memory, READ 180 AFTER 390 | +300 MB while reading, flat; back near the start 60 s after Stop (1272 → 1243 → 1230 MB); CPU 0 after |
+| 2026-11-07 | 0.5.1 before signing | chromium/memory, READN 12 | +380–600 MB while reading at 2×, flat; CPU 0 after Stop; engine page closed at 5 min idle, about 260 MB freed |
 | 2026-11-03 | release test plan (uncommitted) | firefox/memory, READ 180 AFTER 390 | +290–320 MB while reading, flat; back near the start 30 s after Stop (1272 → 1226 MB); CPU 0–1 s per 30 s after. Same as 2026-10-25 |
 | 2026-11-03 | release test plan (uncommitted) | chromium/memory, READN 12 | +390–575 MB while reading at 2×, flat after 3 min; CPU 0 after Stop; engine page closed at 5 min idle, 240 MB freed. Same as 2026-10-25 |
 | 2026-10-25 | clean-up (after f8298dc) | chromium/memory, READN 12 | +390–575 MB while reading at 2×, flat; CPU 0 after Stop; engine page closed at 5 min idle, 240 MB freed |

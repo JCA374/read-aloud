@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Neural Voices",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Reads web pages and PDFs aloud with natural Piper voices that run inside your browser. Your text never leaves your computer.",
   "icons": {
     "16": "icons/icon16.png",
