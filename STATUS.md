@@ -1,22 +1,21 @@
 # Development status
 
-Updated 7 November 2026, after making the add-on computers only (no Android). **0.5.0 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
+Updated 7 November 2026, after releasing 0.5.1. **0.5.1 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
 
 ## At a glance
 
 | ✅ Working and tested | 🟡 Built, not tested yet | 🔵 Left to do |
 |---|---|---|
-| **19**: reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **2**: decide which name the project shows publicly; then the GitHub release of 0.5.0 (the Chromium zip) |
+| **19**: reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **1**: decide which name the project shows publicly |
 
 ## What's deployed
 
 | Where | What | State |
 |---|---|---|
-| Firefox add-on store | **0.5.0**, listed, desktop Firefox only | ✅ Public. Approved by Mozilla between 3 and 7 November. Category Language Support, 4 screenshots, GPL-3.0, privacy policy set. The store counts 1 daily user so far. |
-| Signed file | `dist/neural-voices-0.5.0-signed.xpi` | ✅ Downloaded with the API keys; matches Mozilla's checksum (34f398d6…) and has the same files as the upload. |
-| Older version | 0.4.0, unlisted (not in the store) | Installs of it should update to 0.5.0 by themselves (same add-on id). |
-| GitHub Releases | v0.4.0 (Firefox file + Chromium zip) | 🟡 No v0.5.0 release yet, held back while you decide about the public name (below). Chrome, Edge and Brave users get 0.4.0 from there for now. |
-| Project page | <https://jca374.github.io/read-aloud/> | ✅ Updated: install from the store, all 0.5.0 features shown. |
+| Firefox add-on store | **0.5.1**, listed, Firefox on computers (142 or newer) | ✅ Public. Signed and approved by Mozilla within 15 minutes on 7 November. [Store page](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/). 0.5.0 (approved 3–7 November) users update by themselves. |
+| Signed file | `dist/neural-voices-0.5.1-signed.xpi` | ✅ Matches Mozilla's checksum (087b8e0e…); marked for desktop Firefox only. |
+| GitHub Releases | [v0.5.1](https://github.com/JCA374/read-aloud/releases/tag/v0.5.1): the signed Firefox file and the Chromium zip | ✅ The download has the same checksum, and GitHub serves it as a Firefox add-on. Notes cover 0.5.0 and 0.5.1. |
+| Project page | <https://jca374.github.io/read-aloud/> | ✅ Install from the store; Chromium zip from the latest GitHub release. |
 
 ## Do this next: decide which name the project shows
 
@@ -72,8 +71,8 @@ add-on, which now means its users have to reinstall. Tell me what you prefer; un
 
 | Step | State |
 |---|---|
-| Signed by Mozilla | ✅ 0.4.0 unlisted, 0.5.0 listed. New versions: `tools/sign.sh --listed`. |
-| On GitHub Releases | ✅ v0.4.0. v0.5.0 not yet (see above). |
+| Signed by Mozilla | ✅ 0.4.0 unlisted; 0.5.0 and 0.5.1 listed. New versions: `tools/sign.sh --listed`. |
+| On GitHub Releases | ✅ v0.4.0 and v0.5.1. |
 | Listed in the store | ✅ 0.5.0 public since about 7 November: [store page](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/). Firefox desktop only. New versions go through Mozilla's review before users get them. |
 
 In Chromium, "Load unpacked" is already permanent.
@@ -134,6 +133,10 @@ test on a phone, the add-on is now for computers only: the manifest no longer me
 already offers it for desktop Firefox only. The small fix that stops the background from failing when menus
 or shortcuts are missing is kept (it costs nothing), with its quick check. Slip: I tried to download Google's
 `adb` tool myself; that was blocked, and you decided against phone testing anyway.
+
+**7 November (later):** release 0.5.1 after all test groups passed. One timing run looked 5× slower (first
+sound 16.4 s): the test profile had been started fresh, so the voice downloaded again. A second run gave the
+usual 3.2 s. Signing and approval took under 15 minutes.
 
 **Suggestion:** for each change, say whether it should go out as a new version, so every change lands in
 the changelog and the release notes write themselves.
