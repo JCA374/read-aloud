@@ -1,45 +1,52 @@
 # Development status
 
-Updated 3 November 2026, after submitting 0.5.0 to the public store. It is waiting for Mozilla's review.
+Updated 7 November 2026: **0.5.0 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
 
 ## At a glance
 
 | ✅ Working and tested | 🟡 Built, not tested yet | 🔵 Left to do |
 |---|---|---|
-| **19**: reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the release, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **2**: paste the privacy policy on Mozilla's site, then Mozilla's review of the listing |
+| **19**: reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **2**: decide which name the project shows publicly; then the GitHub release of 0.5.0 (the Chromium zip) |
 
-Since the 0.4.0 release (not released yet): the pronunciation dictionary, Settings in a new order, volume in
-the page player, any language recognised from the words, and a Firefox fix for long sentences on slow
-computers. See [CHANGELOG.md](CHANGELOG.md).
+## What's deployed
 
-## Do this next: one step on Mozilla's site, then wait
+| Where | What | State |
+|---|---|---|
+| Firefox add-on store | **0.5.0**, listed, desktop Firefox only | ✅ Public. Approved by Mozilla between 3 and 7 November. Category Language Support, 4 screenshots, GPL-3.0, privacy policy set. The store counts 1 daily user so far. |
+| Signed file | `dist/neural-voices-0.5.0-signed.xpi` | ✅ Downloaded with the API keys; matches Mozilla's checksum (34f398d6…) and has the same files as the upload. |
+| Older version | 0.4.0, unlisted (not in the store) | Installs of it should update to 0.5.0 by themselves (same add-on id). |
+| GitHub Releases | v0.4.0 (Firefox file + Chromium zip) | 🟡 No v0.5.0 release yet, held back while you decide about the public name (below). Chrome, Edge and Brave users get 0.4.0 from there for now. |
+| Project page | <https://jca374.github.io/read-aloud/> | ✅ Updated: install from the store, all 0.5.0 features shown. |
 
-0.5.0 is submitted as a public (listed) add-on, Firefox desktop only. The store texts, the category
-(Language Support), the licence (GPL-3.0) and 4 screenshots are on Mozilla's site. Mozilla's API can't set
-the privacy policy, so:
+## Do this next: decide which name the project shows
 
-1. Open <https://addons.mozilla.org/developers/addon/a9f96c5f57e94f0c8762/edit>, find **Privacy Policy**,
-   tick that the add-on has one, and paste the text of [PRIVACY.md](PRIVACY.md). Save.
-2. While you're there, look over the description and screenshots.
-3. Wait for the review (often a day or two; can be longer). Check with
-   `python3 tools/amo.py status neural-voices@jca374.github.io` (keys loaded), or ask me.
-4. When it's approved, tell me: I download the signed file, make the GitHub release, and publish the info page
-   (already updated for 0.5.0, held back until then) with install instructions pointing at the store. Your installed 0.4.0 should then update by itself.
+0.5.0 is public. Two things show who made it:
+
+1. **The author name on the store page: "Jonas".** It was changed to "JCA374" on 3 November but is "Jonas"
+   again now, probably reset when you logged in. Change it under *Edit My Profile → Display Name* on
+   addons.mozilla.org if you want something else. Location, job and bio are empty.
+2. **"JCA374"** (close to your email prefix) in the GitHub account, the project page address and the add-on's
+   permanent id (`neural-voices@jca374.github.io`, which can never change for this add-on). Your email itself
+   is shown nowhere. Your full name is on the 72 past commits on GitHub; new commits say JCA374.
+
+Options: keep it as it is; or a new GitHub account with a neutral name (the repo moves there, history
+rewritten). The add-on id would still contain "jca374" unless the add-on is published again as a new
+add-on, which now means its users have to reinstall. Tell me what you prefer; until then I change nothing.
 
 ## What works
 
 | | What | How it was checked |
 |---|---|---|
 | ✅ Tested | **Everything in Firefox**, the store we're listing in. Until now some features were only tested in Chromium. | New Firefox test, 18 checks: a pronunciation typed with real key presses and used when reading; pause, resume, next, previous, speed; volume with arrow keys, mute, unmute; Escape; the engine starting again after Firefox closes the idle background page. Also run against the built package that goes to Mozilla, not just the source folder. |
-| ✅ Tested | **Fixed: long sentences on a slow computer in Firefox** (not released yet). Firefox closes the add-on's background after 30 s without activity, even in the middle of making speech, and that sentence was lost. The page now sends a small "still waiting" message every 5 s. | With Firefox's limit set to 8 s: a 33 s render finished with the messages; without them it was lost at 8 s. A check in the Firefox test keeps watching this. |
+| ✅ Tested | **Fixed: long sentences on a slow computer in Firefox** (new in 0.5.0). Firefox closes the add-on's background after 30 s without activity, even in the middle of making speech, and that sentence was lost. The page now sends a small "still waiting" message every 5 s. | With Firefox's limit set to 8 s: a 33 s render finished with the messages; without them it was lost at 8 s. A check in the Firefox test keeps watching this. |
 | ✅ Tested | **Real websites.** | Firefox, 6 live sites: Wikipedia in English and Swedish, MDN, a GitHub page, an essay in an old table layout, Mozilla's manifesto. Each started reading within 4 s, at the title or the article (not a menu), with the right voice. |
 | ✅ Tested | **Pause after each sentence.** | Measured: with 1 s pause set, the time between two sentences grew by 1.01 s. |
 | ✅ Tested | **Upgrading from 0.4.0.** Settings, voices and preferences stay. | Settings saved the way 0.4.0 saves them (no dictionary yet): Settings opened, reading worked, speed, volume, highlight and the voice list were kept. |
-| ✅ Tested | **Volume in the page player** (not released yet). A speaker button mutes and unmutes; a slider next to the speed sets the volume. Same setting as in Settings, saved for every page. | Chromium and Firefox, with real arrow keys: 4 × ← lowered 100% to 80% and saved it; mute set 0 and the button then says "Unmute"; unmute brought back 80%; a change made elsewhere (as from Settings) moved the slider. Firefox found that quick key presses could lose a step; fixed. |
-| ✅ Tested | **Pronunciation dictionary** (not released yet). Settings → *Pronunciation*: a word or phrase, how to say it, for all voices or one language's voices. *▶ Now* and *▶ With fix* to compare. Right-click a selected word → *Fix pronunciation*. Only the voice hears the change; the page and the highlight keep the original word. In export and import. | Automatic test, 17 checks, including typing with real key presses. With "NASA" → the long form, the audio went from 0.65 s to 3.33 s while the highlight words stayed "NASA". Reading the test page sent "The Keeper of sherry light" to the voice. A Swedish-only entry wasn't used by the English voice. A bad import file kept only its 2 good entries. Plus 7 quick checks of the matching rules. |
+| ✅ Tested | **Volume in the page player** (new in 0.5.0). A speaker button mutes and unmutes; a slider next to the speed sets the volume. Same setting as in Settings, saved for every page. | Chromium and Firefox, with real arrow keys: 4 × ← lowered 100% to 80% and saved it; mute set 0 and the button then says "Unmute"; unmute brought back 80%; a change made elsewhere (as from Settings) moved the slider. Firefox found that quick key presses could lose a step; fixed. |
+| ✅ Tested | **Pronunciation dictionary** (new in 0.5.0). Settings → *Pronunciation*: a word or phrase, how to say it, for all voices or one language's voices. *▶ Now* and *▶ With fix* to compare. Right-click a selected word → *Fix pronunciation*. Only the voice hears the change; the page and the highlight keep the original word. In export and import. | Automatic test, 17 checks, including typing with real key presses. With "NASA" → the long form, the audio went from 0.65 s to 3.33 s while the highlight words stayed "NASA". Reading the test page sent "The Keeper of sherry light" to the voice. A Swedish-only entry wasn't used by the English voice. A bad import file kept only its 2 good entries. Plus 7 quick checks of the matching rules. |
 | ✅ Tested | **Reads web pages, with no server.** Selection, the whole article (menus and footers skipped), or from a clicked sentence. | Firefox 158 and Chromium, automated: English and Swedish read with words highlighted, no errors. First sound 3–4 s from cold, 0.75 s after the popup's warm-up. |
 | ✅ Tested | **Controls and highlights.** Pause, next, previous, speed, Stop and Escape; five highlight styles; one tab reads at a time. | On a 400-paragraph page each control did what it says. Switching style changed the highlight at once. Starting a second tab stopped the first. |
-| ✅ Tested | **Languages.** Each paragraph gets the voice for its language, recognised from its words in any language by the browser's built-in detector (offline). Before, only English and Swedish were recognised from the words (not released yet). | A page marked as English with paragraphs in 8 languages: both browsers recognised German, French, Norwegian, Finnish, Spanish, Polish, Swedish and English. A page mixing English and Swedish switched voice every paragraph; a German page was read with Thorsten. 400 paragraphs checked in about 0.2 s. |
+| ✅ Tested | **Languages.** Each paragraph gets the voice for its language, recognised from its words in any language by the browser's built-in detector (offline). Before, only English and Swedish were recognised from the words (new in 0.5.0). | A page marked as English with paragraphs in 8 languages: both browsers recognised German, French, Norwegian, Finnish, Spanish, Polish, Swedish and English. A page mixing English and Swedish switched voice every paragraph; a German page was read with Thorsten. 400 paragraphs checked in about 0.2 s. |
 | ✅ Tested | **Voices.** 170 voices in 49 languages; downloads with progress and size check; a clear message when offline; kept when the voice list updates; changes apply at once. | Download site blocked: stopped after 6.6 s with a clear message. A voice stored under an older address was kept and read without downloading. |
 | ✅ Tested | **Settings page**, in the order a new user needs it (Reading first, Credits last). | Automatic test, 18 checks. All 170 online samples exist. |
 | ✅ Tested | **Reads PDFs** in the add-on's own viewer. | Chromium test, 15 checks: paragraphs, hyphen joining, highlights, zoom, hand-over from Chromium's viewer. Firefox read the same PDF. Screenshots checked for the highlight. |
@@ -65,9 +72,9 @@ the privacy policy, so:
 
 | Step | State |
 |---|---|
-| Signed by Mozilla | ✅ 0.4.0, unlisted. New versions: `tools/sign.sh`. |
-| On GitHub Releases | ✅ Anyone with the link can install it. |
-| Listed in the store | 🟡 0.5.0 submitted on 3 November, waiting for Mozilla's review. Firefox desktop only. Then found by anyone and updated automatically; 0.4.0 installs should update by themselves (same add-on id). [How it was done](docs/LISTING.md). |
+| Signed by Mozilla | ✅ 0.4.0 unlisted, 0.5.0 listed. New versions: `tools/sign.sh --listed`. |
+| On GitHub Releases | ✅ v0.4.0. v0.5.0 not yet (see above). |
+| Listed in the store | ✅ 0.5.0 public since about 7 November: [store page](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/). Firefox desktop only. New versions go through Mozilla's review before users get them. |
 
 In Chromium, "Load unpacked" is already permanent.
 

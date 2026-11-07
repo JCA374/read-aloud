@@ -15,9 +15,8 @@ read never leaves your computer. Firefox (desktop), Chrome, Edge and Brave.
 
 ## Install
 
-**Firefox:** download `neural-voices-<version>-signed.xpi` from the
-[latest release](https://github.com/JCA374/read-aloud/releases/latest) and open it in Firefox (or drag it
-into a Firefox window). It's signed by Mozilla, but not listed in the add-on store yet.
+**Firefox:** install it from the add-on store: [Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/). It
+updates itself.
 
 **Chrome, Edge, Brave:** download `neural-voices-<version>-chromium.zip` from the same release and unzip it.
 Then open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and pick the folder.
