@@ -8,7 +8,8 @@ This is the checklist for that day.
 
 The texts live in `docs/listing/listing.json` (name, summary, description, category, homepage, support
 link, licence). The screenshots are `docs/media/store-*.png`, made by
-`KEEP=1 tests/chromium.sh tests/chromium/screenshots.mjs` (needs the internet).
+`KEEP=1 tests/chromium.sh tests/chromium/screenshots.mjs` (needs the internet). The description is plain text: the store shows HTML tags as
+text, so use line breaks, "•" bullets and CAPITAL headings. Change only the texts: `python3 tools/amo.py listing <id>`.
 
 1. Tests: `tests/run.sh all`, `tests/run.sh release`, and the owner's [MANUAL-TEST.md](MANUAL-TEST.md).
 2. `tools/sign.sh --listed --dry-run` shows what will be sent. Then `tools/sign.sh --listed` sends the texts

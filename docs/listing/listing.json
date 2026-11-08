@@ -1,9 +1,21 @@
 {
-  "name": { "en-US": "Neural Voices" },
-  "summary": { "en-US": "Reads web pages and PDFs aloud with natural Piper voices that run inside your browser. Your text never leaves your computer." },
-  "description": { "en-US": "Neural Voices reads web pages and PDFs aloud with natural-sounding neural voices (Piper). The voices run inside your browser, so there is no server, no account and no cloud: the text you listen to never leaves your computer.\n\n<b>What it does</b>\n<ul>\n<li><b>Reads the part you want:</b> the whole article without menus, sidebars and footers, a selection, or from any sentence you click.</li>\n<li><b>Follow along:</b> the sentence is shaded and the word being spoken is marked. The page scrolls with the reading.</li>\n<li><b>Any language:</b> each paragraph's language is recognised from its words, so a page that mixes languages changes voice as it goes. 170 voices in 49 languages; press ▶ Try in Settings to hear one before adding it.</li>\n<li><b>PDFs:</b> open a PDF from the web or your computer; it's shown in the add-on's own viewer and read like a page.</li>\n<li><b>Natural speed:</b> 0.75× to 2×, changed inside the voice, so it sounds like a person talking faster, not a sped-up recording.</li>\n<li><b>Your pronunciations:</b> if a voice says a name wrong, select it, right-click <i>Fix pronunciation</i> and write how it should sound.</li>\n<li><b>Works offline:</b> a voice downloads once (20–140 MB, most about 60 MB) and is kept in the browser.</li>\n</ul>\n\n<b>Controls</b>\nA small player on the page: play/pause, previous/next sentence, speed, volume, voice. Shortcuts: Alt+Shift+R read / pause, Alt+Shift+X stop, Escape stops.\n\n<b>Privacy</b>\nNo tracking, no analytics. The only network use is downloading the voice files you choose from Hugging Face (the Piper voice collection) and, when you press ▶ Try, playing samples from the Piper project's website.\n\n<b>Good to know</b>\nThe first sound takes a few seconds while the voice loads; after that it reads ahead. A reasonably modern computer is needed (one CPU core free). Voices are made by the Piper community; each voice's licence is shown in Settings.\n\nOpen source (GPL-3.0): https://github.com/JCA374/read-aloud" },
-  "categories": ["language-support"],
-  "homepage": { "en-US": "https://jca374.github.io/read-aloud/" },
-  "support_url": { "en-US": "https://github.com/JCA374/read-aloud/issues" },
+  "name": {
+    "en-US": "Neural Voices"
+  },
+  "summary": {
+    "en-US": "Reads web pages and PDFs aloud with natural Piper voices that run inside your browser. Your text never leaves your computer."
+  },
+  "description": {
+    "en-US": "Neural Voices reads web pages and PDFs aloud with natural-sounding neural voices (Piper). The voices run inside your browser, so there is no server, no account and no cloud: the text you listen to never leaves your computer.\n\nWHAT IT DOES\n\n• Reads the part you want: the whole article without menus, sidebars and footers, a selection, or from any sentence you click.\n• Follow along: the sentence is shaded and the word being spoken is marked. The page scrolls with the reading.\n• Any language: each paragraph's language is recognised from its words, so a page that mixes languages changes voice as it goes. 170 voices in 49 languages; press ▶ Try in Settings to hear one before adding it.\n• PDFs: open a PDF from the web or your computer; it's shown in the add-on's own viewer and read like a page.\n• Natural speed: 0.75× to 2×, changed inside the voice, so it sounds like a person talking faster, not a sped-up recording.\n• Your pronunciations: if a voice says a name wrong, select it, right-click \"Fix pronunciation\" and write how it should sound.\n• Works offline: a voice downloads once (20–140 MB, most about 60 MB) and is kept in the browser.\n\nCONTROLS\n\nA small player on the page: play/pause, previous/next sentence, speed, volume, voice. Shortcuts: Alt+Shift+R read / pause, Alt+Shift+X stop, Escape stops.\n\nPRIVACY\n\nNo tracking, no analytics. The only network use is downloading the voice files you choose from Hugging Face (the Piper voice collection) and, when you press ▶ Try, playing samples from the Piper project's website.\n\nGOOD TO KNOW\n\nThe first sound takes a few seconds while the voice loads; after that it reads ahead. A reasonably modern computer is needed (one CPU core free). Voices are made by the Piper community; each voice's licence is shown in Settings.\n\nOpen source (GPL-3.0): https://github.com/JCA374/read-aloud"
+  },
+  "categories": [
+    "language-support"
+  ],
+  "homepage": {
+    "en-US": "https://jca374.github.io/read-aloud/"
+  },
+  "support_url": {
+    "en-US": "https://github.com/JCA374/read-aloud/issues"
+  },
   "license": "GPL-3.0-only"
 }

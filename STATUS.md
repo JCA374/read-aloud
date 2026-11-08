@@ -1,6 +1,6 @@
 # Development status
 
-Updated 8 November 2026, after adding the icon to the Settings and PDF tabs. **0.5.1 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
+Updated 8 November 2026, after fixing the store description (it showed HTML tags) and adding the icon to the Settings and PDF tabs. **0.5.1 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
 
 ## At a glance
 
