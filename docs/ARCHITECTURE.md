@@ -108,3 +108,4 @@ The browsers' own PDF viewers don't run add-on scripts, so PDFs open in `pdf.htm
   results are in `tests/RESULTS.md`.
 - `tools/check-vendor.sh`: checks the 204 bundled library files against npm.
 - `tools/sign.sh` and `tools/amo.py`: signing and Mozilla's API (see `RELEASING.md`).
+- `tools/make-icons.py`: draws the add-on icon (`extension/icons/`); needs Pillow.

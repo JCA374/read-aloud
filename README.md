@@ -52,7 +52,7 @@ it to read. See [PRIVACY.md](PRIVACY.md).
 ```
 extension/        the add-on itself, loaded as it is (no build step)
 tests/            browser tests (tests/run.sh) and their results log
-tools/            voice catalogue, library check, signing
+tools/            voice catalogue, icon, library check, signing
 docs/             project page and documentation
 ```
 

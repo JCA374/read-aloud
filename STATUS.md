@@ -1,12 +1,12 @@
 # Development status
 
-Updated 7 November 2026, after releasing 0.5.1. **0.5.1 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
+Updated 8 November 2026, after adding the icon to the Settings and PDF tabs. **0.5.1 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
 
 ## At a glance
 
 | ✅ Working and tested | 🟡 Built, not tested yet | 🔵 Left to do |
 |---|---|---|
-| **19**: reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **1**: decide which name the project shows publicly |
+| **20**: the icon, reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **1**: decide which name the project shows publicly |
 
 ## What's deployed
 
@@ -36,6 +36,7 @@ add-on, which now means its users have to reinstall. Tell me what you prefer; un
 
 | | What | How it was checked |
 |---|---|---|
+| ✅ Tested | **The icon** (next version: Settings and PDF tabs now show it too). A speaker with two sound waves on an orange square, drawn for this project by `tools/make-icons.py`, so it's free to use (GPL-3.0). | The script redraws the 4 committed icon files identical, pixel for pixel. A new check in the Chromium test: both tabs have the icon and it loads; it fails when the icon is removed. |
 | ✅ Tested | **Everything in Firefox**, the store we're listing in. Until now some features were only tested in Chromium. | New Firefox test, 18 checks: a pronunciation typed with real key presses and used when reading; pause, resume, next, previous, speed; volume with arrow keys, mute, unmute; Escape; the engine starting again after Firefox closes the idle background page. Also run against the built package that goes to Mozilla, not just the source folder. |
 | ✅ Tested | **Fixed: long sentences on a slow computer in Firefox** (new in 0.5.0). Firefox closes the add-on's background after 30 s without activity, even in the middle of making speech, and that sentence was lost. The page now sends a small "still waiting" message every 5 s. | With Firefox's limit set to 8 s: a 33 s render finished with the messages; without them it was lost at 8 s. A check in the Firefox test keeps watching this. |
 | ✅ Tested | **Real websites.** | Firefox, 6 live sites: Wikipedia in English and Swedish, MDN, a GitHub page, an essay in an old table layout, Mozilla's manifesto. Each started reading within 4 s, at the title or the article (not a menu), with the right voice. |

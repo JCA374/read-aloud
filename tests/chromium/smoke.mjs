@@ -13,6 +13,14 @@ const listed = await waitFor(() => opt.ev(`document.querySelectorAll('#mine .voi
 check("settings page lists the voices", listed >= 5, `${listed} voices`);
 const defaults = await waitFor(() => opt.ev(`document.querySelectorAll('#defaults select option').length`), 5000);
 check("settings page voice pickers are filled", defaults >= 5, `${defaults} options`);
+// the Settings and PDF tabs show the add-on's icon
+const tabIcons = await opt.ev(`Promise.all(['options.html', 'pdf.html'].map(async (f) => {
+  const href = new DOMParser().parseFromString(await (await fetch(f)).text(), 'text/html').querySelector('link[rel=icon]')?.getAttribute('href');
+  if (!href) return f + ': no icon';
+  const img = new Image(); img.src = href; await img.decode().catch(() => {});
+  return img.naturalWidth ? '' : f + ': icon does not load';
+})).then((r) => r.filter(Boolean).join(', '))`);
+check("Settings and PDF tabs have the add-on icon", tabIcons === "", tabIcons);
 const pop = await b.open(b.extUrl("popup.html"), "popup");
 const popOpts = await waitFor(() => pop.ev(`document.querySelectorAll('#voices select option').length`), 5000);
 check("popup voice pickers are filled", popOpts >= 3, `${popOpts} options`);

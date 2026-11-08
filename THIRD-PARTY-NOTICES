@@ -37,7 +37,8 @@ Source code of Neural Voices: https://github.com/JCA374/read-aloud
       University of Illinois/NCSA, Copyright (c) 2010-2014 Emscripten authors
       (licenses/emscripten-LICENSE.txt).
 
-3. Icons (icons/*.png): made for Neural Voices; GPL-3.0 like the rest of the add-on.
+3. Icons (icons/*.png): an original drawing made for Neural Voices, drawn by tools/make-icons.py in the
+   source; GPL-3.0 like the rest of the add-on.
 
 4. pdf.js 6.4.299 (npm package pdfjs-dist), in pdf/, unchanged: shows PDFs in the add-on's PDF viewer.
    https://github.com/mozilla/pdf.js  Licence: Apache-2.0, Copyright Mozilla Foundation

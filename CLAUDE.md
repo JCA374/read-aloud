@@ -28,6 +28,7 @@ Firefox snaps, node 22+ and python3.
 | Try by hand in a separate profile | `tools/try.sh` (Firefox) or `tools/try.sh chromium` |
 | Sign a new version (needs `.amo-keys`) | `tools/sign.sh` |
 | Mozilla API: versions / download a signed file | `python3 tools/amo.py versions\|download <id> [version]` (keys loaded) |
+| Redraw the add-on icon (`extension/icons/`, needs Pillow) | `python3 tools/make-icons.py` |
 | Rebuild the voice catalogue | `node tools/make-catalog.mjs` (never edit `extension/catalog.js` by hand) |
 | Check bundled libraries against npm | `tools/check-vendor.sh` |
 

@@ -5,6 +5,8 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
 
 ## Unreleased
 
+- The Settings and PDF tabs show the add-on's icon.
+
 ## 0.5.1 (2026-11-07)
 
 - The add-on's background no longer stops when the browser has no right-click menus or keyboard shortcuts.
