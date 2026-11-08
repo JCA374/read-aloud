@@ -18,6 +18,7 @@ WebAssembly, no server. There's no build step: `extension/` is loaded as it is, 
 | `offscreen.html`, `offscreen.js` | Chromium only | A hidden page that hosts the worker, because a service worker can't start workers. Left out of the Firefox build. |
 | `popup.*` | toolbar popup | Read page, click-to-read, voice, speed, Settings, *Read this PDF*. Warms up the voice when it opens. |
 | `options.*` | Settings tab | Voice list and catalogue, language defaults, reading options, storage, reset/export/import. |
+| `reader.html`, `reader.js`, `reader.css` | add-on tab | The reader for Firefox's add-on store, where add-ons can't run: shows an add-on's store text so it can be read (see below). |
 | `pdf.html`, `pdf-viewer.js`, `pdf.css`, `pdf/` | add-on tab | The PDF viewer (pdf.js 6.4.299). Draws the pages and puts an invisible text layer over them, grouped into paragraphs (`data-nv-block`), which `content.js` reads like a web page. |
 
 ## The way a sentence becomes sound
@@ -91,6 +92,15 @@ The browsers' own PDF viewers don't run add-on scripts, so PDFs open in `pdf.htm
 - Everywhere: right-click a PDF link → *Read PDF aloud*, or open or drop a local file in the viewer.
 - Fetching a PDF from a site uses the optional host permission for that site, asked for the first time.
 - pdf.js runs without PDF scripts or XFA forms, with `isEvalSupported: false`.
+
+## The add-on store (Firefox)
+
+Firefox runs no add-on scripts on addons.mozilla.org, and refuses add-ons' requests for its web pages. An
+add-on's store page is read in `reader.html?url=<store page>[&read=1]` (`reader.js`): it gets the name,
+summary, description, developer comments and release notes from the store's public API
+(`/api/v5/addons/addon/<slug>/`, open to any site, no permission needed), keeps only their words (HTML parsed
+inert with `DOMParser`, one paragraph per line) and `content.js` reads them. The popup offers it when the tab
+is a store add-on page (`NV.storeAddon`); Alt+Shift+R opens it there too.
 
 ## Firefox and Chromium differences
 

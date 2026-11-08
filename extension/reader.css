@@ -1,0 +1,8 @@
+/* The reader (reader.html): plain text of a page add-ons can't run on, shown so it can be read aloud. */
+#source { color: var(--accent); white-space: nowrap; }
+#text { max-width: 44em; margin: 24px auto 120px; padding: 24px 32px; background: var(--bar); border: 1px solid var(--line); border-radius: 10px; font-size: 17px; line-height: 1.6; }
+#text h1 { font-size: 1.6em; line-height: 1.25; margin: 0 0 .4em; }
+#text h2 { font-size: 1.15em; margin: 1.4em 0 .4em; }
+#text p { margin: 0 0 .8em; }
+#text .summary { font-size: 1.1em; color: var(--muted); }
+@media (max-width: 600px) { #text { margin: 12px 8px 120px; padding: 16px; } }

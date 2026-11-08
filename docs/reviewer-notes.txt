@@ -12,7 +12,9 @@ running as WebAssembly; no server, no data collection.
   UNSAFE_VAR_ASSIGNMENT is inside the minified libraries.
 - Network: voice models from huggingface.co/rhasspy/piper-voices (pinned revision, size-checked) the
   first time a voice is used; samples from rhasspy.github.io when the user presses "Try"; a PDF the user
-  asks to read, from its own site (optional host permission, asked per site).
+  asks to read, from its own site (optional host permission, asked per site); an add-on's public store
+  text from addons.mozilla.org/api/v5 when the user asks to read a store page (reader.html), since content
+  scripts can't run there.
 - Permissions: content script on all pages (reads the text, shows the player); storage; contextMenus;
   activeTab (popup checks whether the tab is a PDF); optional host permissions, per site, for PDFs.
 - Language detection: browser.i18n.detectLanguage (local).

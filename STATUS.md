@@ -1,12 +1,12 @@
 # Development status
 
-Updated 8 November 2026, after releasing 0.5.2 (the icon on the Settings and PDF tabs; the store description fixed). **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
+Updated 8 November 2026, after making store pages readable (not released yet: try it first, see below). **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
 
 ## At a glance
 
 | ✅ Working and tested | 🟡 Built, not tested yet | 🔵 Left to do |
 |---|---|---|
-| **20**: the icon, reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **1**: decide which name the project shows publicly |
+| **21**: reading store pages (next version), the icon, reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **1**: decide which name the project shows publicly |
 
 ## What's deployed
 
@@ -17,7 +17,15 @@ Updated 8 November 2026, after releasing 0.5.2 (the icon on the Settings and PDF
 | GitHub Releases | [v0.5.2](https://github.com/JCA374/read-aloud/releases/tag/v0.5.2): the signed Firefox file and the Chromium zip | ✅ The download has the same checksum, and GitHub serves it as a Firefox add-on. |
 | Project page | <https://jca374.github.io/read-aloud/> | ✅ Install from the store; Chromium zip from the latest GitHub release. |
 
-## Do this next: decide which name the project shows
+## Do this next: try reading the store page, then release
+
+1. Open a Firefox window with the new version (your installed add-on isn't touched): `tools/try.sh`
+2. In it, go to <https://addons.mozilla.org/en-US/firefox/addon/a9f96c5f57e94f0c8762/>, click the add-on's
+   toolbar button → **Read it in Neural Voices**. A new tab shows the store text and reads it.
+3. Also try **Alt+Shift+R** on that store page (the one part the tests can't press).
+4. If it works, tell Claude "release it" (0.5.3).
+
+## Then: decide which name the project shows
 
 0.5.0 is public. Two things show who made it:
 
@@ -36,6 +44,7 @@ add-on, which now means its users have to reinstall. Tell me what you prefer; un
 
 | | What | How it was checked |
 |---|---|---|
+| ✅ Tested | **Reading Firefox's add-on store** (next version, not released). Firefox lets no add-on run on addons.mozilla.org, so the popup there shows *Read it in Neural Voices*: the add-on's store text (name, summary, description, developer comments, release notes) opens in the add-on's own tab and is read. Alt+Shift+R does the same. | New Firefox test, 10 checks, on the real store page: Firefox blocks the add-on there; the popup offers the reader; clicking opens it; the text shows without HTML tags and reading starts. Also against the built package. Alt+Shift+R there not tested automatically. |
 | ✅ Tested | **The icon** (also on the Settings and PDF tabs since 0.5.2). A speaker with two sound waves on an orange square, drawn for this project by `tools/make-icons.py`, so it's free to use (GPL-3.0). | The script redraws the 4 committed icon files identical, pixel for pixel. A new check in the Chromium test: both tabs have the icon and it loads; it fails when the icon is removed. |
 | ✅ Tested | **Everything in Firefox**, the store we're listing in. Until now some features were only tested in Chromium. | New Firefox test, 18 checks: a pronunciation typed with real key presses and used when reading; pause, resume, next, previous, speed; volume with arrow keys, mute, unmute; Escape; the engine starting again after Firefox closes the idle background page. Also run against the built package that goes to Mozilla, not just the source folder. |
 | ✅ Tested | **Fixed: long sentences on a slow computer in Firefox** (new in 0.5.0). Firefox closes the add-on's background after 30 s without activity, even in the middle of making speech, and that sentence was lost. The page now sends a small "still waiting" message every 5 s. | With Firefox's limit set to 8 s: a 33 s render finished with the messages; without them it was lost at 8 s. A check in the Firefox test keeps watching this. |

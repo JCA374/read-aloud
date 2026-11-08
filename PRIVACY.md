@@ -20,6 +20,10 @@ Neural Voices server, no account and no analytics.
 2. **▶ Try in Settings**: plays a short sample of a voice from `rhasspy.github.io/piper-samples`.
 3. **Opening a PDF** you ask it to read: the PDF is fetched from the site it's on. The add-on asks for
    permission for each site the first time.
+4. **Reading a page in Firefox's add-on store** (addons.mozilla.org), when you ask for it: Firefox doesn't
+   let add-ons run there, so the add-on gets that add-on's public store text (name, description) from the
+   store's own public API (`addons.mozilla.org/api`) and shows it in its own tab. Nothing is sent but the
+   add-on's name from the page address.
 
 These sites see an ordinary download request from your browser (your IP address and the browser's usual
 headers), as with any web page. Neural Voices adds nothing to these requests and doesn't track you.

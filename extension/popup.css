@@ -14,6 +14,8 @@ h1 { font-size: 15px; margin: 0; flex: 1; }
 .notice { background: var(--field); border-left: 3px solid var(--bad); padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; }
 #pdf { border-left-color: var(--accent); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 #pdf[hidden] { display: none; }
+#store { border-left-color: var(--accent); }
+#store button { display: block; width: 100%; margin-top: 8px; }
 .notice code { display: block; margin-top: 4px; font-size: 12px; user-select: all; }
 .actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 14px; }
 button { font: inherit; padding: 8px 4px; border-radius: 8px; border: 1px solid var(--line); background: var(--field); color: var(--fg); cursor: pointer; }
