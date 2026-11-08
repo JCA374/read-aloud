@@ -1,6 +1,6 @@
 # Development status
 
-Updated 8 November 2026, after fixing the store description (it showed HTML tags) and adding the icon to the Settings and PDF tabs. **0.5.1 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
+Updated 8 November 2026, after releasing 0.5.2 (the icon on the Settings and PDF tabs; the store description fixed). **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
 
 ## At a glance
 
@@ -12,9 +12,9 @@ Updated 8 November 2026, after fixing the store description (it showed HTML tags
 
 | Where | What | State |
 |---|---|---|
-| Firefox add-on store | **0.5.1**, listed, Firefox on computers (142 or newer) | ✅ Public. Signed and approved by Mozilla within 15 minutes on 7 November. [Store page](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/). 0.5.0 (approved 3–7 November) users update by themselves. |
-| Signed file | `dist/neural-voices-0.5.1-signed.xpi` | ✅ Matches Mozilla's checksum (087b8e0e…); marked for desktop Firefox only. |
-| GitHub Releases | [v0.5.1](https://github.com/JCA374/read-aloud/releases/tag/v0.5.1): the signed Firefox file and the Chromium zip | ✅ The download has the same checksum, and GitHub serves it as a Firefox add-on. Notes cover 0.5.0 and 0.5.1. |
+| Firefox add-on store | **0.5.2**, listed, Firefox on computers (142 or newer) | ✅ Public. Signed and approved by Mozilla within minutes on 8 November. The store description now shows properly (it showed HTML tags as text). [Store page](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/). Earlier versions update by themselves. |
+| Signed file | `dist/neural-voices-0.5.2-signed.xpi` | ✅ Matches Mozilla's checksum (bcb0b6ac…); marked for desktop Firefox only. |
+| GitHub Releases | [v0.5.2](https://github.com/JCA374/read-aloud/releases/tag/v0.5.2): the signed Firefox file and the Chromium zip | ✅ The download has the same checksum, and GitHub serves it as a Firefox add-on. |
 | Project page | <https://jca374.github.io/read-aloud/> | ✅ Install from the store; Chromium zip from the latest GitHub release. |
 
 ## Do this next: decide which name the project shows
@@ -36,7 +36,7 @@ add-on, which now means its users have to reinstall. Tell me what you prefer; un
 
 | | What | How it was checked |
 |---|---|---|
-| ✅ Tested | **The icon** (next version: Settings and PDF tabs now show it too). A speaker with two sound waves on an orange square, drawn for this project by `tools/make-icons.py`, so it's free to use (GPL-3.0). | The script redraws the 4 committed icon files identical, pixel for pixel. A new check in the Chromium test: both tabs have the icon and it loads; it fails when the icon is removed. |
+| ✅ Tested | **The icon** (also on the Settings and PDF tabs since 0.5.2). A speaker with two sound waves on an orange square, drawn for this project by `tools/make-icons.py`, so it's free to use (GPL-3.0). | The script redraws the 4 committed icon files identical, pixel for pixel. A new check in the Chromium test: both tabs have the icon and it loads; it fails when the icon is removed. |
 | ✅ Tested | **Everything in Firefox**, the store we're listing in. Until now some features were only tested in Chromium. | New Firefox test, 18 checks: a pronunciation typed with real key presses and used when reading; pause, resume, next, previous, speed; volume with arrow keys, mute, unmute; Escape; the engine starting again after Firefox closes the idle background page. Also run against the built package that goes to Mozilla, not just the source folder. |
 | ✅ Tested | **Fixed: long sentences on a slow computer in Firefox** (new in 0.5.0). Firefox closes the add-on's background after 30 s without activity, even in the middle of making speech, and that sentence was lost. The page now sends a small "still waiting" message every 5 s. | With Firefox's limit set to 8 s: a 33 s render finished with the messages; without them it was lost at 8 s. A check in the Firefox test keeps watching this. |
 | ✅ Tested | **Real websites.** | Firefox, 6 live sites: Wikipedia in English and Swedish, MDN, a GitHub page, an essay in an old table layout, Mozilla's manifesto. Each started reading within 4 s, at the title or the article (not a menu), with the right voice. |
@@ -72,8 +72,8 @@ add-on, which now means its users have to reinstall. Tell me what you prefer; un
 
 | Step | State |
 |---|---|
-| Signed by Mozilla | ✅ 0.4.0 unlisted; 0.5.0 and 0.5.1 listed. New versions: `tools/sign.sh --listed`. |
-| On GitHub Releases | ✅ v0.4.0 and v0.5.1. |
+| Signed by Mozilla | ✅ 0.4.0 unlisted; 0.5.0, 0.5.1 and 0.5.2 listed. New versions: `tools/sign.sh --listed`. |
+| On GitHub Releases | ✅ v0.4.0, v0.5.1 and v0.5.2. |
 | Listed in the store | ✅ 0.5.0 public since about 7 November: [store page](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/). Firefox desktop only. New versions go through Mozilla's review before users get them. |
 
 In Chromium, "Load unpacked" is already permanent.
@@ -134,6 +134,8 @@ test on a phone, the add-on is now for computers only: the manifest no longer me
 already offers it for desktop Firefox only. The small fix that stops the background from failing when menus
 or shortcuts are missing is kept (it costs nothing), with its quick check. Slip: I tried to download Google's
 `adb` tool myself; that was blocked, and you decided against phone testing anyway.
+
+**8 November:** release 0.5.2. All tests passed except one real-website check: every github.com page answered "504 Gateway Time-out" from this machine (GitHub's API and git worked), so the GitHub page couldn't be read; the other 5 sites passed. Not caused by the add-on; it costs nothing but that check is still to be repeated.
 
 **7 November (later):** release 0.5.1 after all test groups passed. One timing run looked 5× slower (first
 sound 16.4 s): the test profile had been started fresh, so the voice downloaded again. A second run gave the
