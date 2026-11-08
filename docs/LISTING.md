@@ -16,6 +16,8 @@ text, so use line breaks, "•" bullets and CAPITAL headings. Change only the te
    (`amo.py listing`), then uploads the version with its licence (`GPL-3.0-only`), source code, reviewer
    notes and release notes, for desktop Firefox only.
 3. Screenshots: `python3 tools/amo.py previews <id> docs/media/store-*.png` (keys loaded).
+   Store icon: `python3 tools/amo.py icon <id>` (the store doesn't take it from the add-on; it showed a grey
+   default until 8 November).
 4. **By hand on the developer page** (the API can't set it): *Edit Product Page* → **Privacy Policy**: paste
    `PRIVACY.md`.
 5. Wait for the review: `python3 tools/amo.py status <id>`. When approved, download the signed file

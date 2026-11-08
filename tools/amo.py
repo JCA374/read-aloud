@@ -6,6 +6,7 @@
   python3 tools/amo.py download <add-on id> <version>   saves dist/neural-voices-<version>-signed.xpi
   python3 tools/amo.py listing  <add-on id> [--dry-run] sends the store texts in docs/listing/listing.json
   python3 tools/amo.py previews <add-on id> <png>...    uploads screenshots (in this order)
+  python3 tools/amo.py icon     <add-on id>             uploads extension/icons/icon128.png as the store icon
   python3 tools/amo.py status   <add-on id>             the add-on's store status and each version's review
 
 Run with the keys loaded:  set -a; . ./.amo-keys; set +a; python3 tools/amo.py versions <id>
@@ -88,6 +89,10 @@ def main(cmd, addon, *rest):
             body, typ = multipart({"position": pos}, {"image": (os.path.basename(path), open(path, "rb").read(), "image/png")})
             r = send("POST", f"{API}{addon}/previews/", body, typ)
             print("uploaded", path, "->", r.get("image_url", r))
+    elif cmd == "icon":  # the store doesn't take the icon from the add-on: it's uploaded separately
+        body, typ = multipart({}, {"icon": ("icon128.png", open("extension/icons/icon128.png", "rb").read(), "image/png")})
+        r = send("PATCH", f"{API}{addon}/", body, typ)
+        print("store icon:", r.get("icons", r))
     elif cmd == "status":
         a = get(f"{API}{addon}/")
         print("add-on:", a["status"], "| listed:", a.get("current_version", {}) and a["current_version"].get("version"), "|", a["url"])

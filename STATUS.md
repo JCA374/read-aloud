@@ -1,6 +1,6 @@
 # Development status
 
-Updated 8 November 2026, after deciding not to read pages in Firefox's add-on store (built, tested, then removed; the popup now says why such a page can't be read). **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
+Updated 8 November 2026, after giving the store page the add-on's icon (it showed Mozilla's grey default). **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
 
 ## At a glance
 
@@ -12,7 +12,7 @@ Updated 8 November 2026, after deciding not to read pages in Firefox's add-on st
 
 | Where | What | State |
 |---|---|---|
-| Firefox add-on store | **0.5.2**, listed, Firefox on computers (142 or newer) | ✅ Public. Signed and approved by Mozilla within minutes on 8 November. The store description now shows properly (it showed HTML tags as text). [Store page](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/). Earlier versions update by themselves. |
+| Firefox add-on store | **0.5.2**, listed, Firefox on computers (142 or newer) | ✅ Public. Signed and approved by Mozilla within minutes on 8 November. The store description now shows properly (it showed HTML tags as text). The store page shows the add-on's icon since 8 November (uploaded with `tools/amo.py icon`; checked the store serves it). [Store page](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/). Earlier versions update by themselves. |
 | Signed file | `dist/neural-voices-0.5.2-signed.xpi` | ✅ Matches Mozilla's checksum (bcb0b6ac…); marked for desktop Firefox only. |
 | GitHub Releases | [v0.5.2](https://github.com/JCA374/read-aloud/releases/tag/v0.5.2): the signed Firefox file and the Chromium zip | ✅ The download has the same checksum, and GitHub serves it as a Firefox add-on. |
 | Project page | <https://jca374.github.io/read-aloud/> | ✅ Install from the store; Chromium zip from the latest GitHub release. |
