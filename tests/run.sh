@@ -21,7 +21,6 @@ TESTS="
 chromium/smoke|KEEP=1|extension|150
 firefox/smoke||extension|150
 firefox/features|IDLE_MS=8000;TIMEOUT=300|extension|330
-firefox/store-reader|TIMEOUT=150|extension/reader.* extension/popup.* extension/common.js extension/content.js|180
 firefox/real-sites|TIMEOUT=250|extension/content.js extension/common.js|280
 chromium/voice-management|PROFILE=nv-fresh-profile|extension/options.* extension/catalog.js extension/common.js extension/engine/piper-worker.js|240
 chromium/download-failure|PROFILE=nv-fresh-profile;EXTRA=--host-resolver-rules=MAP huggingface.co ~NOTFOUND|extension/engine extension/background.js extension/offscreen.*|150
@@ -39,7 +38,7 @@ firefox/memory|TIMEOUT=700|extension/engine extension/offscreen.* extension/back
 QUICK="chromium/smoke firefox/smoke"
 AFFECTED="firefox/features chromium/voice-management chromium/download-failure chromium/older-revision chromium/settings-extras chromium/pdf chromium/pronunciation"   # added to quick when their files changed
 ALL="chromium/smoke firefox/smoke $AFFECTED chromium/settings-voice-switch chromium/mixed-and-controls"
-RELEASE="firefox/smoke firefox/features firefox/real-sites firefox/store-reader"   # against the built Firefox package (dist/firefox)
+RELEASE="firefox/smoke firefox/features firefox/real-sites"   # against the built Firefox package (dist/firefox)
 TIMING="chromium/warm-up chromium/long-page-cpu chromium/memory firefox/memory"
 
 field() { echo "$TESTS" | awk -F'|' -v n="$1" -v f="$2" '$1 == n { print $f }'; }

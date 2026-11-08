@@ -5,9 +5,6 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
 
 ## Unreleased
 
-- Pages in Firefox's add-on store can be read: Firefox doesn't let add-ons run there, so the popup (or
-  Alt+Shift+R) opens the add-on's store text in Neural Voices' own reader tab and reads it.
-
 ## 0.5.2 (2026-11-08)
 
 - The Settings and PDF tabs show the add-on's icon.

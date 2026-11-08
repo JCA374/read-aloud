@@ -121,13 +121,7 @@ var NV = (() => {
   }
 
   const looksLikePdf = (url) => /^(https?|file):\/\/[^?#]+\.pdf([?#]|$)/i.test(url || "");
-  // Firefox runs no add-on scripts on its add-on store: an add-on's page there is read in reader.html.
-  const storeAddon = (url) => {
-    const m = /^https:\/\/addons\.mozilla\.org\/([^/?#]+)\/(?:firefox|android)\/addon\/([^/?#]+)\/?(?:[?#]|$)/.exec(url || "");
-    return m && { lang: m[1], slug: decodeURIComponent(m[2]) };
-  };
-  const readerUrl = (url, read) => chrome.runtime.getURL(`reader.html?url=${encodeURIComponent(url)}${read ? "&read=1" : ""}`);
   const pdfViewerUrl = (url, read) => chrome.runtime.getURL(`pdf.html?file=${encodeURIComponent(url)}${read ? "&read=1" : ""}`);
 
-  return { sendToTab, applyDictionary, looksLikePdf, pdfViewerUrl, storeAddon, readerUrl, STARTER_VOICES, DEFAULTS, HIGHLIGHTS, shownVoices, listLangs, langDefault, voiceFor, pick, allVoices, fillVoiceSelect };
+  return { sendToTab, applyDictionary, looksLikePdf, pdfViewerUrl, STARTER_VOICES, DEFAULTS, HIGHLIGHTS, shownVoices, listLangs, langDefault, voiceFor, pick, allVoices, fillVoiceSelect };
 })();

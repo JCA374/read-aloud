@@ -103,13 +103,8 @@ chrome.commands?.onCommand.addListener(async (command) => {
   const target = (await readingTab()) ?? tab?.id;
   if (!target) return;
   const msg = { cmd: command === "stop" ? "stop" : "toggle" };
-  // A PDF in Firefox's own viewer can't be reached: Read opens it in the add-on's viewer. Nor can an
-  // add-on's store page: Read opens its text in the reader, next to it.
-  NV.sendToTab(target, msg).catch(() => {
-    if (command !== "read" || target !== tab?.id) return;
-    if (NV.looksLikePdf(tab.url)) return openPdf(tab.url, tab);
-    if (NV.storeAddon(tab.url)) chrome.tabs.create({ url: NV.readerUrl(tab.url, true), index: tab.index + 1, openerTabId: tab.id });
-  });
+  // A PDF in Firefox's own viewer can't be reached: Read opens it in the add-on's viewer.
+  NV.sendToTab(target, msg).catch(() => command === "read" && target === tab?.id && NV.looksLikePdf(tab.url) && openPdf(tab.url, tab));
 });
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

@@ -33,7 +33,6 @@ about 63 MB).
 | Toolbar icon → *Click-to-read*, then click a sentence | reads from there (Esc to leave) |
 | Right-click → *Read aloud from here* / *Read PDF aloud* on a PDF link | reads from that spot / opens the PDF |
 | Select a word → right-click → *Fix pronunciation* | tell the voice how to say it |
-| On Firefox's add-on store: toolbar icon → *Read it in Neural Voices* | reads the add-on's store text in a tab of its own (Firefox lets no add-on run on its store) |
 | `Alt+Shift+R` | read, pause or resume |
 | `Alt+Shift+X` or `Esc` | stop |
 
