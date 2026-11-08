@@ -10,8 +10,9 @@ async function send(cmd) {
   try {
     return await NV.sendToTab(tab.id, { cmd });
   } catch {
-    // Firefox's own PDF viewer runs no add-on scripts: offer to open the PDF in ours.
-    $(NV.looksLikePdf(tab.url) ? "pdf" : "nopage").hidden = false;
+    // Firefox's own PDF viewer runs no add-on scripts: offer to open the PDF in ours. Nor does its add-on
+    // store, and nothing helps there (deliberately no workaround: docs/ARCHITECTURE.md, "Decided against").
+    $(NV.looksLikePdf(tab.url) ? "pdf" : /^https:\/\/addons\.mozilla\.org\//.test(tab.url || "") ? "store" : "nopage").hidden = false;
     return null;
   }
 }

@@ -1,6 +1,7 @@
 // Real websites (needs the internet; live pages change, so it is only in the release group): for each page,
 // reading starts within 10 s, the first sentence read is the title or in the article (not in a menu, header
-// or footer), and there are enough sentences to be the article rather than a few links.
+// or footer), and there are enough sentences to be the article rather than a few links. On Firefox's add-on
+// store, where no add-on can run, the popup says so.
 import { browser, EXT, waitFor, check, finish } from "./lib.mjs";
 
 const SITES = [
@@ -37,5 +38,13 @@ for (const [name, url, voice] of SITES) {
   await waitFor(async () => (await b.status()).state === "idle", 3000);
   await b.close(tab);
 }
+// Firefox's add-on store: no add-on can run there, so the popup says so (no "reload" advice)
+const store = (await b.send("browsingContext.create", { type: "tab" })).result.context;
+await b.send("browsingContext.navigate", { context: store, url: "https://addons.mozilla.org/en-US/firefox/addon/a9f96c5f57e94f0c8762/", wait: "complete" });
+const popup = (await b.send("browsingContext.create", { type: "tab", background: true })).result.context;
+await b.send("browsingContext.activate", { context: store });
+await b.send("browsingContext.navigate", { context: popup, url: `${EXT}/popup.html`, wait: "complete" });
+const said = await waitFor(() => b.ev(popup, `document.querySelector('.notice:not([hidden])')?.textContent.trim()`), 5000);
+check("add-on store: the popup says why it can't be read", /add-on store/.test(said || ""), said || "no notice");
 // Pages from the internet log their own warnings; only the add-on's count here.
 finish(b.errors().filter((e) => /Neural Voices|moz-extension/.test(e)));

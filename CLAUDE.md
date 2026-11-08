@@ -69,6 +69,7 @@ Details: `docs/ARCHITECTURE.md`. The parts that span several files:
 - `docs/LISTING.md`: checklist for a public listing. `PRIVACY.md`: privacy policy (update when the add-on
   uses the network, storage or permissions differently).
 - `CHANGELOG.md`: add every user-visible change under **Unreleased**.
+- Before building a feature, check *Decided against* at the end of `docs/ARCHITECTURE.md`.
 
 ## Making a change
 

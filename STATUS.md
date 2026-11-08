@@ -1,6 +1,6 @@
 # Development status
 
-Updated 8 November 2026, after releasing 0.5.2 (the icon on the Settings and PDF tabs; the store description fixed). **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
+Updated 8 November 2026, after deciding not to read pages in Firefox's add-on store (built, tested, then removed; the popup now says why such a page can't be read). **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
 
 ## At a glance
 
@@ -135,7 +135,7 @@ already offers it for desktop Firefox only. The small fix that stops the backgro
 or shortcuts are missing is kept (it costs nothing), with its quick check. Slip: I tried to download Google's
 `adb` tool myself; that was blocked, and you decided against phone testing anyway.
 
-**8 November:** release 0.5.2. All tests passed except one real-website check: every github.com page answered "504 Gateway Time-out" from this machine (GitHub's API and git worked), so the GitHub page couldn't be read; the other 5 sites passed. Not caused by the add-on; it costs nothing but that check is still to be repeated.
+**8 November:** release 0.5.2. One real-website check failed because every github.com page answered "504 Gateway Time-out" from this machine; repeated later the same day, all 6 sites passed. Then a reader for Firefox's add-on store was built and tested (one extra round), and removed again on the owner's question whether it was worth it: Firefox blocks every add-on there, so it was little use for its cost. Suggestion: ask "is it worth it?" before building a workaround for a rule that affects every add-on. It's noted under *Decided against* in `docs/ARCHITECTURE.md`.
 
 **7 November (later):** release 0.5.1 after all test groups passed. One timing run looked 5× slower (first
 sound 16.4 s): the test profile had been started fresh, so the voice downloaded again. A second run gave the

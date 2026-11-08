@@ -5,6 +5,9 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
 
 ## Unreleased
 
+- On a page in Firefox's add-on store, the popup says why it can't be read (Firefox lets no add-on run there)
+  instead of suggesting a reload.
+
 ## 0.5.2 (2026-11-08)
 
 - The Settings and PDF tabs show the add-on's icon.

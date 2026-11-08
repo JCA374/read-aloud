@@ -109,3 +109,11 @@ The browsers' own PDF viewers don't run add-on scripts, so PDFs open in `pdf.htm
 - `tools/check-vendor.sh`: checks the 204 bundled library files against npm.
 - `tools/sign.sh` and `tools/amo.py`: signing and Mozilla's API (see `RELEASING.md`).
 - `tools/make-icons.py`: draws the add-on icon (`extension/icons/`); needs Pillow.
+
+## Decided against (don't build these again)
+
+- **Reading pages in Firefox's add-on store (addons.mozilla.org).** Firefox runs no add-on scripts there and
+  refuses add-ons' requests for its pages; this blocks every read-aloud add-on, not just this one. A reader
+  tab that got an add-on's text from the store's public API was built and tested on 2026-11-08, then removed
+  (commit 20f92f4 reverts 88d326e): little use, and it cost three files, a test, and one more address in the
+  privacy policy and reviewer notes. The popup only says why such a page can't be read.
