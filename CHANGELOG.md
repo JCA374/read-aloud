@@ -5,7 +5,10 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
 
 ## Unreleased
 
+## 0.5.2 (2026-11-08)
+
 - The Settings and PDF tabs show the add-on's icon.
+- The store description shows properly (it showed HTML tags as text).
 
 ## 0.5.1 (2026-11-07)
 
