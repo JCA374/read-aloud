@@ -6,7 +6,6 @@ Claude Code runs it from hooks (see README.md):
   speak.py stop   UserPromptSubmit hook: stops reading when you send a new message
 By hand:
   speak.py on | off | status     turn reading on or off
-  speak.py last [session id]     read the reply before your latest message (the /read command)
   speak.py say "some text"       read a text
   speak.py speed 1.2             faster (or slower, below 1)
 """
@@ -15,7 +14,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 VOICES = {"en": HERE / "voices/en_GB-cori-medium.onnx", "sv": HERE / "voices/sv_SE-alma-medium.onnx"}
-OFF, PID, SPEED, SKIP = HERE / ".off", HERE / ".pid", HERE / ".speed", HERE / ".skip"
+OFF, PID, SPEED = HERE / ".off", HERE / ".pid", HERE / ".speed"
 PYTHON = HERE / ".venv/bin/python"
 
 
@@ -75,36 +74,10 @@ def last_reply(event):
                 break  # back at your message: the reply is everything after it
             if e.get("type") == "assistant" and isinstance(content, list):
                 parts += [b["text"] for b in reversed(content) if b.get("type") == "text"]
-                if parts:
-                    break  # only the final answer, not the progress notes before it
         if parts:
             return "\n\n".join(reversed(parts))
         time.sleep(0.2)
     return ""
-
-
-def previous_reply(session=""):
-    """For /read: the reply before your latest message, in this folder's newest (or the given) session."""
-    folder = Path.home() / ".claude/projects" / re.sub(r"[^A-Za-z0-9]", "-", os.getcwd())
-    logs = [folder / f"{session}.jsonl"] if session and (folder / f"{session}.jsonl").exists() else \
-        sorted(folder.glob("*.jsonl"), key=lambda p: p.stat().st_mtime)[-1:]
-    if not logs:
-        return ""
-    parts, seen_prompt = [], False
-    for line in reversed(logs[0].read_text().splitlines()):
-        try:
-            e = json.loads(line)
-        except ValueError:
-            continue
-        content = (e.get("message") or {}).get("content")
-        if e.get("type") == "user" and not e.get("isMeta") and not (
-                isinstance(content, list) and any(b.get("type") == "tool_result" for b in content)):
-            seen_prompt = True  # first your /read, then the reply before it
-        elif seen_prompt and e.get("type") == "assistant" and isinstance(content, list):
-            parts += [b["text"] for b in reversed(content) if b.get("type") == "text"]
-            if parts:
-                break  # only the final answer, not the progress notes before it
-    return "\n\n".join(reversed(parts))
 
 
 def stop():
@@ -155,15 +128,8 @@ def main():
     cmd = sys.argv[1] if len(sys.argv) > 1 else "status"
     if cmd == "hook":
         event = json.load(sys.stdin)
-        if SKIP.exists():
-            SKIP.unlink()  # the short answer to /read: keep reading the earlier reply
-        elif not OFF.exists() and not event.get("stop_hook_active"):
+        if not OFF.exists() and not event.get("stop_hook_active"):
             speak_later(last_reply(event))
-    elif cmd == "last":
-        text = previous_reply(sys.argv[2] if len(sys.argv) > 2 else "")
-        speak_later(text)
-        SKIP.touch()
-        print("Reading the last reply aloud." if clean(text) else "Found no reply to read.")
     elif cmd == "stop":
         stop()
     elif cmd == "play":

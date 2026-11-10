@@ -1,6 +1,6 @@
 # Development status
 
-Updated 10 November 2026, after adding `/read` to the reader for Claude Code's replies (`tools/claude-speak/`; needs two setup steps from you, below). **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
+Updated 10 November 2026, after building a reader for Claude Code's replies (`tools/claude-speak/`; needs one setup step from you, below). **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
 
 ## At a glance
 
@@ -26,9 +26,7 @@ change its own settings, so you add the two hooks yourself:
 1. In Claude Code type `/hooks`, or open `~/.claude/settings.json` in an editor.
 2. Add the `hooks` part from [tools/claude-speak/README.md](tools/claude-speak/README.md), with `REPO`
    replaced by the full path to this repo.
-3. For `/read` (reads the previous reply when you ask), run this from the repo root:
-   `! mkdir -p ~/.claude/skills/read && sed "s|REPO|$PWD|g" tools/claude-speak/read-skill.md > ~/.claude/skills/read/SKILL.md`
-4. Restart Claude Code. Turn automatic reading off with `! python3 tools/claude-speak/speak.py off`.
+3. Restart Claude Code. Turn it off with `! python3 tools/claude-speak/speak.py off`.
 
 Piper and the two voices are already set up on your computer (in `tools/claude-speak/`, not committed).
 
@@ -76,7 +74,7 @@ add-on, which now means its users have to reinstall. Tell me what you prefer; un
 
 | | What | Why not |
 |---|---|---|
-| 🟡 Not tested | **Claude Code reading its replies aloud** | Tested by hand without Claude Code: a fake reply is found in a transcript, cleaned (no code, tables or links), the hook returns in 0.13 s and the voice plays in the background; *stop* ends it mid-sentence. `speak.py last` (behind `/read`) found the final answer in this session's real log and read it, and the next automatic reading was skipped as it should be. Not yet run as a real hook or a real `/read`, because the hooks aren't added (above). It starts about 5 s after a reply, the time to load the voice. |
+| 🟡 Not tested | **Claude Code reading its replies aloud** | Tested by hand without Claude Code: a fake reply is found in a transcript, cleaned (no code, tables or links), the hook returns in 0.13 s and the voice plays in the background; *stop* ends it mid-sentence. Not yet run as a real hook, because the hooks aren't added (above). It starts about 5 s after a reply, the time to load the voice. |
 | 🟡 Not tested | **A really slow computer** | Not tried on real slow hardware. A simulation with half a CPU core took 39 s to the first sound and then rendered a bit slower than it speaks. With one full core it's fine. |
 | 🟡 Not tested | **Clicking through Firefox by hand** | Firefox was tested by scripts, not by a person. |
 | 🟡 Not tested | **Listening by ear** | Speed and pitch were measured; nobody has judged the voices or the volume by ear. |
@@ -98,7 +96,7 @@ In Chromium, "Load unpacked" is already permanent.
 
 **10 November:** Claude Opus 5.5. Built `tools/claude-speak/` (Piper in Python, the add-on's voices, a Stop
 hook). Slip: I tried to add the hooks to Claude Code's settings, then wrote a script that would do it; both
-were blocked, since an assistant changing its own settings needs you. The same happened with the `/read` skill. Cost: one setup step is left to you.
+were blocked, since an assistant changing its own settings needs you. Cost: one setup step is left to you.
 Suggestion: ask for permission before changing Claude Code's own settings.
 
 **2–3 November:** Claude Opus 5.5. Planned the clean-up first (plan approved), then built it: API keys

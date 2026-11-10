@@ -34,18 +34,6 @@ project). Replace `REPO` with the full path to this repo:
 }
 ```
 
-### The /read command
-
-`/read` reads the reply before it aloud, whether or not automatic reading is on. To add it, run this from
-the repo root (it copies `read-skill.md` into your Claude Code skills, with the repo's path filled in):
-
-```
-mkdir -p ~/.claude/skills/read && sed "s|REPO|$PWD|g" tools/claude-speak/read-skill.md > ~/.claude/skills/read/SKILL.md
-```
-
-It finds the reply in the session's log (`~/.claude/projects/<folder>/<session>.jsonl`), so run Claude
-Code from the same folder. Only the final answer is read, not the short progress notes before it.
-
 ## Using it
 
 In Claude Code, the `!` in front runs a command:
@@ -55,7 +43,6 @@ In Claude Code, the `!` in front runs a command:
 | Turn off / on | `! python3 tools/claude-speak/speak.py off` (or `on`) |
 | Stop the current reply | send a new message, or `! python3 tools/claude-speak/speak.py stop` |
 | Faster or slower | `! python3 tools/claude-speak/speak.py speed 1.2` |
-| Read the previous reply | `/read` |
 | Read any text | `python3 tools/claude-speak/speak.py say "Hello"` |
 
 It starts talking about 5 seconds after a reply ends, because loading the voice takes that long.
