@@ -31,7 +31,6 @@ Firefox snaps, node 22+ and python3.
 | Redraw the add-on icon (`extension/icons/`, needs Pillow) | `python3 tools/make-icons.py` |
 | Rebuild the voice catalogue | `node tools/make-catalog.mjs` (never edit `extension/catalog.js` by hand) |
 | Check bundled libraries against npm | `tools/check-vendor.sh` |
-| Read Claude Code's replies aloud (separate extra, not the add-on) | `tools/claude-speak/speak.py on\|off\|last\|say` (setup: its README) |
 
 A new behaviour needs a check: in a smoke test if quick, otherwise a new test using `check()`/`finish()`
 from `tests/chromium/lib.mjs`, registered in `tests/run.sh` with the files it covers. Tests should type and
@@ -59,10 +58,6 @@ Details: `docs/ARCHITECTURE.md`. The parts that span several files:
   ignore the add-on's internal messages.
 - **Voices** download from Hugging Face at the revision pinned in `catalog.js`, are size-checked, and live
   in the Cache API (`piper-voices`). Bundled code in `engine/vendor/` and `pdf/` is unchanged from npm.
-- **`tools/claude-speak/`** is not part of the add-on: a Python Piper reader for Claude Code's replies (Stop
-  hook, `/read` skill from `read-skill.md`), using the add-on's default voices at the same pinned revision.
-  Its venv and voices are git-ignored. Claude Code blocks an assistant from installing its hooks or skill,
-  so give the owner the command to run.
 - **Ids that must never change:** the gecko id `neural-voices@jca374.github.io` (signing and updates).
 
 ## Docs (keep them accurate when something changes)
