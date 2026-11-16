@@ -6,7 +6,7 @@ Updated 16 November 2026, after a code review (bugs, security, licences), fixing
 
 | ✅ Working and tested | 🟡 Built, not tested yet | 🔵 Left to do |
 |---|---|---|
-| **22**: reading inside frames, the review fixes, the icon, reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **7**: claude.ai itself in your own browser, a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first two are in your [checklist](docs/MANUAL-TEST.md)) | **3**: try it on claude.ai, release it, decide which name the project shows publicly |
+| **22**: reading inside frames, the review fixes, the icon, reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **7**: claude.ai itself in your own browser, a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first two are in your [checklist](docs/MANUAL-TEST.md)) | **2**: try it on claude.ai, release it |
 
 ## What's deployed
 
@@ -33,20 +33,10 @@ test (15 checks) and a Firefox check. All tests pass. Slips: the Chromium test h
 service worker on a fresh profile (about 20 minutes to find); Firefox 158 needed a new variable for the
 test connection (10 minutes, not the add-on); one timing check failed under load and passed alone.
 
-## Decide which name the project shows
+## The name stays
 
-0.5.0 is public. Two things show who made it:
-
-1. **The author name on the store page: "Jonas".** It was changed to "JCA374" on 3 November but is "Jonas"
-   again now, probably reset when you logged in. Change it under *Edit My Profile → Display Name* on
-   addons.mozilla.org if you want something else. Location, job and bio are empty.
-2. **"JCA374"** (close to your email prefix) in the GitHub account, the project page address and the add-on's
-   permanent id (`neural-voices@jca374.github.io`, which can never change for this add-on). Your email itself
-   is shown nowhere. Your full name is on the 72 past commits on GitHub; new commits say JCA374.
-
-Options: keep it as it is; or a new GitHub account with a neutral name (the repo moves there, history
-rewritten). The add-on id would still contain "jca374" unless the add-on is published again as a new
-add-on, which now means its users have to reinstall. Tell me what you prefer; until then I change nothing.
+Decided 16 November: the store author name ("Jonas"), the GitHub account (JCA374), the page address and the
+add-on id stay as they are. Nothing to change.
 
 ## What works
 
