@@ -29,11 +29,7 @@ export function finish(errors) {
 
 // The browser with the add-on loaded. `logs` collects every "[Neural Voices]" console line.
 export async function browser({ quiet = false } = {}) {
-  const targets = await waitFor(async () => { const t = await list(); return t.some((x) => x.type === "service_worker") && t; }, 20000, 250);
-  if (!targets) { console.log("FAIL the add-on's service worker never started"); process.exit(1); }
   const errors = [], logs = [];
-  const swTarget = targets.find((t) => t.type === "service_worker");
-  const extId = new URL(swTarget.url).host;
 
   function connect(t, tag) {
     const ws = new WebSocket(t.webSocketDebuggerUrl); let id = 0; const pending = new Map();
@@ -52,7 +48,19 @@ export async function browser({ quiet = false } = {}) {
     return new Promise((res) => (ws.onopen = async () => { await send("Runtime.enable"); res({ send, ev, tag }); }));
   }
 
-  const sw = await connect(swTarget, "bg");
+  // The add-on's service worker. A fresh profile starts Chromium's own extensions' workers too, so ours is
+  // the one whose manifest says Neural Voices.
+  let swTarget = null, sw = null;
+  await waitFor(async () => {
+    for (const t of (await list()).filter((x) => x.type === "service_worker" && /\/background\.js$/.test(x.url))) {
+      const c = await connect(t, "bg");
+      if ((await c.ev(`chrome.runtime.getManifest().name`)) === "Neural Voices") { swTarget = t; sw = c; return true; }
+    }
+    return false;
+  }, 20000, 250);
+  if (!sw) { console.log("FAIL the add-on's service worker never started"); process.exit(1); }
+  const extId = new URL(swTarget.url).host;
+  const targets = await list();
   const toTabs = (msg, how = "any") => `chrome.tabs.query({}).then(ts => Promise.${how}(ts.map(t => chrome.tabs.sendMessage(t.id, ${msg}))))`;
 
   // Open a page in a new tab and wait until it has loaded (and, for test pages, until the add-on runs in it).

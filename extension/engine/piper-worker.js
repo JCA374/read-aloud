@@ -280,6 +280,7 @@ self.onmessage = ({ data }) => {
   }
   if (data.type === "unload") {
     return reply(data.id, async () => {
+      if (data.voice === speaking) await queue.catch(() => {}); // never mid-sentence (the voice was just deleted)
       await unloadVoice(data.voice);
       return { ok: true };
     });

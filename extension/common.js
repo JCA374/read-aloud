@@ -93,11 +93,12 @@ var NV = (() => {
     );
   }
 
-  // A message to a tab's content script. The PDF viewer is an add-on page, which tabs.sendMessage can't
+  // A message to a tab's content script: to one frame (0 = the page itself) or, without frameId, to every
+  // frame (the first answer is returned). The PDF viewer is an add-on page, which tabs.sendMessage can't
   // reach, so it gets the message as a runtime message with the tab's id.
-  async function sendToTab(tabId, msg) {
+  async function sendToTab(tabId, msg, frameId) {
     try {
-      return await chrome.tabs.sendMessage(tabId, msg);
+      return await chrome.tabs.sendMessage(tabId, msg, frameId == null ? undefined : { frameId });
     } catch (e) {
       if (!/Receiving end does not exist/i.test(e?.message)) throw e; // a content script got it but didn't reply
       const res = await chrome.runtime.sendMessage({ ...msg, toTab: tabId }).catch(() => undefined);

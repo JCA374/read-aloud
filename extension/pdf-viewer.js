@@ -28,7 +28,12 @@ const button = (text, onClick) => Object.assign(el("button", { type: "button", t
 // ---------------------------------------------------------------- loading
 
 async function loadUrl(url) {
-  $("name").textContent = decodeURIComponent(url.split(/[?#]/)[0].split("/").pop() || url);
+  const name = url.split(/[?#]/)[0].split("/").pop() || url;
+  try {
+    $("name").textContent = decodeURIComponent(name);
+  } catch {
+    $("name").textContent = name; // a badly encoded address
+  }
   notice(el("p", { textContent: "Opening the PDF…" }));
   let res;
   try {

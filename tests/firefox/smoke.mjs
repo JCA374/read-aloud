@@ -58,4 +58,18 @@ check("every paragraph's language recognised from its words", found8 === "de fr 
 await waitFor(async () => (await b.status()).state === "playing", 30000);
 await b.stopAll();
 
+// 5. A page holding an article in a frame from another site (like an artifact on claude.ai): "Read page", as
+// the popup sends it, reads the article in the frame, not the page's few words
+const framesTab = await b.open("frames.html");
+const framesTabId = await b.ev(b.ext, `chrome.tabs.query({}).then(ts => ts.find(t => t.url.endsWith('frames.html')).id)`);
+const kids = (await b.send("browsingContext.getTree", { root: framesTab })).result.contexts[0].children || [];
+const article = kids.find((c) => /long\.html/.test(c.url))?.context;
+check("frames.html: the article frame is there", !!article, kids.map((c) => c.url).join(", "));
+const sent = await b.ev(b.ext, `chrome.runtime.sendMessage({type: 'command', tabId: ${framesTabId}, cmd: 'toggle'}).then(s => JSON.stringify(s))`); // answered before reading starts
+const frameWord = await waitFor(() => b.word(article), 30000, 50);
+check("frames.html: Read page reads the article in the frame", !!frameWord && !(await b.word(framesTab)), `frame: ${JSON.stringify(frameWord)}; page: ${JSON.stringify(await b.word(framesTab))}; ${sent}`);
+await b.stopAll();
+check("frames.html: Stop", (await waitFor(async () => (await b.status()).state === "idle", 3000)) !== null);
+await b.close(framesTab);
+
 finish(b.errors());

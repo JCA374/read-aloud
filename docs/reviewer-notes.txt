@@ -13,7 +13,8 @@ running as WebAssembly; no server, no data collection.
 - Network: voice models from huggingface.co/rhasspy/piper-voices (pinned revision, size-checked) the
   first time a voice is used; samples from rhasspy.github.io when the user presses "Try"; a PDF the user
   asks to read, from its own site (optional host permission, asked per site).
-- Permissions: content script on all pages (reads the text, shows the player); storage; contextMenus;
+- Permissions: content script on all pages and their frames (all_frames: an embedded document or an
+  artifact on claude.ai is a page in an iframe; reads the text, shows the player); storage; contextMenus;
   activeTab (popup checks whether the tab is a PDF); optional host permissions, per site, for PDFs.
 - Language detection: browser.i18n.detectLanguage (local).
 - Data: declared "none". Page text never leaves the browser.

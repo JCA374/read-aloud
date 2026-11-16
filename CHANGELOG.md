@@ -5,6 +5,17 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
 
 ## Unreleased
 
+- **Reads text inside frames.** Many pages show their content in a frame from another site: an artifact
+  on claude.ai, an embedded document, an editor. The add-on now runs in those frames too. *Read page* reads
+  the frame with the text (or the one with selected text), the selection speaker and right-click items work
+  inside a frame, and one frame reads at a time: when another starts, the first stops. Click-to-read is
+  switched on and off in every frame of the page together.
+- Fixed: a settings file with a speed, volume or pause outside the sliders' range was accepted as it was
+  (a speed of 0 broke the voice until Reset). Numbers are now kept within range, and a broken file always
+  gives the "isn't a Neural Voices settings file" message instead of doing nothing.
+- Fixed: the PDF viewer did nothing when the PDF's address had a badly encoded file name.
+- Fixed: deleting the voice that is speaking could crash the voice engine.
+- Fixed: the popup showed no message when it had no tab to read.
 - On a page in Firefox's add-on store, the popup says why it can't be read (Firefox lets no add-on run there)
   instead of suggesting a reload.
 

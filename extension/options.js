@@ -260,7 +260,7 @@ async function renderStorage() {
   const bytes = [...downloaded].reduce((sum, id) => sum + DETAILS[id].onnx.size + DETAILS[id].config.size, 0);
   let text = n ? `Downloaded voices: ${n}, ${mb(bytes)}.` : "No voices downloaded yet.";
   const est = await navigator.storage?.estimate?.().catch(() => null);
-  if (est?.quota) text += ` The browser allows this add-on about ${Math.floor((est.quota - est.usage) / 1e9)} GB more.`;
+  if (est?.quota) text += ` The browser allows this add-on about ${Math.max(0, Math.floor((est.quota - est.usage) / 1e9))} GB more.`;
   $("storage").textContent = text;
   $("deleteAll").disabled = !n;
 }
@@ -274,14 +274,17 @@ async function deleteAll() {
   render();
 }
 
-// Only known settings with the right type; voice ids must be in the catalogue.
+// Only known settings with the right type; voice ids must be in the catalogue; numbers within their sliders' range.
+const RANGES = { speed: [0.75, 2], volume: [0, 1], pause: [0, 0.5] };
 function cleanSettings(data) {
   const out = {};
   const known = (id) => typeof id === "string" && id in DETAILS;
   for (const [k, def] of Object.entries(NV.DEFAULTS)) {
     const v = data?.[k];
-    if (v === undefined || typeof v !== typeof def || Array.isArray(v) !== Array.isArray(def)) continue;
-    if (k === "shown") {
+    if (v === undefined || v === null || typeof v !== typeof def || Array.isArray(v) !== Array.isArray(def)) continue;
+    if (k in RANGES) {
+      if (Number.isFinite(v)) out[k] = Math.min(RANGES[k][1], Math.max(RANGES[k][0], v));
+    } else if (k === "shown") {
       const ids = v.filter(known);
       if (ids.length) out.shown = [...new Set(ids)];
     } else if (k === "langVoices") {
@@ -308,13 +311,13 @@ function exportSettings() {
 }
 
 async function importSettings(file) {
-  let data;
+  let changes;
   try {
-    data = JSON.parse(await file.text());
+    const data = JSON.parse(await file.text());
+    changes = cleanSettings(data?.settings ?? data);
   } catch {
     return alert("That file isn't a Neural Voices settings file.");
   }
-  const changes = cleanSettings(data?.settings ?? data);
   if (!Object.keys(changes).length) return alert("No settings found in that file.");
   await save(changes);
 }

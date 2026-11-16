@@ -5,16 +5,16 @@ async function activeTab() {
   return tab;
 }
 
+// A command for the page: the background sends it to the frame that's reading, or the one with the text.
 async function send(cmd) {
   const tab = await activeTab();
-  try {
-    return await NV.sendToTab(tab.id, { cmd });
-  } catch {
+  const res = tab?.id == null ? null : await chrome.runtime.sendMessage({ type: "command", tabId: tab.id, cmd }).catch(() => null);
+  if (res == null) {
     // Firefox's own PDF viewer runs no add-on scripts: offer to open the PDF in ours. Nor does its add-on
     // store, and nothing helps there (deliberately no workaround: docs/ARCHITECTURE.md, "Decided against").
-    $(NV.looksLikePdf(tab.url) ? "pdf" : /^https:\/\/addons\.mozilla\.org\//.test(tab.url || "") ? "store" : "nopage").hidden = false;
-    return null;
+    $(NV.looksLikePdf(tab?.url) ? "pdf" : /^https:\/\/addons\.mozilla\.org\//.test(tab?.url || "") ? "store" : "nopage").hidden = false;
   }
+  return res;
 }
 
 function render(status) {

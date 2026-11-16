@@ -70,6 +70,10 @@ const imported = await waitFor(async () => { const s = await b.sw.ev(`chrome.sto
 check("Import gives back the exported settings", !!imported && JSON.stringify(imported.shown) === JSON.stringify(after), JSON.stringify(imported));
 const cleaned = await opt.ev(`JSON.stringify(cleanSettings({ speed: 'fast', voice: 'piper:nope', shown: ['piper:nope', ${JSON.stringify(CORI)}], extra: 1, highlight: 'pink' }))`);
 check("Import drops unknown voices, keys and wrong types", cleaned === JSON.stringify({ shown: [CORI] }), cleaned);
+const ranged = await opt.ev(`JSON.stringify(cleanSettings({ speed: 0, volume: 5, pause: -3, langVoices: null, autoScroll: null }))`);
+check("Import keeps numbers within their range and skips null", ranged === JSON.stringify({ speed: 0.75, volume: 1, pause: 0 }), ranged);
+await opt.ev(`window.alert = () => {}; importSettings(new File(['{"settings":{"langVoices":null,"speed":"x"}}'], 'bad.json')).then(() => 'ok')`);
+check("a file with nothing usable doesn't break the page", await opt.ev(`typeof settings.speed === 'number'`));
 await b.sw.ev(`chrome.storage.local.set({ pause: 0, highlight: 'classic', speed: 1 })`);
 
 // 6. Reading options: skip code blocks; pause; auto-scroll

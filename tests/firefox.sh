@@ -25,7 +25,8 @@ user_pref("browser.shell.checkDefaultBrowser", false);
 PREFS
 # IDLE_MS=n: Firefox stops the add-on's background page after n ms without events (default 30 s)
 echo "user_pref(\"extensions.background.idle.timeout\", ${IDLE_MS:-30000});" >>"$profile/user.js"   # always set: prefs stay in the profile
-(firefox --headless --no-remote --profile "$profile" --remote-debugging-port 9334 --remote-allow-system-access >/dev/null 2>&1 &)
+# Evaluating in the add-on's own pages needs system access: the flag, and since Firefox 158 the variable too.
+(MOZ_REMOTE_ALLOW_SYSTEM_ACCESS=1 firefox --headless --no-remote --profile "$profile" --remote-debugging-port 9334 --remote-allow-system-access >/dev/null 2>&1 &)
 timeout "${TIMEOUT:-200}" node "$test" "$ext"
 status=$?
 stop_browser

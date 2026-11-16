@@ -27,6 +27,7 @@ chromium/download-failure|PROFILE=nv-fresh-profile;EXTRA=--host-resolver-rules=M
 chromium/settings-voice-switch|KEEP=1|extension|150
 chromium/settings-extras|KEEP=1|extension/options.* extension/common.js extension/content.js extension/background.js tests/site/code.html|200
 chromium/pdf|KEEP=1|extension/pdf* extension/content.js extension/common.js extension/background.js tests/site/doc.pdf|150
+chromium/frames|KEEP=1|extension/manifest.json extension/content.js extension/common.js extension/background.js extension/popup.js tests/site/frames.html|150
 chromium/pronunciation|KEEP=1|extension/options.* extension/common.js extension/content.js extension/background.js extension/engine/host.js extension/engine/piper-worker.js tests/site/long.html|200
 chromium/older-revision|KEEP=1;EXTRA=--host-resolver-rules=MAP huggingface.co ~NOTFOUND|extension/engine/piper-worker.js extension/options.js|150
 chromium/mixed-and-controls|KEEP=1|extension|200
@@ -36,7 +37,7 @@ chromium/memory|KEEP=1;TIMEOUT=1000|extension/engine extension/offscreen.* exten
 firefox/memory|TIMEOUT=700|extension/engine extension/offscreen.* extension/background.js|760
 "
 QUICK="chromium/smoke firefox/smoke"
-AFFECTED="firefox/features chromium/voice-management chromium/download-failure chromium/older-revision chromium/settings-extras chromium/pdf chromium/pronunciation"   # added to quick when their files changed
+AFFECTED="firefox/features chromium/voice-management chromium/download-failure chromium/older-revision chromium/settings-extras chromium/pdf chromium/frames chromium/pronunciation"   # added to quick when their files changed
 ALL="chromium/smoke firefox/smoke $AFFECTED chromium/settings-voice-switch chromium/mixed-and-controls"
 RELEASE="firefox/smoke firefox/features firefox/real-sites"   # against the built Firefox package (dist/firefox)
 TIMING="chromium/warm-up chromium/long-page-cpu chromium/memory firefox/memory"

@@ -36,6 +36,9 @@ about 63 MB).
 | `Alt+Shift+R` | read, pause or resume |
 | `Alt+Shift+X` or `Esc` | stop |
 
+Text shown in a frame inside a page (an artifact on claude.ai, an embedded document, an editor) is read
+like any page: *Read page* picks the frame with the text, and the speaker and right-click items work inside it.
+
 The player has previous/next sentence, speed, voice and ⚙ Settings. In Settings: your voice list
 (▶ Try a voice before downloading it), a default voice for each language, speed, volume, the highlight
 style, scrolling, skip code blocks, a pause after each sentence, **your own pronunciations** for words a

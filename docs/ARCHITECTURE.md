@@ -54,22 +54,38 @@ content.js ──{type:"tts", voice, text, speed, say?}──▶ background.js �
 ## Messages
 
 To the background (`chrome.runtime.sendMessage`, field `type`):
-`tts`, `voices` (the list without download details), `download`, `unload`, `warm`, `reading` (a tab's
-state, for "one tab at a time"), `openPdf`, `openOptions`, `keepAlive` (sent every 5 s while a `tts` request
-waits: Firefox closes a background page after 30 s without events, even mid-render). Internal:
-`voiceProgress`, `engineIdle`, and messages with `target: "offscreen"` (Chromium).
+`tts`, `voices` (the list without download details), `download`, `unload`, `warm`, `reading` (a frame's
+state, for "one reader at a time"), `bid` (a frame's answer to a `bid` command, below), `command` (from the
+popup: `{tabId, cmd}`, routed to the right frame; answers `null` when no content script answers), `clickMode`
+(`{on}`: a frame switched click-to-read, pass it on to the page's other frames), `openPdf`, `openOptions`,
+`keepAlive` (sent every 5 s while a `tts` request waits: Firefox closes a background page after 30 s without
+events, even mid-render). Internal: `voiceProgress`, `engineIdle`, and messages with `target: "offscreen"`
+(Chromium).
 
-To a tab (`NV.sendToTab`, field `cmd`): `readSelection`, `readFromHere`, `readPage`, `toggle`, `stop`,
-`clickMode`, `voiceProgress`, `status`. Every command except `voiceProgress` replies with the tab's state.
+To a tab (`NV.sendToTab(tabId, msg, frameId?)`, field `cmd`): `readSelection`, `readFromHere`, `readPage`,
+`toggle`, `stop`, `clickMode` (`on` to set it, else toggle and tell the other frames), `voiceProgress`,
+`status`, `bid`. Every command except `voiceProgress` replies with the frame's state; `bid` replies
+`{text, selection, frames}` (how much it has to read; a frame too small to see counts as empty).
 The PDF viewer is an add-on page, which `tabs.sendMessage` can't reach, so `sendToTab` falls back to a
 runtime message with `toTab: <tab id>`.
+
+**Frames.** `content.js` runs in every frame of a page (`all_frames`), because an editor or an artifact on
+claude.ai is a page in an iframe from another site. Each frame has its own player and reads on its own; the
+background keeps one reader per browser: when a frame starts, the one that was reading (another tab or
+another frame) gets `stop`, and the page's other frames leave click-to-read. Commands for "the page"
+(popup, shortcuts) go through `toFrame()` in the background: to the frame that's reading; else `stop` to
+every frame, and the rest to the frame with selected text, else the one with the most text (the page is
+asked first; only when it holds iframes are all frames asked, with a `bid` token, and their runtime `bid`
+answers collected for 150 ms). Right-click items go to the frame that was clicked (`info.frameId`). A frame
+asks for the voice list only when it needs it (pages hold many small frames). `tests/site/frames.html` and
+`tests/chromium/frames.mjs` cover this.
 
 ## Storage
 
 | Where | What |
 |---|---|
 | `chrome.storage.local` | Settings: the keys of `NV.DEFAULTS` in `common.js` (`voice`, `voiceSv`, `langVoices`, `autoDetect`, `fixedVoice`, `shown`, `speed`, `volume`, `highlight`, `autoScroll`, `pause`, `skipCode`, and `dictionary`: `[{word, say, lang}]`, `lang` "" for every voice). |
-| `chrome.storage.session` | `readingTab`: the tab that's reading (the background can be unloaded between events). |
+| `chrome.storage.session` | `reading`: `{tab, frame}`, the frame that's reading (the background can be unloaded between events). |
 | Cache API, cache `piper-voices` | Voice files (`.onnx`, `.onnx.json`), keyed by their pinned URL. Settings shows the size and deletes them. |
 
 ## Voices and the catalogue

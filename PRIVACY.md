@@ -18,15 +18,16 @@ Neural Voices server, no account and no analytics.
    (`huggingface.co/rhasspy/piper-voices`), at a fixed version. Only the voice files are requested; no
    text or personal data is sent.
 2. **▶ Try in Settings**: plays a short sample of a voice from `rhasspy.github.io/piper-samples`.
-3. **Opening a PDF** you ask it to read: the PDF is fetched from the site it's on. The add-on asks for
-   permission for each site the first time.
+3. **Opening a PDF** you ask it to read: the PDF is fetched from the site it's on, with that site's
+   cookies, so a PDF behind a login opens too. The add-on asks for permission for each site the first time.
 
 These sites see an ordinary download request from your browser (your IP address and the browser's usual
 headers), as with any web page. Neural Voices adds nothing to these requests and doesn't track you.
 
 ## Permissions
 
-- **Access to the pages you visit**: to read their text and show the player. The text stays in the browser.
+- **Access to the pages you visit**, including the frames inside them (an embedded document, an artifact on
+  claude.ai): to read their text and show the player. The text stays in the browser.
 - **Storage**: to keep your settings.
 - **Context menus**: the *Read aloud* items when you right-click.
 - **Active tab**: lets the popup see whether the current tab is a PDF.
@@ -38,4 +39,4 @@ headers), as with any web page. Neural Voices adds nothing to these requests and
 
 Questions or problems: open an issue at <https://github.com/JCA374/read-aloud/issues>.
 
-Last updated: 2 November 2026.
+Last updated: 16 November 2026.

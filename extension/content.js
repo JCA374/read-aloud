@@ -10,18 +10,22 @@
   let settings = { ...NV.DEFAULTS };
   let voices = NV.STARTER_VOICES;
   let dictRev = 0; // counts changes to your pronunciations, so pieces rendered before a change are redone
+  // This script runs in every frame of a page too (an editor, or an artifact on claude.ai, is a page in an
+  // iframe from another site). A frame asks the background for the voice list only when it needs it.
+  const IN_FRAME = window !== window.top;
 
+  let voicesLoaded = null;
   function loadVoices() {
-    NV.allVoices().then((v) => {
+    return (voicesLoaded ??= NV.allVoices().then((v) => {
       voices = v;
       ui.sync();
-    });
+    }));
   }
 
   let ownVolumeSaves = 0; // volume changes saved by this page's player and not yet reported back
   chrome.storage.local.get(NV.DEFAULTS).then((s) => {
     settings = s;
-    loadVoices();
+    if (!IN_FRAME) loadVoices();
   });
   chrome.storage.onChanged.addListener((changes) => {
     // The player's own volume saves come back here one by one; while some are still on their way, an older
@@ -623,6 +627,7 @@
   }
 
   async function readRange(range, root, skipBoilerplate, startAt) {
+    await loadVoices();
     const { segs, lang, i } = await plan(range, root, skipBoilerplate, startAt);
     player.start(segs, i, lang);
   }
@@ -647,6 +652,7 @@
   async function prewarmSelection() {
     const sel = getSelection();
     if (!sel.rangeCount || sel.isCollapsed || player.state !== "idle") return;
+    await loadVoices();
     const { segs, lang } = await plan(sel.getRangeAt(0), document.body, false);
     if (!segs.length || player.state !== "idle") return;
     const voice = NV.voiceFor(segs[0].lang || lang, settings, voices);
@@ -745,11 +751,19 @@
     hoverEl = el;
     el?.classList.add("nv-hover");
   }
-  function setClickMode(on) {
+  // Click-to-read is on or off in every frame of the page at once: switched here (tell = true), the
+  // background passes it on to the other frames. Only the page itself shows the bar for it; a frame
+  // shows its bar once it reads. A frame that is reading keeps the mode when the others are switched off.
+  function setClickMode(on, tell = false) {
+    if (!on && !tell && player.state !== "idle") return;
     clickMode = on;
-    if (on) ui.show();
-    else setHover(null);
+    if (on && !IN_FRAME) ui.show();
+    else if (!on) {
+      setHover(null);
+      if (player.state === "idle" && IN_FRAME) ui.bar?.classList.remove("open");
+    }
     ui.sync();
+    if (tell) chrome.runtime.sendMessage({ type: "clickMode", on }).catch(() => {});
   }
   addEventListener("mouseover", (e) => {
     if (!clickMode || e.target === ui.host) return;
@@ -765,7 +779,7 @@
   // Escape leaves click-to-read, or stops reading (but not while typing in a field).
   addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
-    if (clickMode) setClickMode(false);
+    if (clickMode) setClickMode(false, true);
     else if (player.state !== "idle" && !e.target.closest?.("input, textarea, select, [contenteditable]")) player.stop();
   });
 
@@ -870,6 +884,7 @@
 
     build() {
       if (this.host) return;
+      loadVoices();
       this.host = document.createElement("neural-voices-player");
       const root = this.host.attachShadow({ mode: "closed" });
       const style = document.createElement("style");
@@ -904,7 +919,7 @@
       $(".next").onclick = () => player.skip(1);
       $(".stop").onclick = () => player.stop();
       this.els.play.onclick = () => player.toggle();
-      this.els.click.onclick = () => setClickMode(!clickMode);
+      this.els.click.onclick = () => setClickMode(!clickMode, true);
       $(".settings").onclick = () => chrome.runtime.sendMessage({ type: "openOptions" }).catch(() => {});
       $(".close").onclick = () => {
         player.stop();
@@ -1045,11 +1060,28 @@
     addEventListener("nv-read-page", () => readPage());
     addEventListener("nv-stop", () => player.stop());
   }
+  // Leaving the page (or the frame) while reading: tell the background, so it doesn't wait for this one.
+  addEventListener("pagehide", () => {
+    if (player.state !== "idle") chrome.runtime.sendMessage({ type: "reading", state: "idle" }).catch(() => {});
+  });
+
+  // How much this frame has to read, for the background to pick the frame a command is for (a frame too
+  // small to see, like an ad, has nothing).
+  function bid() {
+    const hidden = IN_FRAME && (innerWidth < 200 || innerHeight < 100);
+    return { text: hidden ? 0 : (document.body?.innerText || "").length, selection: !getSelection().isCollapsed, frames: document.querySelectorAll("iframe, frame").length };
+  }
 
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     // Only commands. (The PDF viewer, an add-on page, also sees the add-on's internal messages.)
     if (!msg.cmd || (msg.toTab != null && msg.toTab !== myTab)) return;
     switch (msg.cmd) {
+      case "bid": {
+        const b = bid();
+        if (msg.token) chrome.runtime.sendMessage({ type: "bid", token: msg.token, ...b }).catch(() => {});
+        sendResponse(b);
+        return;
+      }
       case "readSelection":
         readSelection() || readPage();
         break;
@@ -1066,7 +1098,8 @@
         player.stop();
         break;
       case "clickMode":
-        setClickMode(!clickMode);
+        if (msg.on == null) setClickMode(!clickMode, true); // from the popup: switch it here and in every frame
+        else setClickMode(msg.on); // from the background: another frame switched it
         break;
       case "voiceProgress": {
         const label = voices.find((v) => v.id === msg.voice)?.label || msg.voice;

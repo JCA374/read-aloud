@@ -1,12 +1,12 @@
 # Development status
 
-Updated 8 November 2026, after giving the store page the add-on's icon (it showed Mozilla's grey default). **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)).
+Updated 16 November 2026, after a code review (bugs, security, licences), fixing what it found, and making the add-on read text inside frames, such as a Claude artifact. **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)); the changes below are not released yet.
 
 ## At a glance
 
 | ✅ Working and tested | 🟡 Built, not tested yet | 🔵 Left to do |
 |---|---|---|
-| **20**: the icon, reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **6**: a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first are in your [checklist](docs/MANUAL-TEST.md)) | **1**: decide which name the project shows publicly |
+| **22**: reading inside frames, the review fixes, the icon, reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **7**: claude.ai itself in your own browser, a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first two are in your [checklist](docs/MANUAL-TEST.md)) | **3**: try it on claude.ai, release it, decide which name the project shows publicly |
 
 ## What's deployed
 
@@ -17,7 +17,23 @@ Updated 8 November 2026, after giving the store page the add-on's icon (it showe
 | GitHub Releases | [v0.5.2](https://github.com/JCA374/read-aloud/releases/tag/v0.5.2): the signed Firefox file and the Chromium zip | ✅ The download has the same checksum, and GitHub serves it as a Firefox add-on. |
 | Project page | <https://jca374.github.io/read-aloud/> | ✅ Install from the store; Chromium zip from the latest GitHub release. |
 
-## Do this next: decide which name the project shows
+## Do this next: try it on claude.ai, then release
+
+1. Load the development version (`tools/try.sh`), open a Claude artifact or a chat on claude.ai, and press
+   **Read page**. The artifact is a page inside a frame; the add-on now reads the frame with the text.
+   In Firefox, if it stays silent, click once inside the frame and press play again (Firefox lets a frame
+   play sound only after you've clicked in it). Tell me what you see.
+2. Delete or move `fix1.jpg` from the repo root before any commit; it's a phone photo in a public repo.
+3. When happy: a new version (`release` skill). The review's full report: [review page](https://claude.ai/artifact/Urhwe6aacYEYcAMFnSKeka).
+
+**16 November, in short:** code review found 4 small bugs (settings import accepted a speed of 0 and
+crashed on null; the PDF viewer stopped on a badly encoded name; the popup with no tab; deleting the voice
+that is speaking), all fixed and tested. New: reading inside frames (Claude artifacts), with a Chromium
+test (15 checks) and a Firefox check. All tests pass. Slips: the Chromium test helper took the wrong
+service worker on a fresh profile (about 20 minutes to find); Firefox 158 needed a new variable for the
+test connection (10 minutes, not the add-on); one timing check failed under load and passed alone.
+
+## Decide which name the project shows
 
 0.5.0 is public. Two things show who made it:
 
