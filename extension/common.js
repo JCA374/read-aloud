@@ -22,6 +22,7 @@ var NV = (() => {
     autoScroll: true, // keep the sentence being read in view
     pause: 0, // extra seconds of silence after each sentence
     skipCode: true, // don't read code blocks (<pre>)
+    readCaptions: false, // read image captions when reading the page (a selected caption is always read)
     dictionary: [], // your pronunciations: [{word, say, lang}], lang "" = every language
   };
 

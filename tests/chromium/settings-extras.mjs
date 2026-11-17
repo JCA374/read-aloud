@@ -1,6 +1,6 @@
 // Settings page extras: the ⚙ button in the player, ▶ Try (online sample, and the voice itself as fallback),
 // search and filters, voice order, storage, reset / export / import, and the reading options
-// (skip code blocks, auto-scroll). Downloads Cori first if the profile doesn't have it.
+// (skip code blocks, image captions, auto-scroll). Downloads Cori first if the profile doesn't have it.
 import { browser, waitFor, check, finish, player, sleep, CORI } from "./lib.mjs";
 
 const b = await browser();
@@ -86,6 +86,14 @@ await sleep(200);
 const withCode = await total();
 check("code block skipped by default, read when the setting is off", skipped > 0 && withCode > skipped, `${skipped} pieces vs ${withCode}`);
 await b.sw.ev(`chrome.storage.local.set({ skipCode: true })`);
+// Image captions: skipped by default; the Settings checkbox, clicked like a user, makes the page read them
+await opt.ev(`document.getElementById('readCaptions').click()`);
+const saved = await waitFor(() => b.sw.ev(`chrome.storage.local.get('readCaptions').then(r => r.readCaptions)`), 3000);
+await page.send("Page.bringToFront"); await sleep(300);
+const withCaption = await total();
+check("image caption skipped by default, read after ticking Read image captions", saved === true && withCaption > skipped, `${skipped} pieces vs ${withCaption}, saved ${saved}`);
+await opt.ev(`document.getElementById('readCaptions').click()`);
+await sleep(200);
 
 const long = await b.open("long.html", "long");
 const scrolled = async (autoScroll) => { // read, skip ahead 14 pieces, and see whether the page moved

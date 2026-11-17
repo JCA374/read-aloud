@@ -35,7 +35,7 @@ tests/firefox.sh  tests/firefox/<test>.mjs [dir] # FRESH=1 starts with an empty 
 ```
 
 A kept Chromium profile is started fresh automatically when `background.js` or `manifest.json` changed.
-`PROFILE=<name>` uses another profile folder. Both serve `tests/site/` on port 8799.
+`PROFILE=<name>` uses another profile folder. Both serve `tests/site/` on port 8799 with `tests/serve.py`, which turns caching off (kept profiles would otherwise test an old copy of a changed page).
 
 | Test | What it checks | Takes |
 |---|---|---|
@@ -45,7 +45,7 @@ A kept Chromium profile is started fresh automatically when `background.js` or `
 | `firefox/real-sites.mjs` | Real websites (Wikipedia EN and SV, MDN, a GitHub README, an old table-layout essay, Mozilla's manifesto): reading starts within 10 s, with the title or the article first (not a menu), the right voice, at least 10 sentences. Only in `release` (needs the internet; live pages change) | 1 min |
 | `chromium/settings-voice-switch.mjs` | One picker per language; with no Swedish voice the page says so; detection off gives one picker; changing voice in the popup while reading restarts the sentence | 10 s |
 | `chromium/voice-management.mjs` | Add a voice, download with progress, delete; download progress in the player; a `lang="de"` page; highlight styles | 30–60 s (fresh profile) |
-| `chromium/settings-extras.mjs` | ⚙ in the player opens Settings; ▶ Try plays the online sample, and with it blocked a downloaded voice reads one; search and filters; ↑ reorders; storage line; reset / export / import and cleaning a bad file; skip code blocks on/off; auto-scroll on/off; upgrading from 0.4.0 (storage without the newer keys). Downloads Cori first if the profile lacks it | 35 s |
+| `chromium/settings-extras.mjs` | ⚙ in the player opens Settings; ▶ Try plays the online sample, and with it blocked a downloaded voice reads one; search and filters; ↑ reorders; storage line; reset / export / import and cleaning a bad file; skip code blocks on/off; image captions skipped, read after ticking the setting; auto-scroll on/off; upgrading from 0.4.0 (storage without the newer keys). Downloads Cori first if the profile lacks it | 35 s |
 | `chromium/pronunciation.mjs` | Your pronunciations: add, replace, edit, remove, ▶ Try; the engine reads the replacement while word times keep the page's words; reading a page with an entry; per-language entries; import cleaning; `?word=` from the right-click item | 20 s |
 | `chromium/pdf.mjs` | The PDF viewer: text in paragraphs, hyphen joining, pages drawn, reading with highlights, commands reach it, zoom, hand-over from Chromium's own PDF viewer. Uses `site/doc.pdf` (made by `site/make-pdf.py`) | 15 s |
 | `chromium/frames.mjs` | A page holding an article in an iframe from another site (`site/frames.html`, like an artifact on claude.ai) plus a tiny frame: every frame bids, the article frame is picked; Read page reads it, status and Stop reach it; selected text in the page wins; a frame starting stops the page; click-to-read switched in every frame, Escape in the frame switches it off everywhere | 15 s |

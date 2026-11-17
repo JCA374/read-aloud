@@ -445,6 +445,7 @@ function render() {
   $("pause").value = String(settings.pause);
   $("autoScroll").checked = settings.autoScroll;
   $("skipCode").checked = settings.skipCode;
+  $("readCaptions").checked = settings.readCaptions;
 }
 
 $("addLang").onchange = () => setFilter({ lang: $("addLang").value });
@@ -471,7 +472,7 @@ for (const [id, fmt] of [["speed", (x) => `${x}×`], ["volume", (x) => `${Math.r
 $("highlight").replaceChildren(...Object.entries(NV.HIGHLIGHTS).map(([k, label]) => el("option", { value: k, textContent: label })));
 $("highlight").onchange = () => save({ highlight: $("highlight").value });
 $("pause").onchange = () => save({ pause: parseFloat($("pause").value) });
-for (const id of ["autoScroll", "skipCode"]) $(id).onchange = () => save({ [id]: $(id).checked });
+for (const id of ["autoScroll", "skipCode", "readCaptions"]) $(id).onchange = () => save({ [id]: $(id).checked });
 $("deleteAll").onclick = deleteAll;
 $("reset").onclick = () => confirm("Put all settings back to how they were when the add-on was installed? Downloaded voices stay.") && save({ ...NV.DEFAULTS });
 $("export").onclick = exportSettings;

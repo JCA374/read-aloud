@@ -1,12 +1,12 @@
 # Development status
 
-Updated 17 November 2026, after fixing the missing right-click item inside a Claude artifact, which you found on claude.ai. **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)); the changes below are not released yet.
+Updated 17 November 2026, after fixing the right-click item inside a Claude artifact and adding a setting so image captions are skipped. **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)); the changes below are not released yet.
 
 ## At a glance
 
 | ✅ Working and tested | 🟡 Built, not tested yet | 🔵 Left to do |
 |---|---|---|
-| **22**: reading inside frames, the review fixes, the icon, reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **7**: claude.ai itself in your own browser, a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first two are in your [checklist](docs/MANUAL-TEST.md)) | **2**: try it on claude.ai, release it |
+| **24**: skipping image captions, right-click inside frames, reading inside frames, the review fixes, the icon, reading, controls, volume, languages, voices, Settings, PDFs, speed, memory, Mozilla's checks, build and tests, signing tools, the releases, the pronunciation dictionary, everything in Firefox, real websites, the pause after sentences, upgrading from 0.4.0, the Firefox fix for long sentences | **7**: claude.ai itself in your own browser, a slow computer, Firefox by hand, listening by ear, word timing, shortcuts, PDFs in Firefox's own viewer (all but the first two are in your [checklist](docs/MANUAL-TEST.md)) | **2**: try it on claude.ai, release it |
 
 ## What's deployed
 
@@ -19,13 +19,15 @@ Updated 17 November 2026, after fixing the missing right-click item inside a Cla
 
 ## Do this next: try it on claude.ai, then release
 
-1. Load the development version (`tools/try.sh`), open a Claude artifact or a chat on claude.ai, and press
+1. In the Firefox window that's open, read the Wikipedia page again: it should go from paragraph to
+   paragraph without the picture captions. Settings → *Read image captions* brings them back.
+2. Load the development version (`tools/try.sh`), open a Claude artifact or a chat on claude.ai, and press
    **Read page**. The artifact is a page inside a frame; the add-on now reads the frame with the text.
    In Firefox, if it stays silent, click once inside the frame and press play again (Firefox lets a frame
    play sound only after you've clicked in it). Tell me what you see.
-2. When happy: a new version (`release` skill). The review's full report: [review page](https://claude.ai/artifact/Urhwe6aacYEYcAMFnSKeka).
+3. When happy: a new version (`release` skill). The review's full report: [review page](https://claude.ai/artifact/Urhwe6aacYEYcAMFnSKeka).
 
-**17 November:** you tried claude.ai and the right-click menu had no *Read aloud from here* inside an artifact. Cause: the item was set for right-clicks on the page itself, and a click inside a frame counts as a different place. Fixed, with a new quick check; all quick tests pass. `fix1.jpg` deleted. Open question: on Wikipedia the reading jumps from the main text into image captions.
+**17 November:** you tried claude.ai and the right-click menu had no *Read aloud from here* inside an artifact. Cause: the item was set for right-clicks on the page itself, and a click inside a frame counts as a different place. Fixed, with a new quick check; all quick tests pass. `fix1.jpg` deleted. Then you said reading on Wikipedia jumps from the text into image captions: captions are now skipped when reading a page, and a new Settings box, *Read image captions*, reads them again (your choice, option 2). Tested in Chromium. Two older checks failed while another job kept the machine busy; one fails the same way without today's changes. They need a re-run when the machine is quiet.
 
 **16 November, in short:** code review found 4 small bugs (settings import accepted a speed of 0 and
 crashed on null; the PDF viewer stopped on a badly encoded name; the popup with no tab; deleting the voice
@@ -43,6 +45,8 @@ add-on id stay as they are. Nothing to change.
 
 | | What | How it was checked |
 |---|---|---|
+| ✅ Tested | **Skips image captions** (unreleased). Reading a page no longer jumps from the text into a picture's caption (Wikipedia, WordPress and most news sites mark them). Settings → *Read image captions* reads them. A selected caption, or one you start reading from, is always read. | Chromium settings test: on a page with a caption between two paragraphs, reading is shorter by default and longer after clicking the new box in Settings. Not yet heard on Wikipedia itself. |
+| ✅ Tested | **Right-click inside a frame** (unreleased). *Read aloud from here* now shows when you right-click inside a Claude artifact. | You found it missing on claude.ai. A quick check now makes sure the menu item covers frames. |
 | ✅ Tested | **Reads text inside frames** (unreleased). A Claude artifact, an embedded document or an editor is a page in a frame from another site, where the add-on never ran before. *Read page* reads the frame with the text (or the one with selected text), the speaker and right-click items work inside a frame, one frame reads at a time, and click-to-read is switched in every frame together. | New Chromium test, 15 checks, on a page with an article in a sandboxed cross-origin frame and a 1-pixel frame with text: the article frame is picked, words highlighted inside it, the page stays idle, status and Stop reach the frame, selected text in the page wins, a frame starting stops the page, click-to-read on and off everywhere. Firefox: 3 checks in the smoke test, same page. Not yet tried on claude.ai itself (see below). |
 | ✅ Tested | **The review's fixes** (unreleased). Settings import keeps speed, volume and pause within range and no longer breaks on null; the PDF viewer copes with a badly encoded file name; the popup with no tab; deleting the voice that is speaking waits for the sentence. | Two new import checks (a file with speed 0, volume 5, pause -3 and null gives 0.75, 1, 0 and skips null; a file with nothing usable leaves the page working). The other fixes are covered by the existing tests passing; the review report has the details. |
 | ✅ Tested | **The icon** (also on the Settings and PDF tabs since 0.5.2). A speaker with two sound waves on an orange square, drawn for this project by `tools/make-icons.py`, so it's free to use (GPL-3.0). | The script redraws the 4 committed icon files identical, pixel for pixel. A new check in the Chromium test: both tabs have the icon and it loads; it fails when the icon is removed. |

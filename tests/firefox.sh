@@ -13,7 +13,7 @@ mine() { for p in $(pgrep -f "nv-profile"); do [ "$(ps -o comm= -p "$p")" != bas
 stop_browser() { for p in $(mine); do kill "$p" 2>/dev/null; done; sleep 2; }
 
 # The server must not keep this script's output open, or "| tail" after the runner never finishes.
-curl -s -o /dev/null http://127.0.0.1:8799/ || { (cd "$here/site" && exec python3 -m http.server 8799 </dev/null >/dev/null 2>&1) & }
+curl -s -o /dev/null http://127.0.0.1:8799/ || { (exec python3 "$here/serve.py" </dev/null >/dev/null 2>&1) & }
 stop_browser
 [ -n "$FRESH" ] && rm -rf "$profile"
 mkdir -p "$profile"; rm -rf "$profile/startupCache" "$profile/addonStartup.json.lz4"

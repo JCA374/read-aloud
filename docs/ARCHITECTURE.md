@@ -84,7 +84,7 @@ asks for the voice list only when it needs it (pages hold many small frames). `t
 
 | Where | What |
 |---|---|
-| `chrome.storage.local` | Settings: the keys of `NV.DEFAULTS` in `common.js` (`voice`, `voiceSv`, `langVoices`, `autoDetect`, `fixedVoice`, `shown`, `speed`, `volume`, `highlight`, `autoScroll`, `pause`, `skipCode`, and `dictionary`: `[{word, say, lang}]`, `lang` "" for every voice). |
+| `chrome.storage.local` | Settings: the keys of `NV.DEFAULTS` in `common.js` (`voice`, `voiceSv`, `langVoices`, `autoDetect`, `fixedVoice`, `shown`, `speed`, `volume`, `highlight`, `autoScroll`, `pause`, `skipCode`, `readCaptions`, and `dictionary`: `[{word, say, lang}]`, `lang` "" for every voice). |
 | `chrome.storage.session` | `reading`: `{tab, frame}`, the frame that's reading (the background can be unloaded between events). |
 | Cache API, cache `piper-voices` | Voice files (`.onnx`, `.onnx.json`), keyed by their pinned URL. Settings shows the size and deletes them. |
 

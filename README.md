@@ -41,7 +41,7 @@ like any page: *Read page* picks the frame with the text, and the speaker and ri
 
 The player has previous/next sentence, speed, voice and ⚙ Settings. In Settings: your voice list
 (▶ Try a voice before downloading it), a default voice for each language, speed, volume, the highlight
-style, scrolling, skip code blocks, a pause after each sentence, **your own pronunciations** for words a
+style, scrolling, skip code blocks, read image captions, a pause after each sentence, **your own pronunciations** for words a
 voice says wrong, storage use, and export/import.
 
 ## Privacy

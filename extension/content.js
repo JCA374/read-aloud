@@ -46,6 +46,9 @@
 
   const SKIP = "script,style,noscript,template,svg,canvas,textarea,input,select,button,iframe,object,math,neural-voices-player,[aria-hidden=true],[hidden]";
   const BOILERPLATE = "nav,header,footer,aside,[role=navigation],[role=banner],[role=contentinfo],[role=complementary],[role=search],.mw-editsection,.noprint";
+  // Image captions: Wikipedia (figcaption, older .thumbcaption, galleries), WordPress. Skipped when reading the
+  // page unless the setting says otherwise; a selection, or "read from here" on a caption, still reads it.
+  const CAPTION = "figcaption,.thumbcaption,.gallerytext,.wp-caption-text";
   const ACCEPT = NodeFilter.FILTER_ACCEPT;
   const SKIPNODE = NodeFilter.FILTER_SKIP;
   const HAS_WORD = /[\p{L}\p{N}]/u;
@@ -102,6 +105,11 @@
     const visible = new Map();
     let container = range.commonAncestorContainer;
     if (container.nodeType !== Node.ELEMENT_NODE) container = container.parentElement;
+    const first = range.startContainer.childNodes[range.startOffset] ?? range.startContainer; // where reading starts
+    const skipCaption = (el) => {
+      const cap = el.closest(CAPTION);
+      return !!cap && !cap.contains(first);
+    };
     const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
       acceptNode(n) {
         if (!n.data.trim() || !range.intersectsNode(n)) return SKIPNODE;
@@ -109,6 +117,7 @@
         if (!el || el.closest(SKIP) || isFootnoteMark(el)) return SKIPNODE;
         if (settings.skipCode && el.closest("pre")) return SKIPNODE; // code blocks
         if (skipBoilerplate && isBoilerplate(el, root)) return SKIPNODE;
+        if (skipBoilerplate && !settings.readCaptions && skipCaption(el)) return SKIPNODE; // image captions
         return isVisible(el, visible) ? ACCEPT : SKIPNODE;
       },
     });

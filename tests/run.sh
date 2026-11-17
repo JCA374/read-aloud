@@ -127,7 +127,7 @@ case $mode in
   *) list="$*" ;;
 esac
 
-curl -s -o /dev/null http://127.0.0.1:8799/ || { (cd tests/site && exec python3 -m http.server 8799 </dev/null >/dev/null 2>&1) & }
+curl -s -o /dev/null http://127.0.0.1:8799/ || { (exec python3 tests/serve.py </dev/null >/dev/null 2>&1) & }
 failed=0
 [ "$mode" != timing ] && { instant_checks || failed=1; }
 cq=$(for t in $list; do [[ $t == chromium/* ]] && echo "$t"; done)
