@@ -24,6 +24,8 @@ Updated 17 November 2026, after releasing 0.6.0: reading inside frames, image ca
 2. Nothing else is open. When the machine is quiet, re-run `tests/run.sh chromium/settings-extras` and
    `tests/run.sh firefox/features`: two timing checks failed under load (details below).
 
+**Store description** updated on 17 November: it now mentions reading inside frames (Claude artifacts) and skipping image captions; the store's public API serves the new text.
+
 **17 November, 0.6.0 released:** you liked the caption change and asked to publish. `tests/run.sh release` passed (Firefox, built package, real sites); `run.sh all` passed 11 of 13, with two timing checks failing while another job kept the machine busy (one fails the same way on 0.5.2's code; alone it reads in 10 s). Signed as a listed version, approved within minutes, GitHub Release made, its download checked. Earlier today: you tried claude.ai and the right-click menu had no *Read aloud from here* inside an artifact. Cause: the item was set for right-clicks on the page itself, and a click inside a frame counts as a different place. Fixed, with a new quick check; all quick tests pass. `fix1.jpg` deleted. Then you said reading on Wikipedia jumps from the text into image captions: captions are now skipped when reading a page, and a new Settings box, *Read image captions*, reads them again (your choice, option 2). Tested in Chromium. Two older checks failed while another job kept the machine busy; one fails the same way without today's changes. They need a re-run when the machine is quiet.
 
 **16 November, in short:** code review found 4 small bugs (settings import accepted a speed of 0 and
