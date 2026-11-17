@@ -5,6 +5,8 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
 
 ## Unreleased
 
+## 0.6.0 (2026-11-17)
+
 - **Reads text inside frames.** Many pages show their content in a frame from another site: an artifact
   on claude.ai, an embedded document, an editor. The add-on now runs in those frames too. *Read page* reads
   the frame with the text (or the one with selected text), the selection speaker and right-click items work
