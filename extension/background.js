@@ -50,7 +50,7 @@ function piperTts(msg, tabId) {
 chrome.runtime.onInstalled.addListener(() => {
   if (!chrome.contextMenus) return;
   chrome.contextMenus.create({ id: "read-selection", title: "Read aloud", contexts: ["selection"] });
-  chrome.contextMenus.create({ id: "read-from-here", title: "Read aloud from here", contexts: ["page", "link", "image"] });
+  chrome.contextMenus.create({ id: "read-from-here", title: "Read aloud from here", contexts: ["page", "frame", "link", "image"] }); // "page" is the top page only; "frame" is a right-click inside an iframe
   chrome.contextMenus.create({ id: "fix-pronunciation", title: "Fix pronunciation of “%s”", contexts: ["selection"] });
   chrome.contextMenus.create({ id: "read-pdf", title: "Read PDF aloud", contexts: ["link"], targetUrlPatterns: ["*://*/*.pdf", "*://*/*.pdf?*", "*://*/*.PDF"] });
 });

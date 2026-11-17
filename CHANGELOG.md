@@ -10,6 +10,7 @@ release, that section gets the new version number (`tools/sign.sh` sends it to M
   the frame with the text (or the one with selected text), the selection speaker and right-click items work
   inside a frame, and one frame reads at a time: when another starts, the first stops. Click-to-read is
   switched on and off in every frame of the page together.
+- Fixed: right-clicking inside a frame (such as a Claude artifact) showed no *Read aloud from here*.
 - Fixed: a settings file with a speed, volume or pause outside the sliders' range was accepted as it was
   (a speed of 0 broke the voice until Reset). Numbers are now kept within range, and a broken file always
   gives the "isn't a Neural Voices settings file" message instead of doing nothing.

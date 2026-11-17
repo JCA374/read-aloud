@@ -1,6 +1,6 @@
 # Development status
 
-Updated 16 November 2026, after a code review (bugs, security, licences), fixing what it found, and making the add-on read text inside frames, such as a Claude artifact. **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)); the changes below are not released yet.
+Updated 17 November 2026, after fixing the missing right-click item inside a Claude artifact, which you found on claude.ai. **0.5.2 is live in Firefox's add-on store** ([Neural Voices on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/a9f96c5f57e94f0c8762/)); the changes below are not released yet.
 
 ## At a glance
 
@@ -23,8 +23,9 @@ Updated 16 November 2026, after a code review (bugs, security, licences), fixing
    **Read page**. The artifact is a page inside a frame; the add-on now reads the frame with the text.
    In Firefox, if it stays silent, click once inside the frame and press play again (Firefox lets a frame
    play sound only after you've clicked in it). Tell me what you see.
-2. Delete or move `fix1.jpg` from the repo root before any commit; it's a phone photo in a public repo.
-3. When happy: a new version (`release` skill). The review's full report: [review page](https://claude.ai/artifact/Urhwe6aacYEYcAMFnSKeka).
+2. When happy: a new version (`release` skill). The review's full report: [review page](https://claude.ai/artifact/Urhwe6aacYEYcAMFnSKeka).
+
+**17 November:** you tried claude.ai and the right-click menu had no *Read aloud from here* inside an artifact. Cause: the item was set for right-clicks on the page itself, and a click inside a frame counts as a different place. Fixed, with a new quick check; all quick tests pass. `fix1.jpg` deleted. Open question: on Wikipedia the reading jumps from the main text into image captions.
 
 **16 November, in short:** code review found 4 small bugs (settings import accepted a speed of 0 and
 crashed on null; the PDF viewer stopped on a badly encoded name; the popup with no tab; deleting the voice
